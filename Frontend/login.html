@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Cherry.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body class="auth-body">
+
+  <div class="auth-bg">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+  </div>
+
+  <a href="/" class="auth-logo">cherry<span>.dev</span></a>
+
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Welcome back</h1>
+      <p>Sign in to your admin dashboard</p>
+    </div>
+
+    <form id="loginForm" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+          <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-alert" id="loginAlert" role="alert"></div>
+      <button type="submit" class="btn btn-primary btn-lg btn-full" id="loginBtn">
+        Sign In
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <a href="/" class="auth-back">← Back to site</a>
+    </div>
+  </div>
+
+  <script>
+    // Redirect if already logged in
+    (async () => {
+      try {
+        const res  = await fetch('/api/auth/check', { credentials: 'include' });
+        const data = await res.json();
+        if (data.loggedIn) window.location.href = '/dashboard';
+      } catch (_) {}
+    })();
+
+    // Toggle password visibility
+    document.getElementById('togglePw').addEventListener('click', () => {
+      const input = document.getElementById('password');
+      input.type  = input.type === 'password' ? 'text' : 'password';
+    });
+
+    // Login form submit
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn   = document.getElementById('loginBtn');
+      const alert = document.getElementById('loginAlert');
+
+      btn.disabled    = true;
+      btn.textContent = 'Signing in…';
+      alert.className = 'form-alert';
+      alert.textContent = '';
+
+      try {
+        const res  = await fetch('/api/auth/login', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value,
+          }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          window.location.href = '/dashboard';
+        } else {
+          throw new Error(data.error || 'Invalid credentials.');
+        }
+      } catch (err) {
+        alert.className   = 'form-alert form-alert--error';
+        alert.textContent = '✗ ' + err.message;
+        btn.disabled      = false;
+        btn.textContent   = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>

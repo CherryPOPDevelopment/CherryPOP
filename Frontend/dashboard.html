@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Cherry.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+<body class="dash-body">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <a href="/" class="logo sidebar-logo">cherry<span>.dev</span></a>
+    <nav class="sidebar-nav">
+      <a href="#" class="sidebar-link active" data-section="inquiries">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Inquiries
+        <span class="badge" id="newBadge"></span>
+      </a>
+      <a href="/" class="sidebar-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        View Site
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-chip" id="userChip">
+        <span class="user-avatar" id="userAvatar">A</span>
+        <span class="user-name" id="userName">Admin</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ─────────────────────────────────────────────────────────────── -->
+  <main class="dash-main">
+    <header class="dash-header">
+      <div>
+        <h1 class="dash-title">Inquiries</h1>
+        <p class="dash-sub">Manage all incoming project requests</p>
+      </div>
+      <div class="dash-header-actions">
+        <button class="btn btn-ghost btn-sm" id="refreshBtn">↻ Refresh</button>
+      </div>
+    </header>
+
+    <!-- Stats row -->
+    <div class="dash-stats" id="dashStats">
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statTotal">—</span><span class="dash-stat-label">Total</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statNew">—</span><span class="dash-stat-label">New</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statAccepted">—</span><span class="dash-stat-label">Accepted</span></div>
+      <div class="dash-stat-card"><span class="dash-stat-num" id="statCompleted">—</span><span class="dash-stat-label">Completed</span></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="dash-filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="new">New</button>
+      <button class="filter-btn" data-filter="in_review">In Review</button>
+      <button class="filter-btn" data-filter="accepted">Accepted</button>
+      <button class="filter-btn" data-filter="completed">Completed</button>
+      <button class="filter-btn" data-filter="declined">Declined</button>
+    </div>
+
+    <!-- Table -->
+    <div class="dash-table-wrapper">
+      <table class="dash-table" id="inquiriesTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Service</th>
+            <th>Budget</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inquiriesBody">
+          <tr><td colspan="8" class="table-empty">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- ── DETAIL MODAL ──────────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const VALID_STATUSES = ['new', 'in_review', 'accepted', 'completed', 'declined'];
+    let allInquiries = [];
+    let currentFilter = 'all';
+
+    // ── Auth guard
+    (async () => {
+      try {
+        const res  = await fetch('/api/auth/check', { credentials: 'include' });
+        const data = await res.json();
+        if (!data.loggedIn) { window.location.href = '/login'; return; }
+        document.getElementById('userName').textContent  = data.user.username;
+        document.getElementById('userAvatar').textContent = data.user.username[0].toUpperCase();
+      } catch (_) { window.location.href = '/login'; }
+    })();
+
+    // ── Load inquiries
+    async function loadInquiries() {
+      try {
+        const res  = await fetch('/api/inquiries', { credentials: 'include' });
+        if (res.status === 403) { window.location.href = '/login'; return; }
+        allInquiries = await res.json();
+        updateStats();
+        renderTable();
+      } catch (_) {
+        document.getElementById('inquiriesBody').innerHTML =
+          '<tr><td colspan="8" class="table-empty table-error">Failed to load inquiries.</td></tr>';
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('statTotal').textContent     = allInquiries.length;
+      document.getElementById('statNew').textContent       = allInquiries.filter(i => i.status === 'new').length;
+      document.getElementById('statAccepted').textContent  = allInquiries.filter(i => i.status === 'accepted').length;
+      document.getElementById('statCompleted').textContent = allInquiries.filter(i => i.status === 'completed').length;
+      const newCount = allInquiries.filter(i => i.status === 'new').length;
+      const badge = document.getElementById('newBadge');
+      badge.textContent = newCount || '';
+      badge.style.display = newCount ? 'inline-flex' : 'none';
+    }
+
+    function renderTable() {
+      const filtered = currentFilter === 'all'
+        ? allInquiries
+        : allInquiries.filter(i => i.status === currentFilter);
+      const tbody = document.getElementById('inquiriesBody');
+      if (!filtered.length) {
+        tbody.innerHTML = '<tr><td colspan="8" class="table-empty">No inquiries found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = filtered.map(i => `
+        <tr data-id="${i.id}">
+          <td class="td-id">${i.id}</td>
+          <td class="td-name">${esc(i.name)}</td>
+          <td class="td-email"><a href="mailto:${esc(i.email)}">${esc(i.email)}</a></td>
+          <td><span class="tag tag--${i.service_type}">${i.service_type}</span></td>
+          <td>${i.budget ? esc(i.budget) : '<span class="muted">—</span>'}</td>
+          <td>
+            <select class="status-select status--${i.status}" data-id="${i.id}" title="Change status">
+              ${VALID_STATUSES.map(s => `<option value="${s}" ${s === i.status ? 'selected' : ''}>${fmt(s)}</option>`).join('')}
+            </select>
+          </td>
+          <td class="td-date">${fmtDate(i.created_at)}</td>
+          <td><button class="btn btn-ghost btn-sm view-btn" data-id="${i.id}">View</button></td>
+        </tr>
+      `).join('');
+
+      // Status selects
+      tbody.querySelectorAll('.status-select').forEach(sel => {
+        sel.addEventListener('change', async () => {
+          const id = sel.dataset.id;
+          await updateStatus(id, sel.value);
+        });
+      });
+
+      // View buttons
+      tbody.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => openModal(parseInt(btn.dataset.id)));
+      });
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        await fetch(`/api/inquiries/${id}`, {
+          method:  'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ status }),
+        });
+        const idx = allInquiries.findIndex(i => i.id == id);
+        if (idx !== -1) allInquiries[idx].status = status;
+        updateStats();
+        renderTable();
+      } catch (_) { alert('Failed to update status.'); }
+    }
+
+    function openModal(id) {
+      const i = allInquiries.find(x => x.id === id);
+      if (!i) return;
+      document.getElementById('modalContent').innerHTML = `
+        <div class="modal-head">
+          <h2>${esc(i.name)}</h2>
+          <span class="tag tag--${i.service_type}">${i.service_type}</span>
+        </div>
+        <div class="modal-body">
+          <div class="modal-field"><label>Email</label><a href="mailto:${esc(i.email)}">${esc(i.email)}</a></div>
+          <div class="modal-field"><label>Budget</label><span>${i.budget ? esc(i.budget) : '—'}</span></div>
+          <div class="modal-field"><label>Status</label><span class="status-pill status--${i.status}">${fmt(i.status)}</span></div>
+          <div class="modal-field"><label>Submitted</label><span>${fmtDate(i.created_at)}</span></div>
+          <div class="modal-field full"><label>Message</label><p class="modal-message">${esc(i.message)}</p></div>
+        </div>
+      `;
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    document.getElementById('modalClose').addEventListener('click', () =>
+      document.getElementById('modalOverlay').classList.remove('open'));
+    document.getElementById('modalOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modalOverlay'))
+        document.getElementById('modalOverlay').classList.remove('open');
+    });
+
+    // ── Filters
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderTable();
+      });
+    });
+
+    // ── Refresh
+    document.getElementById('refreshBtn').addEventListener('click', loadInquiries);
+
+    // ── Logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      window.location.href = '/login';
+    });
+
+    // ── Helpers
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function fmt(s)  { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+    function fmtDate(d) {
+      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    loadInquiries();
+  </script>
+</body>
+</html>

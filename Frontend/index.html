@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cherry.dev — Freelance Web & App Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="logo">cherry<span>.dev</span></a>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#portfolio">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="btn btn-ghost" id="navLoginBtn">Login</a>
+        <a href="#contact" class="btn btn-primary">Get a Quote</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="hero-orb orb-1"></div>
+      <div class="hero-orb orb-2"></div>
+    </div>
+    <div class="hero-content">
+      <span class="hero-badge">✦ Available for projects</span>
+      <h1 class="hero-title">
+        I build digital<br/>
+        <span class="gradient-text">experiences that</span><br/>
+        convert &amp; scale
+      </h1>
+      <p class="hero-sub">
+        Freelance developer specialising in websites, mobile apps, and
+        full-featured online shops. Clean code. On time. No fluff.
+      </p>
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary btn-lg">Start a Project</a>
+        <a href="#portfolio" class="btn btn-ghost btn-lg">View My Work</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">40+</span><span class="stat-label">Projects Delivered</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">98%</span><span class="stat-label">Client Satisfaction</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num">5yr</span><span class="stat-label">Experience</span></div>
+    </div>
+  </section>
+
+  <!-- ── SERVICES ─────────────────────────────────────────────────────────── -->
+  <section class="section services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">What I do</span>
+        <h2 class="section-title">Services</h2>
+        <p class="section-sub">End-to-end solutions built around your goals.</p>
+      </div>
+      <div class="services-grid">
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+            </svg>
+          </div>
+          <h3>Website Development</h3>
+          <p>Blazing-fast, responsive websites engineered for performance and SEO. From landing pages to complex portals.</p>
+          <ul class="service-list">
+            <li>Custom design &amp; branding</li>
+            <li>SEO-optimised architecture</li>
+            <li>CMS integration</li>
+            <li>Hosting &amp; deployment</li>
+          </ul>
+          <a href="#contact" class="service-link">Get a quote →</a>
+        </div>
+
+        <div class="service-card service-card--featured">
+          <span class="featured-badge">Most Popular</span>
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/>
+            </svg>
+          </div>
+          <h3>App Development</h3>
+          <p>Cross-platform mobile &amp; web applications that feel native on every device. Built with modern frameworks.</p>
+          <ul class="service-list">
+            <li>iOS &amp; Android (React Native)</li>
+            <li>Progressive Web Apps</li>
+            <li>API &amp; backend integration</li>
+            <li>App Store submission</li>
+          </ul>
+          <a href="#contact" class="service-link">Get a quote →</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <h3>Shop Development</h3>
+          <p>High-converting e-commerce stores with seamless checkout, inventory management, and payment integration.</p>
+          <ul class="service-list">
+            <li>Shopify / WooCommerce</li>
+            <li>Custom storefront builds</li>
+            <li>Payment gateway setup</li>
+            <li>Product &amp; order management</li>
+          </ul>
+          <a href="#contact" class="service-link">Get a quote →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
+  <section class="section about" id="about">
+    <div class="container about-grid">
+      <div class="about-image">
+        <div class="about-img-wrapper">
+          <div class="about-img-placeholder">
+            <svg viewBox="0 0 100 100" fill="none">
+              <circle cx="50" cy="35" r="20" fill="var(--accent)" opacity=".15"/>
+              <circle cx="50" cy="35" r="20" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+              <ellipse cx="50" cy="78" rx="30" ry="18" fill="var(--accent)" opacity=".08"/>
+              <ellipse cx="50" cy="78" rx="30" ry="18" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="about-decoration"></div>
+        </div>
+      </div>
+      <div class="about-content">
+        <span class="section-tag">About me</span>
+        <h2 class="section-title">Turning ideas into<br/><span class="gradient-text">working products</span></h2>
+        <p>I'm a full-stack freelance developer with 5 years of experience shipping production-grade products for startups, agencies, and direct clients.</p>
+        <p>I care about clean code, honest timelines, and making sure every project actually grows your business — not just looks good in a Figma file.</p>
+        <div class="about-skills">
+          <span class="skill-tag">React / Next.js</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">React Native</span>
+          <span class="skill-tag">MySQL / PostgreSQL</span>
+          <span class="skill-tag">Shopify</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">AWS / VPS</span>
+        </div>
+        <a href="#contact" class="btn btn-primary mt-1">Work with me</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PORTFOLIO ─────────────────────────────────────────────────────────── -->
+  <section class="section portfolio" id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Recent work</span>
+        <h2 class="section-title">Featured Projects</h2>
+      </div>
+      <div class="portfolio-grid">
+        <div class="portfolio-card">
+          <div class="portfolio-img portfolio-img--web">
+            <span class="portfolio-tag">Website</span>
+          </div>
+          <div class="portfolio-info">
+            <h4>Bloom Studio</h4>
+            <p>Brand site with CMS, animations, and booking system.</p>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-img portfolio-img--app">
+            <span class="portfolio-tag">App</span>
+          </div>
+          <div class="portfolio-info">
+            <h4>FitTrack Pro</h4>
+            <p>Cross-platform fitness tracker with live sync and analytics.</p>
+          </div>
+        </div>
+        <div class="portfolio-card">
+          <div class="portfolio-img portfolio-img--shop">
+            <span class="portfolio-tag">Shop</span>
+          </div>
+          <div class="portfolio-info">
+            <h4>Luxe Botanics</h4>
+            <p>Shopify store with custom storefront and subscription model.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ───────────────────────────────────────────────────────────── -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Let's talk</span>
+        <h2 class="section-title">Start a Project</h2>
+        <p class="section-sub">Fill in the form and I'll get back to you within 24 hours.</p>
+      </div>
+      <div class="contact-layout">
+        <form class="contact-form" id="inquiryForm" novalidate>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" placeholder="Jane Smith" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="service_type">Service Needed</label>
+              <select id="service_type" name="service_type" required>
+                <option value="" disabled selected>Select a service…</option>
+                <option value="website">Website Development</option>
+                <option value="app">App Development</option>
+                <option value="shop">Shop Development</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="budget">Budget Range</label>
+              <select id="budget" name="budget">
+                <option value="" disabled selected>Select a range…</option>
+                <option value="Under £1k">Under £1,000</option>
+                <option value="£1k–£3k">£1,000 – £3,000</option>
+                <option value="£3k–£7k">£3,000 – £7,000</option>
+                <option value="£7k+">£7,000+</option>
+                <option value="Let's discuss">Let's discuss</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="message">Project Details</label>
+            <textarea id="message" name="message" rows="5" placeholder="Tell me about your project, goals, and timeline…" required></textarea>
+          </div>
+          <div class="form-alert" id="formAlert" role="alert"></div>
+          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBtn">
+            Send Inquiry
+          </button>
+        </form>
+        <aside class="contact-aside">
+          <div class="contact-info-card">
+            <h4>Quick facts</h4>
+            <ul>
+              <li>📍 Remote — worldwide</li>
+              <li>⏱ Response within 24h</li>
+              <li>📅 Currently accepting new clients</li>
+            </ul>
+          </div>
+          <div class="contact-info-card">
+            <h4>Process</h4>
+            <ol>
+              <li>Submit your inquiry</li>
+              <li>Discovery call &amp; proposal</li>
+              <li>Design &amp; development</li>
+              <li>Review, launch &amp; support</li>
+            </ol>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a href="/" class="logo">cherry<span>.dev</span></a>
+      <p class="footer-copy">© <span id="year"></span> cherry.dev — All rights reserved.</p>
+      <a href="/login" class="footer-admin" id="footerLoginBtn">Admin</a>
+    </div>
+  </footer>
+
+  <script>
+    // ── Nav scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // ── Hamburger
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.toggle('open');
+    });
+
+    // ── Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ── Check login state → swap nav button
+    (async () => {
+      try {
+        const res  = await fetch('/api/auth/check', { credentials: 'include' });
+        const data = await res.json();
+        if (data.loggedIn) {
+          document.getElementById('navLoginBtn').textContent  = 'Dashboard';
+          document.getElementById('navLoginBtn').href         = '/dashboard';
+          document.getElementById('footerLoginBtn').textContent = 'Dashboard';
+          document.getElementById('footerLoginBtn').href       = '/dashboard';
+        }
+      } catch (_) {}
+    })();
+
+    // ── Inquiry form
+    document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn   = document.getElementById('submitBtn');
+      const alert = document.getElementById('formAlert');
+      const form  = e.target;
+
+      btn.disabled    = true;
+      btn.textContent = 'Sending…';
+      alert.className = 'form-alert';
+      alert.textContent = '';
+
+      const payload = {
+        name:         form.name.value.trim(),
+        email:        form.email.value.trim(),
+        service_type: form.service_type.value,
+        budget:       form.budget.value || undefined,
+        message:      form.message.value.trim(),
+      };
+
+      try {
+        const res  = await fetch('/api/inquiries', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+          credentials: 'include',
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          alert.className   = 'form-alert form-alert--success';
+          alert.textContent = '✓ Inquiry sent! I\'ll be in touch within 24 hours.';
+          form.reset();
+        } else {
+          throw new Error(data.error || 'Something went wrong.');
+        }
+      } catch (err) {
+        alert.className   = 'form-alert form-alert--error';
+        alert.textContent = '✗ ' + err.message;
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Send Inquiry';
+      }
+    });
+  </script>
+</body>
+</html>
