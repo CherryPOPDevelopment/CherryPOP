@@ -6,6 +6,7 @@ const path    = require('path');
 
 const authRouter      = require('./routes/auth');
 const inquiriesRouter = require('./routes/inquiries');
+const contentRouter   = require('./routes/content');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -34,11 +35,17 @@ app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Im
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
 app.use('/api/inquiries', inquiriesRouter);
+app.use('/api/content',   contentRouter);
 
 // ── Page routes ───────────────────────────────────────────────────────────────
 app.get('/',           (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
 app.get('/login',      (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'login.html')));
 app.get('/dashboard',  (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'dashboard.html')));
+app.get('/services/:name', (req, res) => {
+  const allowed = ['website', 'app', 'shop'];
+  if (!allowed.includes(req.params.name)) return res.redirect('/');
+  res.sendFile(path.join(__dirname, '..', 'Frontend', 'services', `${req.params.name}.html`));
+});
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));

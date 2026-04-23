@@ -15,12 +15,19 @@
   <aside class="sidebar">
     <a href="/" class="logo sidebar-logo">cherry<span>.dev</span></a>
     <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link active" data-section="inquiries">
+      <a href="#" class="sidebar-link active" data-tab="inquiries">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
         Inquiries
         <span class="badge" id="newBadge"></span>
+      </a>
+      <a href="#" class="sidebar-link" data-tab="editor">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        Edit Site
       </a>
       <a href="/" class="sidebar-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -41,6 +48,9 @@
 
   <!-- ── MAIN ─────────────────────────────────────────────────────────────── -->
   <main class="dash-main">
+
+    <!-- ════ INQUIRIES TAB ════ -->
+    <div id="tab-inquiries" class="dash-tab">
     <header class="dash-header">
       <div>
         <h1 class="dash-title">Inquiries</h1>
@@ -89,6 +99,31 @@
         </tbody>
       </table>
     </div>
+    </div><!-- /tab-inquiries -->
+
+    <!-- ════ EDITOR TAB ════ -->
+    <div id="tab-editor" class="dash-tab" style="display:none">
+      <header class="dash-header">
+        <div>
+          <h1 class="dash-title">Edit Site</h1>
+          <p class="dash-sub">Update text for every section of your website</p>
+        </div>
+        <div class="dash-header-actions" id="editorSaveStatus"></div>
+      </header>
+
+      <!-- Section tabs -->
+      <div class="editor-section-tabs">
+        <button class="esec-btn active" data-sec="hero">Hero</button>
+        <button class="esec-btn" data-sec="services">Services</button>
+        <button class="esec-btn" data-sec="about">About</button>
+        <button class="esec-btn" data-sec="contact">Contact</button>
+      </div>
+
+      <div class="editor-body" id="editorBody">
+        <p class="editor-loading">Loading content…</p>
+      </div>
+    </div><!-- /tab-editor -->
+
   </main>
 
   <!-- ── DETAIL MODAL ──────────────────────────────────────────────────────── -->
@@ -104,18 +139,31 @@
     let allInquiries = [];
     let currentFilter = 'all';
 
-    // ── Auth guard
+    // ════ AUTH GUARD ════════════════════════════════════════════════════════
     (async () => {
       try {
         const res  = await fetch('/api/auth/check', { credentials: 'include' });
         const data = await res.json();
         if (!data.loggedIn) { window.location.href = '/login'; return; }
-        document.getElementById('userName').textContent  = data.user.username;
+        document.getElementById('userName').textContent   = data.user.username;
         document.getElementById('userAvatar').textContent = data.user.username[0].toUpperCase();
       } catch (_) { window.location.href = '/login'; }
     })();
 
-    // ── Load inquiries
+    // ════ TAB SWITCHING ══════════════════════════════════════════════════════
+    document.querySelectorAll('.sidebar-link[data-tab]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tab = link.dataset.tab;
+        document.querySelectorAll('.sidebar-link[data-tab]').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('.dash-tab').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + tab).style.display = '';
+        if (tab === 'editor') loadEditorSection(currentEditorSection);
+      });
+    });
+
+    // ════ INQUIRIES ══════════════════════════════════════════════════════════
     async function loadInquiries() {
       try {
         const res  = await fetch('/api/inquiries', { credentials: 'include' });
@@ -165,16 +213,9 @@
           <td><button class="btn btn-ghost btn-sm view-btn" data-id="${i.id}">View</button></td>
         </tr>
       `).join('');
-
-      // Status selects
       tbody.querySelectorAll('.status-select').forEach(sel => {
-        sel.addEventListener('change', async () => {
-          const id = sel.dataset.id;
-          await updateStatus(id, sel.value);
-        });
+        sel.addEventListener('change', () => updateStatus(sel.dataset.id, sel.value));
       });
-
-      // View buttons
       tbody.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => openModal(parseInt(btn.dataset.id)));
       });
@@ -183,15 +224,12 @@
     async function updateStatus(id, status) {
       try {
         await fetch(`/api/inquiries/${id}`, {
-          method:  'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ status }),
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          credentials: 'include', body: JSON.stringify({ status }),
         });
         const idx = allInquiries.findIndex(i => i.id == id);
         if (idx !== -1) allInquiries[idx].status = status;
-        updateStats();
-        renderTable();
+        updateStats(); renderTable();
       } catch (_) { alert('Failed to update status.'); }
     }
 
@@ -209,8 +247,7 @@
           <div class="modal-field"><label>Status</label><span class="status-pill status--${i.status}">${fmt(i.status)}</span></div>
           <div class="modal-field"><label>Submitted</label><span>${fmtDate(i.created_at)}</span></div>
           <div class="modal-field full"><label>Message</label><p class="modal-message">${esc(i.message)}</p></div>
-        </div>
-      `;
+        </div>`;
       document.getElementById('modalOverlay').classList.add('open');
     }
 
@@ -220,8 +257,6 @@
       if (e.target === document.getElementById('modalOverlay'))
         document.getElementById('modalOverlay').classList.remove('open');
     });
-
-    // ── Filters
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -230,23 +265,142 @@
         renderTable();
       });
     });
-
-    // ── Refresh
     document.getElementById('refreshBtn').addEventListener('click', loadInquiries);
 
-    // ── Logout
+    // ════ SITE EDITOR ════════════════════════════════════════════════════════
+    let currentEditorSection = 'hero';
+
+    // Field definitions for each section
+    const SECTION_FIELDS = {
+      hero: [
+        { key: 'badge',          label: 'Availability Badge',    type: 'text' },
+        { key: 'title',          label: 'Main Headline',         type: 'textarea' },
+        { key: 'subtitle',       label: 'Subtitle / Tagline',    type: 'textarea' },
+        { key: 'cta_primary',    label: 'Primary CTA Button',    type: 'text' },
+        { key: 'cta_secondary',  label: 'Secondary CTA Button',  type: 'text' },
+        { key: 'stat1_num',      label: 'Stat 1 — Number',       type: 'text' },
+        { key: 'stat1_label',    label: 'Stat 1 — Label',        type: 'text' },
+        { key: 'stat2_num',      label: 'Stat 2 — Number',       type: 'text' },
+        { key: 'stat2_label',    label: 'Stat 2 — Label',        type: 'text' },
+        { key: 'stat3_num',      label: 'Stat 3 — Number',       type: 'text' },
+        { key: 'stat3_label',    label: 'Stat 3 — Label',        type: 'text' },
+      ],
+      services: [
+        { key: 'tag',            label: 'Section Tag',           type: 'text' },
+        { key: 'title',          label: 'Section Title',         type: 'text' },
+        { key: 'subtitle',       label: 'Section Subtitle',      type: 'text' },
+        { key: 'website_title',  label: 'Website Card — Title',  type: 'text' },
+        { key: 'website_desc',   label: 'Website Card — Desc',   type: 'textarea' },
+        { key: 'app_title',      label: 'App Card — Title',      type: 'text' },
+        { key: 'app_desc',       label: 'App Card — Desc',       type: 'textarea' },
+        { key: 'shop_title',     label: 'Shop Card — Title',     type: 'text' },
+        { key: 'shop_desc',      label: 'Shop Card — Desc',      type: 'textarea' },
+      ],
+      about: [
+        { key: 'tag',    label: 'Section Tag',    type: 'text' },
+        { key: 'title',  label: 'Headline',       type: 'textarea' },
+        { key: 'body1',  label: 'Paragraph 1',    type: 'textarea' },
+        { key: 'body2',  label: 'Paragraph 2',    type: 'textarea' },
+        { key: 'cta',    label: 'CTA Button Text',type: 'text' },
+      ],
+      contact: [
+        { key: 'tag',      label: 'Section Tag',    type: 'text' },
+        { key: 'title',    label: 'Section Title',  type: 'text' },
+        { key: 'subtitle', label: 'Subtitle',       type: 'textarea' },
+        { key: 'info1',    label: 'Info Line 1',    type: 'text' },
+        { key: 'info2',    label: 'Info Line 2',    type: 'text' },
+        { key: 'info3',    label: 'Info Line 3',    type: 'text' },
+      ],
+    };
+
+    document.querySelectorAll('.esec-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.esec-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentEditorSection = btn.dataset.sec;
+        loadEditorSection(currentEditorSection);
+      });
+    });
+
+    async function loadEditorSection(section) {
+      const body = document.getElementById('editorBody');
+      body.innerHTML = '<p class="editor-loading">Loading…</p>';
+      try {
+        const res  = await fetch(`/api/content/${section}`, { credentials: 'include' });
+        const data = await res.json();
+        renderEditorForm(section, data);
+      } catch (_) {
+        body.innerHTML = '<p class="editor-loading" style="color:#f87171">Failed to load content.</p>';
+      }
+    }
+
+    function renderEditorForm(section, data) {
+      const fields = SECTION_FIELDS[section] || [];
+      const body   = document.getElementById('editorBody');
+      body.innerHTML = `
+        <form class="editor-form" id="editorForm">
+          <div class="editor-fields">
+            ${fields.map(f => `
+              <div class="editor-field ${f.type === 'textarea' ? 'editor-field--wide' : ''}">
+                <label>${esc(f.label)}</label>
+                ${f.type === 'textarea'
+                  ? `<textarea name="${f.key}" rows="3">${esc(data[f.key] || '')}</textarea>`
+                  : `<input type="text" name="${f.key}" value="${esc(data[f.key] || '')}" />`
+                }
+              </div>
+            `).join('')}
+          </div>
+          <div class="editor-footer">
+            <div class="editor-alert" id="editorAlert"></div>
+            <button type="submit" class="btn btn-primary" id="editorSaveBtn">Save Changes</button>
+          </div>
+        </form>`;
+
+      document.getElementById('editorForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn   = document.getElementById('editorSaveBtn');
+        const alert = document.getElementById('editorAlert');
+        btn.disabled = true; btn.textContent = 'Saving…';
+        alert.className = 'editor-alert'; alert.textContent = '';
+
+        const payload = {};
+        fields.forEach(f => {
+          payload[f.key] = e.target[f.key].value;
+        });
+
+        try {
+          const res = await fetch(`/api/content/${section}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload),
+          });
+          if (res.ok) {
+            alert.className = 'editor-alert editor-alert--success';
+            alert.textContent = '✓ Saved! Changes are live on your site.';
+          } else {
+            const d = await res.json();
+            throw new Error(d.error || 'Save failed.');
+          }
+        } catch (err) {
+          alert.className = 'editor-alert editor-alert--error';
+          alert.textContent = '✗ ' + err.message;
+        } finally {
+          btn.disabled = false; btn.textContent = 'Save Changes';
+        }
+      });
+    }
+
+    // ════ SHARED ═════════════════════════════════════════════════════════════
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
       window.location.href = '/login';
     });
 
-    // ── Helpers
     function esc(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
     function fmt(s)  { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
     function fmtDate(d) {
