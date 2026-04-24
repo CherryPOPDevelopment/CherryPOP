@@ -40,6 +40,7 @@ app.use('/api/content',   contentRouter);
 // ── Page routes ───────────────────────────────────────────────────────────────
 app.get('/',           (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
 app.get('/login',      (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'login.html')));
+app.get('/contact',    (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'contact.html')));
 app.get('/dashboard',  (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'dashboard.html')));
 app.get('/services/:name', (req, res) => {
   const allowed = ['website', 'app', 'shop'];

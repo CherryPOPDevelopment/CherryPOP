@@ -18,11 +18,11 @@
         <li><a href="#services">Services</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#portfolio">Work</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="/contact">Contact</a></li>
       </ul>
       <div class="nav-actions">
         <a href="/login" class="btn btn-ghost" id="navLoginBtn">Login</a>
-        <a href="#contact" class="btn btn-primary">Get a Quote</a>
+        <a href="/contact" class="btn btn-primary">Get a Quote</a>
       </div>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -48,7 +48,7 @@
         full-featured online shops. Clean code. On time. No fluff.
       </p>
       <div class="hero-cta">
-        <a href="#contact" class="btn btn-primary btn-lg">Start a Project</a>
+        <a href="/contact" class="btn btn-primary btn-lg">Start a Project</a>
         <a href="#portfolio" class="btn btn-ghost btn-lg">View My Work</a>
       </div>
     </div>
@@ -87,7 +87,7 @@
           </ul>
           <div class="service-card-actions">
             <a href="/services/website.html" class="btn btn-primary btn-sm">View Pricing &amp; Details</a>
-            <a href="#contact" class="service-link">Quick quote →</a>
+            <a href="/contact" class="service-link">Quick quote →</a>
           </div>
         </div>
 
@@ -108,7 +108,7 @@
           </ul>
           <div class="service-card-actions">
             <a href="/services/app.html" class="btn btn-primary btn-sm">View Pricing &amp; Details</a>
-            <a href="#contact" class="service-link">Quick quote →</a>
+            <a href="/contact" class="service-link">Quick quote →</a>
           </div>
         </div>
 
@@ -130,7 +130,7 @@
           </ul>
           <div class="service-card-actions">
             <a href="/services/shop.html" class="btn btn-primary btn-sm">View Pricing &amp; Details</a>
-            <a href="#contact" class="service-link">Quick quote →</a>
+            <a href="/contact" class="service-link">Quick quote →</a>
           </div>
         </div>
 
@@ -167,8 +167,12 @@
           <span class="skill-tag">Shopify</span>
           <span class="skill-tag">TypeScript</span>
           <span class="skill-tag">AWS / VPS</span>
+          <span class="skill-tag">JavaScript / Java</span>
+          <span class="skill-tag">CSS / css+</span>
+          <span class="skill-tag">html</span>
+          <span class="skill-tag">PYTHON</span>
         </div>
-        <a href="#contact" class="btn btn-primary mt-1">Work with me</a>
+        <a href="/contact" class="btn btn-primary mt-1">Work with me</a>
       </div>
     </div>
   </section>
@@ -212,80 +216,6 @@
     </div>
   </section>
 
-  <!-- ── CONTACT ───────────────────────────────────────────────────────────── -->
-  <section class="section contact" id="contact">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Let's talk</span>
-        <h2 class="section-title">Start a Project</h2>
-        <p class="section-sub">Fill in the form and I'll get back to you within 24 hours.</p>
-      </div>
-      <div class="contact-layout">
-        <form class="contact-form" id="inquiryForm" novalidate>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="name">Full Name</label>
-              <input type="text" id="name" name="name" placeholder="Jane Smith" required />
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="jane@example.com" required />
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="service_type">Service Needed</label>
-              <select id="service_type" name="service_type" required>
-                <option value="" disabled selected>Select a service…</option>
-                <option value="website">Website Development</option>
-                <option value="app">App Development</option>
-                <option value="shop">Shop Development</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="budget">Budget Range</label>
-              <select id="budget" name="budget">
-                <option value="" disabled selected>Select a range…</option>
-                <option value="Under £1k">Under $1,000</option>
-                <option value="£1k–£3k">$1,000 – £3,000</option>
-                <option value="£3k–£7k">£3,000 – £7,000</option>
-                <option value="£7k+">£7,000+</option>
-                <option value="Let's discuss">Let's discuss</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="message">Project Details</label>
-            <textarea id="message" name="message" rows="5" placeholder="Tell me about your project, goals, and timeline…" required></textarea>
-          </div>
-          <div class="form-alert" id="formAlert" role="alert"></div>
-          <button type="submit" class="btn btn-primary btn-lg btn-full" id="submitBtn">
-            Send Inquiry
-          </button>
-        </form>
-        <aside class="contact-aside">
-          <div class="contact-info-card">
-            <h4>Quick facts</h4>
-            <ul>
-              <li>📍 Remote — worldwide</li>
-              <li>⏱ Response within 24h</li>
-              <li>📅 Currently accepting new clients</li>
-            </ul>
-          </div>
-          <div class="contact-info-card">
-            <h4>Process</h4>
-            <ol>
-              <li>Submit your inquiry</li>
-              <li>Discovery call &amp; proposal</li>
-              <li>Design &amp; development</li>
-              <li>Review, launch &amp; support</li>
-            </ol>
-          </div>
-        </aside>
-      </div>
-    </div>
-  </section>
-
   <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -324,50 +254,7 @@
       } catch (_) {}
     })();
 
-    // ── Inquiry form
-    document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn   = document.getElementById('submitBtn');
-      const alert = document.getElementById('formAlert');
-      const form  = e.target;
 
-      btn.disabled    = true;
-      btn.textContent = 'Sending…';
-      alert.className = 'form-alert';
-      alert.textContent = '';
-
-      const payload = {
-        name:         form.name.value.trim(),
-        email:        form.email.value.trim(),
-        service_type: form.service_type.value,
-        budget:       form.budget.value || undefined,
-        message:      form.message.value.trim(),
-      };
-
-      try {
-        const res  = await fetch('/api/inquiries', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify(payload),
-          credentials: 'include',
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          alert.className   = 'form-alert form-alert--success';
-          alert.textContent = '✓ Inquiry sent! I\'ll be in touch within 24 hours.';
-          form.reset();
-        } else {
-          throw new Error(data.error || 'Something went wrong.');
-        }
-      } catch (err) {
-        alert.className   = 'form-alert form-alert--error';
-        alert.textContent = '✗ ' + err.message;
-      } finally {
-        btn.disabled    = false;
-        btn.textContent = 'Send Inquiry';
-      }
-    });
   </script>
 </body>
 </html>
