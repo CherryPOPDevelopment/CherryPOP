@@ -1,0 +1,248 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Cherry.dev — Chatbot Widget
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Toggle button ───────────────────────────────────────────────────────── */
+.cb-toggle {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 1000;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 28px rgba(230,49,90,.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cb-toggle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 36px rgba(230,49,90,.55);
+}
+.cb-toggle svg { width: 26px; height: 26px; color: #fff; transition: opacity 0.15s; }
+.cb-toggle .cb-icon-open  { display: block; }
+.cb-toggle .cb-icon-close { display: none; }
+.cb-toggle.open .cb-icon-open  { display: none; }
+.cb-toggle.open .cb-icon-close { display: block; }
+
+/* Notification dot */
+.cb-dot {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 12px; height: 12px;
+  background: #ff4d6d;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  animation: cb-pulse 2s infinite;
+}
+@keyframes cb-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.3); opacity: .7; }
+}
+.cb-toggle.open .cb-dot { display: none; }
+
+/* ── Popup ───────────────────────────────────────────────────────────────── */
+.cb-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 28px;
+  z-index: 999;
+  width: 360px;
+  max-height: 540px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 64px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.88) translateY(20px);
+  transform-origin: bottom right;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), opacity 0.2s ease;
+}
+.cb-popup.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+@media (max-width: 420px) {
+  .cb-popup { width: calc(100vw - 32px); right: 16px; bottom: 96px; }
+  .cb-toggle { right: 16px; bottom: 16px; }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.cb-header {
+  background: var(--accent);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.cb-avatar {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.cb-header-info strong {
+  display: block;
+  color: #fff;
+  font-weight: 700;
+  font-size: .95rem;
+}
+.cb-header-info span {
+  font-size: .78rem;
+  color: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.cb-header-info span::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: #4ade80;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ── Messages ────────────────────────────────────────────────────────────── */
+.cb-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.cb-messages::-webkit-scrollbar { width: 4px; }
+.cb-messages::-webkit-scrollbar-thumb { background: #e0e0ee; border-radius: 4px; }
+
+.cb-msg {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: .88rem;
+  line-height: 1.5;
+  animation: cb-fadein 0.2s ease;
+}
+@keyframes cb-fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cb-msg--bot {
+  background: #f4f4fb;
+  color: #1a1a2e;
+  border-bottom-left-radius: 6px;
+  align-self: flex-start;
+}
+.cb-msg--user {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 6px;
+  align-self: flex-end;
+}
+
+/* Typing indicator */
+.cb-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+  background: #f4f4fb;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  align-self: flex-start;
+  animation: cb-fadein 0.2s ease;
+}
+.cb-typing span {
+  width: 7px; height: 7px;
+  background: #aaaacc;
+  border-radius: 50%;
+  animation: cb-bounce 1.2s infinite;
+}
+.cb-typing span:nth-child(2) { animation-delay: .2s; }
+.cb-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes cb-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%            { transform: translateY(-6px); }
+}
+
+/* Quick replies */
+.cb-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  padding: 0 16px 10px;
+  flex-shrink: 0;
+}
+.cb-qr {
+  padding: .42rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #e0e0ee;
+  background: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.cb-qr:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ── Input bar ───────────────────────────────────────────────────────────── */
+.cb-input-bar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 12px 14px;
+  border-top: 1px solid #f0f0f8;
+  flex-shrink: 0;
+}
+.cb-input-bar input {
+  flex: 1;
+  border: 1.5px solid #e0e0ee;
+  border-radius: 999px;
+  padding: .55rem 1rem;
+  font-size: .88rem;
+  font-family: inherit;
+  outline: none;
+  color: #1a1a2e;
+  background: #f8f8fd;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.cb-input-bar input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: #fff;
+}
+.cb-input-bar input::placeholder { color: #aaaacc; }
+.cb-send {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.15s;
+}
+.cb-send:hover { background: var(--accent-light); transform: scale(1.08); }
+.cb-send svg { width: 16px; height: 16px; color: #fff; }
