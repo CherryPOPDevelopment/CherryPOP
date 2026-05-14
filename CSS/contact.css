@@ -2,6 +2,9 @@
    Cherry.dev — Contact Page Styles
    ══════════════════════════════════════════════════════════════════════ */
 
+/* Blur the cherry background image on the contact page */
+body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
+
 /* ── Active nav link ────────────────────────────────────────────────────── */
 .nav-links a.active { color: var(--accent); }
 
@@ -27,17 +30,17 @@
 }
 
 .cp-panel-inner {
-  background: rgba(255,255,255,0.18);
+  background: var(--glass-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,0.35);
-  border-radius: 28px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: 40px 36px;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   width: 100%;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  box-shadow: var(--section-card-shadow);
 }
 
 /* Back link */
@@ -61,12 +64,12 @@
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -.03em;
-  color: #1a1a2e;
+  color: var(--section-text);
   margin-bottom: .85rem;
 }
 .cp-headline p {
   font-size: .97rem;
-  color: #555577;
+  color: var(--section-text-muted);
   line-height: 1.65;
   max-width: 340px;
 }
@@ -81,7 +84,7 @@
 .cp-info-icon {
   width: 40px; height: 40px;
   min-width: 40px;
-  background: rgba(230,49,90,.1);
+  background: var(--accent-subtle);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -89,8 +92,8 @@
   color: var(--accent);
 }
 .cp-info-icon svg { width: 18px; height: 18px; }
-.cp-info-item strong { display: block; font-size: .9rem; font-weight: 700; color: #1a1a2e; }
-.cp-info-item span   { font-size: .82rem; color: #777799; }
+.cp-info-item strong { display: block; font-size: .9rem; font-weight: 700; color: var(--section-text); }
+.cp-info-item span   { font-size: .82rem; color: var(--section-text-sub); }
 
 /* Steps */
 .cp-steps-label {
@@ -114,13 +117,13 @@
   align-items: center;
   gap: .85rem;
   font-size: .9rem;
-  color: #333355;
+  color: var(--section-text);
   font-weight: 500;
 }
 .cp-steps-list li span {
   min-width: 32px; height: 32px;
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   border-radius: 10px;
   font-size: .75rem;
   font-weight: 800;
@@ -142,12 +145,12 @@
 }
 
 .cp-form-card {
-  background: #ffffff;
-  border-radius: 28px;
+  background: var(--section-card-bg);
+  border-radius: var(--radius-xl);
   padding: 40px;
   width: 100%;
   max-width: 560px;
-  box-shadow: 0 8px 48px rgba(0,0,0,0.10);
+  box-shadow: var(--section-card-shadow);
 }
 @media (max-width: 480px) {
   .cp-form-card { padding: 28px 20px; }
@@ -157,12 +160,12 @@
   font-size: 1.6rem;
   font-weight: 800;
   letter-spacing: -.025em;
-  color: #1a1a2e;
+  color: var(--section-text);
   margin-bottom: .35rem;
 }
 .cp-form-sub {
   font-size: .9rem;
-  color: #777799;
+  color: var(--section-text-sub);
   margin-bottom: 1.75rem;
 }
 
@@ -179,21 +182,21 @@
   gap: .45rem;
   padding: .55rem 1.1rem;
   border-radius: 999px;
-  border: 1.5px solid #e0e0ee;
-  background: #f8f8fd;
+  border: 1.5px solid var(--input-border);
+  background: var(--input-bg);
   font-size: .85rem;
   font-weight: 600;
-  color: #555577;
+  color: var(--section-text-muted);
   cursor: pointer;
   transition: all var(--transition);
   user-select: none;
 }
 .cp-chip svg { width: 15px; height: 15px; }
-.cp-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(230,49,90,.05); }
+.cp-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-faint); }
 input[name="service_chip"]:checked + .cp-chip {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: 0 4px 16px var(--accent-glow);
 }
 
@@ -202,7 +205,7 @@ input[name="service_chip"]:checked + .cp-chip {
 .cp-form-card .form-group label {
   font-size: .8rem;
   font-weight: 700;
-  color: #555577;
+  color: var(--section-text-muted);
   letter-spacing: .04em;
   text-transform: uppercase;
   margin-bottom: .4rem;
@@ -211,11 +214,11 @@ input[name="service_chip"]:checked + .cp-chip {
 .cp-form-card input,
 .cp-form-card select,
 .cp-form-card textarea {
-  background: #f8f8fd;
-  border: 1.5px solid #e0e0ee;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
   border-radius: 12px;
   padding: .75rem 1rem;
-  color: #1a1a2e;
+  color: var(--section-text);
   width: 100%;
   outline: none;
   font-family: inherit;
@@ -223,13 +226,13 @@ input[name="service_chip"]:checked + .cp-chip {
   transition: border-color var(--transition), box-shadow var(--transition);
 }
 .cp-form-card input::placeholder,
-.cp-form-card textarea::placeholder { color: #aaaacc; }
+.cp-form-card textarea::placeholder { color: var(--input-placeholder); }
 .cp-form-card input:focus,
 .cp-form-card select:focus,
 .cp-form-card textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
-  background: #fff;
+  background: var(--bg-elevated);
 }
 .cp-form-card textarea { resize: vertical; min-height: 120px; }
 
@@ -251,11 +254,11 @@ input[name="service_chip"]:checked + .cp-chip {
 .cp-budget-chip {
   padding: .45rem 1rem;
   border-radius: 999px;
-  border: 1.5px solid #e0e0ee;
-  background: #f8f8fd;
+  border: 1.5px solid var(--input-border);
+  background: var(--input-bg);
   font-size: .82rem;
   font-weight: 600;
-  color: #555577;
+  color: var(--section-text-muted);
   cursor: pointer;
   transition: all var(--transition);
 }
@@ -263,7 +266,7 @@ input[name="service_chip"]:checked + .cp-chip {
 .cp-budget-chip.active {
   border-color: var(--accent);
   background: var(--accent);
-  color: #fff;
+  color: var(--on-accent);
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 

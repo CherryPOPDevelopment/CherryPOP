@@ -41,12 +41,14 @@ app.use('/api/content',   contentRouter);
 app.get('/',           (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
 app.get('/login',      (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'login.html')));
 app.get('/contact',    (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'contact.html')));
+app.get('/faq',        (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'faq.html')));
 app.get('/dashboard',  (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'dashboard.html')));
 app.get('/services/:name', (req, res) => {
   const allowed = ['website', 'app', 'shop'];
   if (!allowed.includes(req.params.name)) return res.redirect('/');
   res.sendFile(path.join(__dirname, '..', 'Frontend', 'services', `${req.params.name}.html`));
 });
+app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoop.html')));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));

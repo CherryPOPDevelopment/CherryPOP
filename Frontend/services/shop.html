@@ -70,7 +70,7 @@
         <div class="tier-card">
           <div class="tier-header">
             <span class="tier-name">Starter</span>
-            <div class="tier-price"><span class="tier-currency">£</span><span class="tier-amount">999</span></div>
+            <div class="tier-price"><span class="tier-currency">$</span><span class="tier-amount">599</span></div>
             <p class="tier-tagline">Launch a clean Shopify store quickly and affordably.</p>
           </div>
           <ul class="tier-features">
@@ -88,7 +88,7 @@
           <span class="tier-badge">Most Popular</span>
           <div class="tier-header">
             <span class="tier-name">Pro</span>
-            <div class="tier-price"><span class="tier-currency">£</span><span class="tier-amount">2,499</span></div>
+            <div class="tier-price"><span class="tier-currency">$</span><span class="tier-amount">1,799</span></div>
             <p class="tier-tagline">A fully branded store built to convert and grow.</p>
           </div>
           <ul class="tier-features">
@@ -107,7 +107,7 @@
         <div class="tier-card">
           <div class="tier-header">
             <span class="tier-name">Enterprise</span>
-            <div class="tier-price"><span class="tier-currency">£</span><span class="tier-amount">5,999+</span></div>
+            <div class="tier-price"><span class="tier-currency">$</span><span class="tier-amount">3,999+</span></div>
             <p class="tier-tagline">Custom-built storefronts and headless commerce at scale.</p>
           </div>
           <ul class="tier-features">
@@ -127,7 +127,7 @@
     </div>
   </section>
 
-  <section class="section sp-section">
+  <section class="section sp-section" id="faq">
     <div class="container">
       <div class="section-header">
         <span class="section-tag">FAQ</span>
@@ -138,6 +138,15 @@
         <details class="faq-item"><summary>Can you migrate my existing store?</summary><p>Yes — I can migrate products, customer data, and order history from most platforms.</p></details>
         <details class="faq-item"><summary>Will I be able to manage the store myself?</summary><p>Absolutely. Every tier includes a handover session so you're confident managing products, orders, and content.</p></details>
         <details class="faq-item"><summary>Do the prices include Shopify subscription fees?</summary><p>No — Shopify's monthly fee is separate and paid directly to Shopify. I'll advise which plan you need.</p></details>
+        <details class="faq-item"><summary>Can you set up payment processing?</summary><p>Yes — I'll connect your preferred payment gateway (Stripe, PayPal, Shopify Payments, etc.) and test the full checkout flow before launch.</p></details>
+        <details class="faq-item"><summary>Will the store be mobile-optimised?</summary><p>Every store I build is fully responsive and tested on mobile, tablet, and desktop. With most e-commerce traffic coming from mobile, this is non-negotiable.</p></details>
+        <details class="faq-item"><summary>Can you help with shipping setup?</summary><p>Yes — I can configure shipping zones, rates, and carrier integrations (e.g. USPS, UPS, Royal Mail) as part of the build.</p></details>
+        <details class="faq-item"><summary>Who owns the store and code after launch?</summary><p>You own everything — the store, theme, and any custom code — once final payment is made. I retain no rights to your project.</p></details>
+        <details class="faq-item"><summary>Do you sign NDAs?</summary><p>Yes — I'm happy to sign a mutual NDA before any sensitive project details are shared.</p></details>
+        <details class="faq-item"><summary>How does payment work?</summary><p>Projects are split 50% upfront and 50% on completion. No payment is taken until we've agreed on scope and you're comfortable to proceed.</p></details>
+        <details class="faq-item"><summary>How does buying a package online work?</summary><p>Click <b>Buy This Package</b> on any tier, fill in your name, email, and a description of your store needs — including your products, branding, and any integrations. I'll review your order and reach out within 24 hours to confirm details before any payment is taken.</p></details>
+        <details class="faq-item"><summary>What if I need something more specific?</summary><p>Use <b>Contact for Custom</b> or visit the Contact page. I'll create a bespoke proposal for your exact requirements — no obligation.</p></details>
+        <details class="faq-item"><summary>How are your prices benchmarked?</summary><p>Prices are based on real freelance market data for e-commerce development. According to <a href="https://www.fiverr.com/resources/guides/costs/magento" target="_blank" rel="noopener noreferrer">Fiverr's 2026 E-commerce Developer Cost Guide</a>, Shopify and WooCommerce builds typically range from $50 to $1,150+. My tiers are priced accessibly within that range with clear deliverables at every level.</p></details>
       </div>
     </div>
   </section>
@@ -151,11 +160,153 @@
   </section>
 
   <footer class="footer">
-    <div class="container footer-inner">
-      <a href="/" class="logo">cherry<span>.dev</span></a>
-      <p class="footer-copy">© <span id="year"></span> cherry.dev</p>
+    <div class="container">
+      <div class="footer-brand">
+        <a href="/" class="logo">cherry<span>.dev</span></a>
+        <span class="footer-tagline">Freelance Web &amp; App Developer</span>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/faq">FAQ</a>
+        <span class="footer-nav-sep" aria-hidden="true"></span>
+        <a href="/login" id="footerLoginBtn">Login</a>
+        <span class="footer-nav-sep" aria-hidden="true"></span>
+        <a href="/login" id="footerAccountBtn" class="footer-nav--pill">My Account</a>
+      </nav>
+      <p class="footer-copy">© <span id="year"></span> cherry.dev — All rights reserved.</p>
     </div>
   </footer>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+  <!-- ── Order Modal ───────────────────────────────────────────────────── -->
+  <div class="order-overlay" id="orderOverlay" role="dialog" aria-modal="true" aria-label="Place your order">
+    <div class="order-modal">
+      <div class="order-modal-head">
+        <h2 id="orderTitle">Place Your Order</h2>
+        <p id="orderSubtitle">Fill in your details and I'll be in touch within 24 hours.</p>
+        <button class="order-modal-close" id="orderClose" aria-label="Close">✕</button>
+      </div>
+      <div class="order-modal-body">
+        <div class="order-tier-summary">
+          <strong id="orderTierName">Package</strong>
+          <span class="order-tier-price" id="orderTierPrice"></span>
+        </div>
+        <div class="order-row">
+          <div class="order-field">
+            <label for="oName">Your Name</label>
+            <input type="text" id="oName" placeholder="Jane Smith" required />
+          </div>
+          <div class="order-field">
+            <label for="oEmail">Email Address</label>
+            <input type="email" id="oEmail" placeholder="jane@example.com" required />
+          </div>
+        </div>
+        <div class="order-field">
+          <label for="oBudget">Timeline / Deadline (optional)</label>
+          <input type="text" id="oBudget" placeholder="e.g. Need it live by end of June" />
+        </div>
+        <div class="order-field">
+          <label for="oNotes">Project Details &amp; Customisation Notes</label>
+          <textarea id="oNotes" placeholder="Describe your store: products, branding, any platforms or integrations you use — the more detail the better!" required></textarea>
+        </div>
+        <p class="order-note">⚠ Submitting this form is <b>not a payment</b> — it's an inquiry. I'll review your brief and contact you to confirm scope and payment before any work begins.</p>
+        <div class="order-alert" id="orderAlert"></div>
+      </div>
+      <div class="order-modal-footer">
+        <button class="btn btn-primary" id="orderSubmit">Send Order Request</button>
+        <button class="btn btn-ghost" id="orderCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var overlay  = document.getElementById('orderOverlay');
+    var titleEl  = document.getElementById('orderTitle');
+    var tierName = document.getElementById('orderTierName');
+    var tierPrice= document.getElementById('orderTierPrice');
+    var alertEl  = document.getElementById('orderAlert');
+    var submitBtn= document.getElementById('orderSubmit');
+    var currentService = 'shop';
+
+    window.openOrder = function (tier, price, service) {
+      currentService = service || 'shop';
+      tierName.textContent  = tier;
+      tierPrice.textContent = price;
+      titleEl.textContent   = 'Order: ' + tier;
+      alertEl.className = 'order-alert';
+      alertEl.textContent = '';
+      document.getElementById('oName').value   = '';
+      document.getElementById('oEmail').value  = '';
+      document.getElementById('oBudget').value = '';
+      document.getElementById('oNotes').value  = '';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Order Request';
+      overlay.classList.add('open');
+      document.getElementById('oName').focus();
+    };
+
+    function close() { overlay.classList.remove('open'); }
+    document.getElementById('orderClose').addEventListener('click', close);
+    document.getElementById('orderCancel').addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+
+    submitBtn.addEventListener('click', async function () {
+      var name    = document.getElementById('oName').value.trim();
+      var email   = document.getElementById('oEmail').value.trim();
+      var budget  = document.getElementById('oBudget').value.trim();
+      var notes   = document.getElementById('oNotes').value.trim();
+      var tier    = tierName.textContent;
+
+      alertEl.className = 'order-alert';
+      alertEl.textContent = '';
+
+      if (!name || !email || !notes) {
+        alertEl.className = 'order-alert order-alert--error';
+        alertEl.textContent = 'Please fill in your name, email, and project details.';
+        return;
+      }
+      var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRe.test(email)) {
+        alertEl.className = 'order-alert order-alert--error';
+        alertEl.textContent = 'Please enter a valid email address.';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        var res = await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            service_type: currentService,
+            budget: (tier + (budget ? ' — ' + budget : '')),
+            message: notes
+          })
+        });
+        var data = await res.json();
+        if (res.ok) {
+          alertEl.className = 'order-alert order-alert--success';
+          alertEl.textContent = '✓ Request sent! I\'ll be in touch within 24 hours.';
+          submitBtn.textContent = 'Sent!';
+          setTimeout(close, 2800);
+        } else {
+          throw new Error(data.error || 'Server error');
+        }
+      } catch (err) {
+        alertEl.className = 'order-alert order-alert--error';
+        alertEl.textContent = err.message || 'Something went wrong. Please try again.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Order Request';
+      }
+    });
+  })();
+  </script>
+  <script src="/chatbot.js"></script>
+
 </body>
 </html>

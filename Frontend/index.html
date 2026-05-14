@@ -195,15 +195,15 @@
             <p>Brand site with CMS, animations, and booking system.</p>
           </div>
         </div>
-        <div class="portfolio-card">
+        <a href="/projects/scoop" class="portfolio-card portfolio-card--link">
           <div class="portfolio-img portfolio-img--app">
             <span class="portfolio-tag">App</span>
           </div>
           <div class="portfolio-info">
-            <h4>FitTrack Pro</h4>
-            <p>Cross-platform fitness tracker with live sync and analytics.</p>
+            <h4>SCOOP</h4>
+            <p>A fully functioning website and app for employees to add recommendations of places near their hotel, update events and keep track of internal notes. Based off of SOVAs travel guide recommendations for their hotel.</p>
           </div>
-        </div>
+        </a>
         <div class="portfolio-card">
           <div class="portfolio-img portfolio-img--shop">
             <span class="portfolio-tag">Shop</span>
@@ -219,10 +219,19 @@
 
   <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
   <footer class="footer">
-    <div class="container footer-inner">
-      <a href="/" class="logo">cherry<span>.dev</span></a>
+    <div class="container">
+      <div class="footer-brand">
+        <a href="/" class="logo">cherry<span>.dev</span></a>
+        <span class="footer-tagline">Freelance Web &amp; App Developer</span>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="/faq">FAQ</a>
+        <span class="footer-nav-sep" aria-hidden="true"></span>
+        <a href="/login" id="footerLoginBtn">Login</a>
+        <span class="footer-nav-sep" aria-hidden="true"></span>
+        <a href="/login" id="footerAccountBtn" class="footer-nav--pill">My Account</a>
+      </nav>
       <p class="footer-copy">© <span id="year"></span> cherry.dev — All rights reserved.</p>
-      <a href="/login" class="footer-admin" id="footerLoginBtn">Admin</a>
     </div>
   </footer>
 
@@ -251,6 +260,8 @@
           document.getElementById('navLoginBtn').href         = '/dashboard';
           document.getElementById('footerLoginBtn').textContent = 'Dashboard';
           document.getElementById('footerLoginBtn').href       = '/dashboard';
+          document.getElementById('footerAccountBtn').textContent = 'My Account';
+          document.getElementById('footerAccountBtn').href        = '/dashboard';
         }
       } catch (_) {}
     })();

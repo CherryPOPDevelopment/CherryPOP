@@ -9,6 +9,10 @@
   overflow: hidden;
 }
 .auth-bg { position: fixed; inset: 0; pointer-events: none; }
+.auth-bg .hero-orb { filter: blur(160px); opacity: .08; }
+
+/* Blur the cherry background image on the login page */
+body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
 .auth-logo {
   position: fixed;
   top: 1.5rem;
