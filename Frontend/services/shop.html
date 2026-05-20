@@ -81,7 +81,7 @@
             <li>Basic SEO</li>
             <li>14-day turnaround</li>
           </ul>
-          <a href="/#contact?service=shop&tier=starter" class="btn btn-ghost btn-full">Get Started</a>
+          <button onclick="openOrder('Shop — Starter','$599','shop')" class="btn btn-ghost btn-full">Buy This Package</button>
         </div>
 
         <div class="tier-card tier-card--featured">
@@ -101,7 +101,7 @@
             <li>3 rounds of revisions</li>
             <li>28-day turnaround</li>
           </ul>
-          <a href="/#contact?service=shop&tier=pro" class="btn btn-primary btn-full">Get Started</a>
+          <button onclick="openOrder('Shop — Pro','$1,799','shop')" class="btn btn-primary btn-full">Buy This Package</button>
         </div>
 
         <div class="tier-card">
@@ -120,7 +120,7 @@
             <li>6 months support</li>
             <li>Bespoke timeline</li>
           </ul>
-          <a href="/#contact?service=shop&tier=enterprise" class="btn btn-ghost btn-full">Get Started</a>
+          <button onclick="openOrder('Shop — Enterprise','$3,999','shop')" class="btn btn-ghost btn-full">Buy This Package</button>
         </div>
 
       </div>
@@ -208,11 +208,11 @@
           <label for="oNotes">Project Details &amp; Customisation Notes</label>
           <textarea id="oNotes" placeholder="Describe your store: products, branding, any platforms or integrations you use — the more detail the better!" required></textarea>
         </div>
-        <p class="order-note">⚠ Submitting this form is <b>not a payment</b> — it's an inquiry. I'll review your brief and contact you to confirm scope and payment before any work begins.</p>
+        <p class="order-note">🔒 After submitting, you'll be securely redirected to <b>Stripe</b> to complete payment. We accept all major cards, Apple Pay &amp; Google Pay.</p>
         <div class="order-alert" id="orderAlert"></div>
       </div>
       <div class="order-modal-footer">
-        <button class="btn btn-primary" id="orderSubmit">Send Order Request</button>
+        <button class="btn btn-primary" id="orderSubmit">Continue to Payment</button>
         <button class="btn btn-ghost" id="orderCancel">Cancel</button>
       </div>
     </div>
@@ -240,7 +240,7 @@
       document.getElementById('oBudget').value = '';
       document.getElementById('oNotes').value  = '';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Send Order Request';
+      submitBtn.textContent = 'Continue to Payment';
       overlay.classList.add('open');
       document.getElementById('oName').focus();
     };
@@ -274,7 +274,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
+      submitBtn.textContent = 'Saving order…';
 
       try {
         var res = await fetch('/api/inquiries', {
@@ -289,19 +289,31 @@
           })
         });
         var data = await res.json();
-        if (res.ok) {
-          alertEl.className = 'order-alert order-alert--success';
-          alertEl.textContent = '✓ Request sent! I\'ll be in touch within 24 hours.';
+        if (!res.ok) throw new Error(data.error || 'Server error');
+
+        alertEl.className = 'order-alert order-alert--success';
+        alertEl.textContent = '✓ Order saved! Redirecting to secure payment…';
+        submitBtn.textContent = 'Redirecting…';
+
+        var payRes = await fetch('/api/payments/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inquiry_id: data.id, tier: tier })
+        });
+        var payData = await payRes.json();
+
+        if (payRes.ok && payData.url) {
+          window.location.href = payData.url;
+        } else {
+          alertEl.textContent = '✓ Request sent! I\'ll be in touch within 24 hours regarding payment.';
           submitBtn.textContent = 'Sent!';
           setTimeout(close, 2800);
-        } else {
-          throw new Error(data.error || 'Server error');
         }
       } catch (err) {
         alertEl.className = 'order-alert order-alert--error';
         alertEl.textContent = err.message || 'Something went wrong. Please try again.';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Order Request';
+        submitBtn.textContent = 'Continue to Payment';
       }
     });
   })();

@@ -16,15 +16,17 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Client project inquiries submitted via the contact form
 CREATE TABLE IF NOT EXISTS inquiries (
-  id           INT AUTO_INCREMENT PRIMARY KEY,
-  name         VARCHAR(100) NOT NULL,
-  email        VARCHAR(100) NOT NULL,
-  service_type ENUM('website','app','shop') NOT NULL,
-  budget       VARCHAR(50),
-  message      TEXT NOT NULL,
-  status       ENUM('new','in_review','accepted','completed','declined') NOT NULL DEFAULT 'new',
-  created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  id                INT AUTO_INCREMENT PRIMARY KEY,
+  name              VARCHAR(100) NOT NULL,
+  email             VARCHAR(100) NOT NULL,
+  service_type      ENUM('website','app','shop','other') NOT NULL,
+  budget            VARCHAR(50),
+  message           TEXT NOT NULL,
+  status            ENUM('new','in_review','accepted','completed','declined') NOT NULL DEFAULT 'new',
+  payment_status    ENUM('none','pending','paid','failed') NOT NULL DEFAULT 'none',
+  stripe_session_id VARCHAR(255) DEFAULT NULL,
+  created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Editable site content sections
@@ -46,3 +48,20 @@ INSERT IGNORE INTO site_content (section, content) VALUES
 -- Replace hash after running:  node -e "const b=require('bcryptjs');console.log(b.hashSync('Admin1234!',12))"
 INSERT IGNORE INTO users (username, email, password_hash, role)
 VALUES ('admin', 'admin@cherrydev.io', '$2a$12$tUBe72W088ZV73.R5lLK7..ydheXjF/9RKMoOyOFR2kFjHNQZTkla', 'admin');
+
+-- Password reset tokens (for forgot-password flow)
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id         INT AUTO_INCREMENT PRIMARY KEY,
+  user_id    INT NOT NULL,
+  token_hash VARCHAR(255) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used       TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Migration for existing databases: add 'other' to inquiries service_type
+ALTER TABLE inquiries MODIFY COLUMN service_type ENUM('website','app','shop','other') NOT NULL;
+-- Migration: add Stripe payment columns
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS payment_status    ENUM('none','pending','paid','failed') NOT NULL DEFAULT 'none';
+ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS stripe_session_id VARCHAR(255) DEFAULT NULL;

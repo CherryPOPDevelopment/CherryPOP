@@ -1,8 +1,9 @@
-const express = require('express');
-const db      = require('../db');
-const router  = express.Router();
+const express  = require('express');
+const db       = require('../db');
+const { sendOrderNotification, sendOrderConfirmation, sendContactConfirmation } = require('../mailer');
+const router   = express.Router();
 
-const VALID_SERVICES = ['website', 'app', 'shop'];
+const VALID_SERVICES = ['website', 'app', 'shop', 'other'];
 const VALID_STATUSES  = ['new', 'in_review', 'accepted', 'completed', 'declined'];
 
 function isAdmin(req, res, next) {
@@ -35,6 +36,36 @@ router.post('/', async (req, res) => {
       'INSERT INTO inquiries (name, email, service_type, budget, message) VALUES (?, ?, ?, ?, ?)',
       [name.trim(), email.trim(), service_type, budget ? budget.trim() : null, message.trim()]
     );
+
+    // Fire-and-forget email notification — don't block the response
+    sendOrderNotification({
+      id:           result.insertId,
+      name:         name.trim(),
+      email:        email.trim(),
+      service_type,
+      budget:       budget ? budget.trim() : null,
+      message:      message.trim(),
+    }).catch(err => console.error('[mailer] Failed to send order notification:', err));
+
+    // Confirmation email to the customer
+    const isOrder = ['website', 'app', 'shop'].includes(service_type);
+    if (isOrder) {
+      sendOrderConfirmation({
+        id:           result.insertId,
+        name:         name.trim(),
+        email:        email.trim(),
+        service_type,
+        budget:       budget ? budget.trim() : null,
+        message:      message.trim(),
+      }).catch(err => console.error('[mailer] Failed to send order confirmation:', err));
+    } else {
+      sendContactConfirmation({
+        name:    name.trim(),
+        email:   email.trim(),
+        message: message.trim(),
+      }).catch(err => console.error('[mailer] Failed to send contact confirmation:', err));
+    }
+
     return res.status(201).json({ success: true, id: result.insertId });
   } catch (err) {
     console.error('Inquiry insert error:', err);

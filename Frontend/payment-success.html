@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Successful — Cherry.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+  <style>
+    .pay-icon { width:72px; height:72px; background:rgba(39,174,96,.12); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; }
+    .pay-icon svg { width:36px; height:36px; stroke:#27ae60; }
+    .steps-list { list-style:none; padding:0; margin:1.5rem 0 0; text-align:left; }
+    .steps-list li { display:flex; gap:.75rem; align-items:flex-start; padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.9rem; color:var(--text-muted); }
+    .steps-list li:last-child { border-bottom:none; }
+    .step-num { min-width:24px; height:24px; border-radius:50%; background:var(--accent); color:#fff; font-size:.75rem; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:.05rem; }
+    .ref-box { background:var(--bg-dark); border:1px solid var(--border); border-radius:8px; padding:.75rem 1rem; margin:1rem 0; font-size:.85rem; color:var(--text-muted); }
+    .ref-box span { color:var(--text); font-weight:600; }
+  </style>
+</head>
+<body class="auth-body">
+
+  <div class="auth-bg">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+  </div>
+
+  <a href="/" class="auth-logo">cherry<span>.dev</span></a>
+
+  <div class="auth-card" style="max-width:480px;text-align:center;">
+    <div class="pay-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <h1 style="font-size:1.75rem;margin-bottom:.5rem;">Payment Successful</h1>
+    <p style="color:var(--text-muted);font-size:.92rem;">Thank you — your payment has been received and a confirmation email is on its way to you.</p>
+
+    <div class="ref-box" id="refBox" hidden>
+      Order reference: <span id="refNum"></span>
+    </div>
+
+    <ul class="steps-list">
+      <li><span class="step-num">1</span>You'll receive a payment receipt by email shortly.</li>
+      <li><span class="step-num">2</span>I'll review your project brief and get in touch within 24 hours.</li>
+      <li><span class="step-num">3</span>We'll have a discovery call to align on scope and timeline.</li>
+      <li><span class="step-num">4</span>Development begins — you'll get regular progress updates.</li>
+    </ul>
+
+    <div style="margin-top:1.75rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+      <a href="/" class="btn btn-primary">Back to Home</a>
+      <a href="/contact" class="btn btn-ghost">Contact Us</a>
+    </div>
+  </div>
+
+  <script>
+    // Show session ID for reference if present in URL
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
+    if (sessionId) {
+      const short = sessionId.replace('cs_live_', '').replace('cs_test_', '').slice(-10).toUpperCase();
+      document.getElementById('refNum').textContent = short;
+      document.getElementById('refBox').hidden = false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Cancelled — Cherry.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+  <style>
+    .pay-icon { width:72px; height:72px; background:rgba(192,57,43,.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; }
+    .pay-icon svg { width:36px; height:36px; stroke:var(--accent); }
+  </style>
+</head>
+<body class="auth-body">
+
+  <div class="auth-bg">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+  </div>
+
+  <a href="/" class="auth-logo">cherry<span>.dev</span></a>
+
+  <div class="auth-card" style="max-width:460px;text-align:center;">
+    <div class="pay-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+    </div>
+    <h1 style="font-size:1.75rem;margin-bottom:.5rem;">Payment Cancelled</h1>
+    <p style="color:var(--text-muted);font-size:.92rem;line-height:1.7;">No worries — your order request has been saved and no payment was taken. You can complete payment at any time or reach out directly if you have questions.</p>
+
+    <div style="margin-top:1.75rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;" id="btnGroup">
+      <a href="/" class="btn btn-primary">Back to Home</a>
+      <a href="/contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+
+  <script>
+    // Add "Return to service" button if we know which service they were on
+    const params     = new URLSearchParams(window.location.search);
+    const inquiryId  = params.get('inquiry_id');
+    // We can't easily know which service page without extra state, so just show home/contact
+  </script>
+</body>
+</html>

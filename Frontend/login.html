@@ -19,40 +19,146 @@
   <a href="/" class="auth-logo">cherry<span>.dev</span></a>
 
   <div class="auth-card">
-    <div class="auth-header">
-      <h1>Welcome back</h1>
-      <p>Sign in to your admin dashboard</p>
-    </div>
 
-    <form id="loginForm" class="auth-form" novalidate>
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
+    <!-- ── LOGIN PANEL ───────────────────────────────────────────────────── -->
+    <div id="panel-login" class="auth-panel">
+      <div class="auth-header">
+        <h1>Welcome back</h1>
+        <p>Sign in to your account</p>
       </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
-          <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
-            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
         </div>
-      </div>
-      <div class="form-alert" id="loginAlert" role="alert"></div>
-      <button type="submit" class="btn btn-primary btn-lg btn-full" id="loginBtn">
-        Sign In
-      </button>
-    </form>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-alert" id="loginAlert" role="alert"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full" id="loginBtn">Sign In</button>
+      </form>
 
-    <div class="auth-footer">
-      <a href="/" class="auth-back">← Back to site</a>
+      <div class="auth-footer">
+        <div class="auth-links">
+          <button type="button" class="auth-link" data-panel="forgot-password">Forgot password?</button>
+          <span class="auth-link-sep">·</span>
+          <button type="button" class="auth-link" data-panel="forgot-username">Forgot username?</button>
+          <span class="auth-link-sep">·</span>
+          <button type="button" class="auth-link" data-panel="register">Create account</button>
+        </div>
+        <a href="/" class="auth-back">← Back to site</a>
+      </div>
     </div>
+
+    <!-- ── REGISTER PANEL ────────────────────────────────────────────────── -->
+    <div id="panel-register" class="auth-panel" hidden>
+      <div class="auth-header">
+        <h1>Create account</h1>
+        <p>Track your projects and communicate with us</p>
+      </div>
+
+      <form id="registerForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" placeholder="yourname" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="reg-password" placeholder="Minimum 8 characters" autocomplete="new-password" required />
+            <button type="button" class="toggle-pw" data-target="reg-password" aria-label="Show password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-alert" id="registerAlert" role="alert"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full" id="registerBtn">Create Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <button type="button" class="auth-link" data-panel="login">← Back to login</button>
+      </div>
+    </div>
+
+    <!-- ── FORGOT PASSWORD PANEL ─────────────────────────────────────────── -->
+    <div id="panel-forgot-password" class="auth-panel" hidden>
+      <div class="auth-header">
+        <h1>Reset password</h1>
+        <p>Enter your email and we'll send you a reset link</p>
+      </div>
+
+      <form id="forgotPwForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="fp-email">Email Address</label>
+          <input type="email" id="fp-email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-alert" id="fpAlert" role="alert"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full" id="fpBtn">Send Reset Link</button>
+      </form>
+
+      <div class="auth-footer">
+        <button type="button" class="auth-link" data-panel="login">← Back to login</button>
+      </div>
+    </div>
+
+    <!-- ── FORGOT USERNAME PANEL ─────────────────────────────────────────── -->
+    <div id="panel-forgot-username" class="auth-panel" hidden>
+      <div class="auth-header">
+        <h1>Forgot username</h1>
+        <p>We'll email your username to you</p>
+      </div>
+
+      <form id="forgotUserForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="fu-email">Email Address</label>
+          <input type="email" id="fu-email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="form-alert" id="fuAlert" role="alert"></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full" id="fuBtn">Send Username</button>
+      </form>
+
+      <div class="auth-footer">
+        <button type="button" class="auth-link" data-panel="login">← Back to login</button>
+      </div>
+    </div>
+
   </div>
 
+  <style>
+    .auth-links { display:flex; align-items:center; justify-content:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.75rem; }
+    .auth-link { background:none; border:none; cursor:pointer; color:var(--accent); font-size:.85rem; padding:0; text-decoration:underline; text-underline-offset:2px; transition:opacity var(--transition); }
+    .auth-link:hover { opacity:.75; }
+    .auth-link-sep { color:var(--text-muted); font-size:.85rem; }
+    .auth-panel[hidden] { display:none; }
+  </style>
+
   <script>
+    // ── Panel switching ──────────────────────────────────────────────────────
+    function showPanel(id) {
+      document.querySelectorAll('.auth-panel').forEach(p => p.hidden = true);
+      document.getElementById('panel-' + id).hidden = false;
+    }
+    document.querySelectorAll('[data-panel]').forEach(el => {
+      el.addEventListener('click', () => showPanel(el.dataset.panel));
+    });
+
     // Redirect if already logged in
     (async () => {
       try {
@@ -62,45 +168,109 @@
       } catch (_) {}
     })();
 
-    // Toggle password visibility
+    // ── Login ────────────────────────────────────────────────────────────────
     document.getElementById('togglePw').addEventListener('click', () => {
       const input = document.getElementById('password');
       input.type  = input.type === 'password' ? 'text' : 'password';
     });
 
-    // Login form submit
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn   = document.getElementById('loginBtn');
-      const alert = document.getElementById('loginAlert');
-
-      btn.disabled    = true;
-      btn.textContent = 'Signing in…';
-      alert.className = 'form-alert';
-      alert.textContent = '';
-
+      const btn     = document.getElementById('loginBtn');
+      const alertEl = document.getElementById('loginAlert');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      alertEl.className = 'form-alert'; alertEl.textContent = '';
       try {
         const res  = await fetch('/api/auth/login', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username: document.getElementById('username').value.trim(), password: document.getElementById('password').value }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) { window.location.href = '/dashboard'; return; }
+        throw new Error(data.error || 'Invalid credentials.');
+      } catch (err) {
+        alertEl.className = 'form-alert form-alert--error';
+        alertEl.textContent = '✗ ' + err.message;
+        btn.disabled = false; btn.textContent = 'Sign In';
+      }
+    });
+
+    // ── Register ─────────────────────────────────────────────────────────────
+    document.querySelectorAll('.toggle-pw[data-target]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        input.type  = input.type === 'password' ? 'text' : 'password';
+      });
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn     = document.getElementById('registerBtn');
+      const alertEl = document.getElementById('registerAlert');
+      btn.disabled = true; btn.textContent = 'Creating…';
+      alertEl.className = 'form-alert'; alertEl.textContent = '';
+      try {
+        const res  = await fetch('/api/auth/register', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           body: JSON.stringify({
-            username: document.getElementById('username').value.trim(),
-            password: document.getElementById('password').value,
+            username: document.getElementById('reg-username').value.trim(),
+            email:    document.getElementById('reg-email').value.trim(),
+            password: document.getElementById('reg-password').value,
           }),
         });
         const data = await res.json();
-
-        if (res.ok && data.success) {
-          window.location.href = '/dashboard';
-        } else {
-          throw new Error(data.error || 'Invalid credentials.');
-        }
+        if (res.ok && data.success) { window.location.href = '/dashboard'; return; }
+        throw new Error(data.error || 'Registration failed.');
       } catch (err) {
-        alert.className   = 'form-alert form-alert--error';
-        alert.textContent = '✗ ' + err.message;
-        btn.disabled      = false;
-        btn.textContent   = 'Sign In';
+        alertEl.className = 'form-alert form-alert--error';
+        alertEl.textContent = '✗ ' + err.message;
+        btn.disabled = false; btn.textContent = 'Create Account';
+      }
+    });
+
+    // ── Forgot Password ───────────────────────────────────────────────────────
+    document.getElementById('forgotPwForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn     = document.getElementById('fpBtn');
+      const alertEl = document.getElementById('fpAlert');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      alertEl.className = 'form-alert'; alertEl.textContent = '';
+      try {
+        await fetch('/api/auth/forgot-password', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: document.getElementById('fp-email').value.trim() }),
+        });
+        alertEl.className = 'form-alert form-alert--success';
+        alertEl.textContent = '✓ If that email is registered, a reset link has been sent.';
+        btn.textContent = 'Sent!';
+      } catch (err) {
+        alertEl.className = 'form-alert form-alert--error';
+        alertEl.textContent = 'Something went wrong. Please try again.';
+        btn.disabled = false; btn.textContent = 'Send Reset Link';
+      }
+    });
+
+    // ── Forgot Username ───────────────────────────────────────────────────────
+    document.getElementById('forgotUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn     = document.getElementById('fuBtn');
+      const alertEl = document.getElementById('fuAlert');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      alertEl.className = 'form-alert'; alertEl.textContent = '';
+      try {
+        await fetch('/api/auth/forgot-username', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: document.getElementById('fu-email').value.trim() }),
+        });
+        alertEl.className = 'form-alert form-alert--success';
+        alertEl.textContent = '✓ If that email is registered, your username has been sent.';
+        btn.textContent = 'Sent!';
+      } catch (err) {
+        alertEl.className = 'form-alert form-alert--error';
+        alertEl.textContent = 'Something went wrong. Please try again.';
+        btn.disabled = false; btn.textContent = 'Send Username';
       }
     });
   </script>

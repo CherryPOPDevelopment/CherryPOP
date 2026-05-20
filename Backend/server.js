@@ -7,6 +7,7 @@ const path    = require('path');
 const authRouter      = require('./routes/auth');
 const inquiriesRouter = require('./routes/inquiries');
 const contentRouter   = require('./routes/content');
+const paymentsRouter  = require('./routes/payments');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -36,13 +37,17 @@ app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Im
 app.use('/api/auth',      authRouter);
 app.use('/api/inquiries', inquiriesRouter);
 app.use('/api/content',   contentRouter);
+app.use('/api/payments',  paymentsRouter);
 
 // ── Page routes ───────────────────────────────────────────────────────────────
-app.get('/',           (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
-app.get('/login',      (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'login.html')));
-app.get('/contact',    (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'contact.html')));
-app.get('/faq',        (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'faq.html')));
-app.get('/dashboard',  (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'dashboard.html')));
+app.get('/',                 (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
+app.get('/login',            (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'login.html')));
+app.get('/reset-password',   (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'reset-password.html')));
+app.get('/payment-success',  (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'payment-success.html')));
+app.get('/payment-cancelled',(_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'payment-cancelled.html')));
+app.get('/contact',          (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'contact.html')));
+app.get('/faq',              (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'faq.html')));
+app.get('/dashboard',        (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'dashboard.html')));
 app.get('/services/:name', (req, res) => {
   const allowed = ['website', 'app', 'shop'];
   if (!allowed.includes(req.params.name)) return res.redirect('/');

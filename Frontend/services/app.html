@@ -215,11 +215,11 @@
           <label for="oNotes">Project Details &amp; Customisation Notes</label>
           <textarea id="oNotes" placeholder="Describe your app idea, screens, features, platform preferences — the more detail the better!" required></textarea>
         </div>
-        <p class="order-note">⚠ Submitting this form is <b>not a payment</b> — it's an inquiry. I'll review your brief and contact you to confirm scope and payment before any work begins.</p>
+        <p class="order-note">🔒 After submitting, you'll be securely redirected to <b>Stripe</b> to complete payment. We accept all major cards, Apple Pay &amp; Google Pay.</p>
         <div class="order-alert" id="orderAlert"></div>
       </div>
       <div class="order-modal-footer">
-        <button class="btn btn-primary" id="orderSubmit">Send Order Request</button>
+        <button class="btn btn-primary" id="orderSubmit">Continue to Payment</button>
         <button class="btn btn-ghost" id="orderCancel">Cancel</button>
       </div>
     </div>
@@ -247,7 +247,7 @@
       document.getElementById('oBudget').value = '';
       document.getElementById('oNotes').value  = '';
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Send Order Request';
+      submitBtn.textContent = 'Continue to Payment';
       overlay.classList.add('open');
       document.getElementById('oName').focus();
     };
@@ -281,7 +281,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
+      submitBtn.textContent = 'Saving order…';
 
       try {
         var res = await fetch('/api/inquiries', {
@@ -296,19 +296,31 @@
           })
         });
         var data = await res.json();
-        if (res.ok) {
-          alertEl.className = 'order-alert order-alert--success';
-          alertEl.textContent = '✓ Request sent! I\'ll be in touch within 24 hours.';
+        if (!res.ok) throw new Error(data.error || 'Server error');
+
+        alertEl.className = 'order-alert order-alert--success';
+        alertEl.textContent = '✓ Order saved! Redirecting to secure payment…';
+        submitBtn.textContent = 'Redirecting…';
+
+        var payRes = await fetch('/api/payments/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inquiry_id: data.id, tier: tier })
+        });
+        var payData = await payRes.json();
+
+        if (payRes.ok && payData.url) {
+          window.location.href = payData.url;
+        } else {
+          alertEl.textContent = '✓ Request sent! I\'ll be in touch within 24 hours regarding payment.';
           submitBtn.textContent = 'Sent!';
           setTimeout(close, 2800);
-        } else {
-          throw new Error(data.error || 'Server error');
         }
       } catch (err) {
         alertEl.className = 'order-alert order-alert--error';
         alertEl.textContent = err.message || 'Something went wrong. Please try again.';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Order Request';
+        submitBtn.textContent = 'Continue to Payment';
       }
     });
   })();
