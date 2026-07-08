@@ -63,5 +63,34 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 -- Migration for existing databases: add 'other' to inquiries service_type
 ALTER TABLE inquiries MODIFY COLUMN service_type ENUM('website','app','shop','other') NOT NULL;
 -- Migration: add Stripe payment columns
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS payment_status    ENUM('none','pending','paid','failed') NOT NULL DEFAULT 'none';
-ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS stripe_session_id VARCHAR(255) DEFAULT NULL;
+SET @payment_status_exists := (
+  SELECT COUNT(*)
+  FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'inquiries'
+    AND COLUMN_NAME = 'payment_status'
+);
+SET @payment_status_sql := IF(
+  @payment_status_exists = 0,
+  "ALTER TABLE inquiries ADD COLUMN payment_status ENUM('none','pending','paid','failed') NOT NULL DEFAULT 'none'",
+  'SELECT 1'
+);
+PREPARE payment_status_stmt FROM @payment_status_sql;
+EXECUTE payment_status_stmt;
+DEALLOCATE PREPARE payment_status_stmt;
+
+SET @stripe_session_exists := (
+  SELECT COUNT(*)
+  FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = DATABASE()
+    AND TABLE_NAME = 'inquiries'
+    AND COLUMN_NAME = 'stripe_session_id'
+);
+SET @stripe_session_sql := IF(
+  @stripe_session_exists = 0,
+  'ALTER TABLE inquiries ADD COLUMN stripe_session_id VARCHAR(255) DEFAULT NULL',
+  'SELECT 1'
+);
+PREPARE stripe_session_stmt FROM @stripe_session_sql;
+EXECUTE stripe_session_stmt;
+DEALLOCATE PREPARE stripe_session_stmt;
