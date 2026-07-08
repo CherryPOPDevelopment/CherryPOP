@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCOOPDemo - Cherry.dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    :root {
+      --demo-bg: #090b0f;
+      --demo-card: #121722;
+      --demo-border: rgba(255,255,255,0.12);
+      --demo-text: #f4f7fb;
+      --demo-muted: #9aa3b2;
+      --demo-accent: #ef4b57;
+      --demo-accent-soft: rgba(239, 75, 87, 0.2);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 10% -10%, #1b2030 0%, transparent 50%),
+                  radial-gradient(900px 500px at 95% 0%, #251726 0%, transparent 45%),
+                  var(--demo-bg);
+      color: var(--demo-text);
+      font-family: 'Manrope', sans-serif;
+      min-height: 100vh;
+    }
+
+    .demo-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .topbar a {
+      color: var(--demo-muted);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .headline {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .sub {
+      margin: 0.5rem 0 0;
+      color: var(--demo-muted);
+      max-width: 700px;
+    }
+
+    .grid {
+      margin-top: 1.75rem;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 1rem;
+    }
+
+    .card {
+      background: linear-gradient(170deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--demo-card);
+      border: 1px solid var(--demo-border);
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .card h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    .card p {
+      margin: 0 0 0.75rem;
+      color: var(--demo-muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+    }
+
+    form {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    input, textarea, select, button {
+      font: inherit;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #0d121b;
+      border: 1px solid var(--demo-border);
+      border-radius: 10px;
+      color: var(--demo-text);
+      padding: 0.72rem 0.78rem;
+      outline: none;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--demo-accent);
+      box-shadow: 0 0 0 3px var(--demo-accent-soft);
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ef4b57, #d63a47);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.72rem 0.95rem;
+      cursor: pointer;
+      transition: transform 0.16s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.6rem;
+      max-height: 370px;
+      overflow: auto;
+    }
+
+    .list li {
+      border: 1px solid var(--demo-border);
+      border-radius: 10px;
+      padding: 0.65rem 0.7rem;
+      background: #0d121b;
+    }
+
+    .meta {
+      margin: 0 0 0.35rem;
+      color: var(--demo-muted);
+      font-size: 0.83rem;
+    }
+
+    .empty {
+      border: 1px dashed var(--demo-border);
+      border-radius: 10px;
+      padding: 0.9rem;
+      color: var(--demo-muted);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .pill {
+      display: inline-block;
+      margin-left: 0.5rem;
+      font-size: 0.75rem;
+      color: #ffdbe0;
+      background: rgba(239, 75, 87, 0.17);
+      border: 1px solid rgba(239, 75, 87, 0.28);
+      border-radius: 999px;
+      padding: 0.15rem 0.48rem;
+    }
+
+    @media (max-width: 980px) {
+      .grid,
+      .columns {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="demo-shell">
+    <div class="topbar">
+      <a href="/projects/scoop"><- Back to SCOOP project</a>
+      <a href="/">Cherry.dev home</a>
+    </div>
+
+    <h1 class="headline">SCOOPDemo</h1>
+    <p class="sub">
+      This integrated CherryPOP demo runs directly inside your site, so it stays live on your domain. Data is persisted in browser local storage for showcase purposes.
+    </p>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Add Recommendation</h2>
+        <p>Capture places near the hotel for team members and guests.</p>
+        <form id="recommendationForm">
+          <input name="title" placeholder="Place name" required />
+          <select name="category" required>
+            <option value="">Category</option>
+            <option>Food</option>
+            <option>Coffee</option>
+            <option>Nightlife</option>
+            <option>Sightseeing</option>
+          </select>
+          <textarea name="note" placeholder="Why this spot is worth visiting" required></textarea>
+          <button type="submit">Save Recommendation</button>
+        </form>
+      </article>
+
+      <article class="card">
+        <h2>Hotel Events</h2>
+        <p>Track internal events and guest-facing activities.</p>
+        <form id="eventForm">
+          <input name="title" placeholder="Event title" required />
+          <input name="date" type="date" required />
+          <textarea name="details" placeholder="Event details" required></textarea>
+          <button type="submit">Add Event</button>
+        </form>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top: 1rem;">
+      <h2>Internal Notes <span class="pill">Team only</span></h2>
+      <p>Maintain quick notes for shift handovers and operations.</p>
+      <form id="noteForm">
+        <textarea name="content" placeholder="Add internal note..." required></textarea>
+        <button type="submit">Save Note</button>
+      </form>
+    </section>
+
+    <section class="columns" style="margin-top: 1rem;">
+      <article class="card">
+        <h2>Recommendations Feed</h2>
+        <ul id="recommendationList" class="list"></ul>
+      </article>
+      <article class="card">
+        <h2>Upcoming Events</h2>
+        <ul id="eventList" class="list"></ul>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top: 1rem;">
+      <h2>Ops Notes</h2>
+      <ul id="noteList" class="list"></ul>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEYS = {
+      recommendations: 'scoopdemo-recommendations',
+      events: 'scoopdemo-events',
+      notes: 'scoopdemo-notes'
+    };
+
+    const recommendationForm = document.getElementById('recommendationForm');
+    const eventForm = document.getElementById('eventForm');
+    const noteForm = document.getElementById('noteForm');
+
+    const recommendationList = document.getElementById('recommendationList');
+    const eventList = document.getElementById('eventList');
+    const noteList = document.getElementById('noteList');
+
+    const safeRead = (key) => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || '[]');
+      } catch {
+        return [];
+      }
+    };
+
+    const safeWrite = (key, value) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    };
+
+    const stamp = () => new Date().toLocaleString();
+
+    const renderList = (items, target, formatter) => {
+      if (!items.length) {
+        target.innerHTML = '<li class="empty">No entries yet.</li>';
+        return;
+      }
+
+      target.innerHTML = items
+        .slice()
+        .reverse()
+        .map(formatter)
+        .join('');
+    };
+
+    const render = () => {
+      const recommendations = safeRead(STORAGE_KEYS.recommendations);
+      const events = safeRead(STORAGE_KEYS.events);
+      const notes = safeRead(STORAGE_KEYS.notes);
+
+      renderList(recommendations, recommendationList, (item) => `
+        <li>
+          <p class="meta">${item.createdAt} · ${item.category}</p>
+          <strong>${item.title}</strong>
+          <p>${item.note}</p>
+        </li>
+      `);
+
+      renderList(events, eventList, (item) => `
+        <li>
+          <p class="meta">${item.createdAt} · ${item.date}</p>
+          <strong>${item.title}</strong>
+          <p>${item.details}</p>
+        </li>
+      `);
+
+      renderList(notes, noteList, (item) => `
+        <li>
+          <p class="meta">${item.createdAt}</p>
+          <p>${item.content}</p>
+        </li>
+      `);
+    };
+
+    recommendationForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(recommendationForm);
+
+      const next = {
+        title: formData.get('title').toString().trim(),
+        category: formData.get('category').toString().trim(),
+        note: formData.get('note').toString().trim(),
+        createdAt: stamp()
+      };
+
+      if (!next.title || !next.category || !next.note) return;
+
+      const recommendations = safeRead(STORAGE_KEYS.recommendations);
+      recommendations.push(next);
+      safeWrite(STORAGE_KEYS.recommendations, recommendations);
+
+      recommendationForm.reset();
+      render();
+    });
+
+    eventForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(eventForm);
+
+      const next = {
+        title: formData.get('title').toString().trim(),
+        date: formData.get('date').toString().trim(),
+        details: formData.get('details').toString().trim(),
+        createdAt: stamp()
+      };
+
+      if (!next.title || !next.date || !next.details) return;
+
+      const events = safeRead(STORAGE_KEYS.events);
+      events.push(next);
+      safeWrite(STORAGE_KEYS.events, events);
+
+      eventForm.reset();
+      render();
+    });
+
+    noteForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(noteForm);
+
+      const next = {
+        content: formData.get('content').toString().trim(),
+        createdAt: stamp()
+      };
+
+      if (!next.content) return;
+
+      const notes = safeRead(STORAGE_KEYS.notes);
+      notes.push(next);
+      safeWrite(STORAGE_KEYS.notes, notes);
+
+      noteForm.reset();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

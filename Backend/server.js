@@ -54,6 +54,8 @@ app.get('/services/:name', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'Frontend', 'services', `${req.params.name}.html`));
 });
 app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoop.html')));
+app.get('/projects/scoopDEMO', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoopDEMO', 'index.html')));
+app.get('/projects/sova-demo', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoopDEMO', 'index.html')));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));

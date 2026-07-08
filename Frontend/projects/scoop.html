@@ -69,17 +69,39 @@
     }
     .demo-wrapper {
       border-radius: 12px;
-      overflow: hidden;
       border: 1px solid var(--on-card-border, rgba(255,255,255,.08));
       box-shadow: 0 8px 40px rgba(0,0,0,.25);
-      background: #000;
+      background: var(--card, #111);
+      padding: 1.5rem;
     }
-    .demo-wrapper iframe {
-      display: block;
-      width: 100%;
-      height: 80vh;
-      min-height: 600px;
-      border: none;
+    .demo-wrapper h2 {
+      margin: 0 0 .75rem;
+      font-size: 1.35rem;
+    }
+    .demo-wrapper p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+    .demo-actions {
+      margin-top: 1.25rem;
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .btn-outline {
+      display: inline-block;
+      padding: .7rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--on-card-border, rgba(255,255,255,.25));
+      color: var(--text, #fff);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .demo-note {
+      margin-top: .9rem;
+      font-size: .92rem;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -105,18 +127,22 @@
       <a href="/#portfolio" class="back-link">← Back to Projects</a>
       <span class="project-tag">App</span>
       <h1>SCOOP</h1>
-      <p>A fully functioning website and app for employees to add recommendations of places near their hotel, update events and keep track of internal notes. Based off of SOVAs travel guide recommendations for their hotel.</p>
+      <p>SCOOPDemo is CherryPOP's built-in concierge product demo where employees can add recommendations, track events, and keep internal notes.</p>
     </div>
   </section>
 
   <section class="demo-section">
     <div class="container">
       <div class="demo-wrapper">
-        <iframe
-          src="http://localhost:4000"
-          allow="same-origin"
-          title="SOVA Scoop Demo">
-        </iframe>
+        <h2>SCOOPDemo</h2>
+        <p>
+          This CherryPOP demo is integrated directly into the website codebase, so it runs on your live domain without localhost links.
+        </p>
+        <div class="demo-actions">
+          <a class="btn btn-primary" href="/projects/scoopDEMO">Open SCOOPDemo</a>
+          <a class="btn-outline" href="/contact">Contact About This Build</a>
+        </div>
+        <p class="demo-note">The experience stays fully on-domain and demonstrates how CherryPOP can ship productized internal tools.</p>
       </div>
     </div>
   </section>
