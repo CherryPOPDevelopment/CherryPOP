@@ -6,6 +6,20 @@ let pool = null;
 
 async function initializePool() {
   try {
+    pool = mysql.createPool({
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'aurelia_contacts',
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      connectTimeout: 5000,
+      enableKeepAlive: true
+    });
+
+    console.log('Aurelia database pool initialized');
+
     // Validate critical environment variables
     const dbHost = process.env.DB_HOST;
     const dbUser = process.env.DB_USER;
