@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservations - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container reservations-page">
+    <% if (message) { %>
+      <div class="alert alert-info" style="margin-top:1.5rem;"><%= message %></div>
+    <% } %>
+
+    <% if (!isStaffView) { %>
+      <section class="reservations-hero">
+        <div>
+          <h1>Reserve a Company Event</h1>
+          <p>Browse active SOVA events in <strong><%= city %></strong>, request space for your party, and track each reservation below.</p>
+          <% if (isGuestReservationMode) { %>
+            <p class="muted-text">You can reserve without signing in. Enter your name and email in the reservation form.</p>
+          <% } %>
+        </div>
+        <div class="reservations-hero-actions">
+          <a href="/events" class="btn btn-secondary">Browse Events</a>
+        </div>
+      </section>
+
+      <section class="reservations-section">
+        <div class="reservations-section-head">
+          <div>
+            <h2>Available Events</h2>
+            <p>Reserve directly from any active company-hosted event.</p>
+          </div>
+        </div>
+
+        <% if (!reservableEvents.length) { %>
+          <div class="workspace-card">
+            <p class="muted-text">There are no active events open for reservation right now.</p>
+          </div>
+        <% } else { %>
+          <div class="reservable-events-grid">
+            <% reservableEvents.forEach(event => { %>
+              <article class="reservable-event-card <%= event.id === selectedEventId ? 'reservable-event-card-selected' : '' %>">
+                <div class="reservable-event-card-head">
+                  <div>
+                    <h3><a href="/events/<%= event.id %>"><%= event.title %></a></h3>
+                    <p class="reservable-event-meta"><%= event.category %> • <%= event.location %></p>
+                  </div>
+                  <span class="badge-status <%= event.is_sold_out ? 'badge-rejected' : 'badge-approved' %>">
+                    <%= event.is_sold_out ? 'Sold Out' : event.available_spots + ' spots left' %>
+                  </span>
+                </div>
+
+                <p class="reservable-event-time">
+                  <strong><%= formatDate(event.start_at) %></strong>
+                  at <%= formatTime(event.start_at) %>
+                  <% if (event.end_at) { %>
+                    • ends <%= formatTime(event.end_at) %>
+                  <% } %>
+                </p>
+
+                <p><%= event.description %></p>
+
+                <% if (event.my_status) { %>
+                  <p class="muted-text">Your current request: <span class="badge-status badge-<%= event.my_status %>"><%= event.my_status %></span><%= event.my_guest_count ? ' for ' + event.my_guest_count + ' guest' + (event.my_guest_count === 1 ? '' : 's') : '' %></p>
+                <% } %>
+
+                <div class="reservable-event-actions">
+                  <a href="/events/<%= event.id %>" class="btn btn-secondary btn-sm">Event Details</a>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm js-reserve-popup-trigger"
+                    data-event-id="<%= event.id %>"
+                    data-event-title="<%= event.title %>"
+                    data-my-guest-count="<%= Number(event.my_guest_count || 1) %>"
+                    data-my-notes="<%= event.my_notes || '' %>"
+                    <%= event.is_sold_out ? 'disabled' : '' %>
+                  >
+                    <%= event.my_status ? 'Update Reservation' : 'Reserve Space' %>
+                  </button>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } %>
+      </section>
+    <% } else { %>
+      <section class="reservations-hero">
+        <div>
+          <h1>Event Reservations</h1>
+          <p>Review all guest requests for active company events and update their status from one queue.</p>
+        </div>
+        <% if (stats) { %>
+          <div class="reservation-stats-grid">
+            <div class="reservation-stat-card">
+              <span>Total</span>
+              <strong><%= stats.total %></strong>
+            </div>
+            <div class="reservation-stat-card">
+              <span>Pending</span>
+              <strong><%= stats.pending %></strong>
+            </div>
+            <div class="reservation-stat-card">
+              <span>Confirmed</span>
+              <strong><%= stats.confirmed %></strong>
+            </div>
+            <div class="reservation-stat-card">
+              <span>Cancelled</span>
+              <strong><%= stats.cancelled %></strong>
+            </div>
+            <% if (isAdminUser) { %>
+              <div class="reservation-stat-card reservation-stat-card-archived">
+                <span>Archived</span>
+                <strong><%= stats.archived %></strong>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </section>
+    <% } %>
+
+    <section id="guest-reservations" class="reservations-section">
+      <h2><%= isStaffView ? 'All Guest Reservations' : 'My Reservations' %></h2>
+      <% if (isStaffView && isAdminUser) { %>
+        <div class="reservations-section-head">
+          <div>
+            <h2>Active Reservation Events</h2>
+            <p>Reservations are grouped by event for faster operations.</p>
+          </div>
+        </div>
+
+        <% if (!reservationsByEvent || !reservationsByEvent.length) { %>
+          <p class="muted-text">No active reservation events right now.</p>
+        <% } else { %>
+          <div class="reservation-event-groups">
+            <% reservationsByEvent.forEach(group => { %>
+              <article class="reservation-event-group-card">
+                <header class="reservation-event-group-head">
+                  <div>
+                    <h3><%= group.event_title %></h3>
+                    <p class="muted-text">
+                      <%= formatDate(group.start_at) %>
+                      <% if (group.end_at) { %>
+                        to <%= formatDate(group.end_at) %>
+                      <% } %>
+                    </p>
+                  </div>
+                  <div class="reservation-event-group-metrics">
+                    <span class="badge-status badge-pending"><%= group.pending_count %> pending</span>
+                    <span class="badge-status badge-approved"><%= group.confirmed_count %> confirmed</span>
+                    <span class="badge-status badge-rejected"><%= group.cancelled_count %> cancelled</span>
+                    <span class="badge-status badge-city-soft"><%= group.total_guests %> guests total</span>
+                  </div>
+                </header>
+
+                <div style="overflow-x:auto;">
+                  <table class="settings-table reservations-table">
+                    <thead>
+                      <tr>
+                        <th>Guest</th>
+                        <th>Guests</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% group.rows.forEach(reservation => { %>
+                        <tr>
+                          <td><%= reservation.customer_username %><br><small><%= reservation.customer_email %></small></td>
+                          <td><%= reservation.guest_count %></td>
+                          <td><span class="badge-status badge-<%= reservation.status %>"><%= reservation.status %></span></td>
+                          <td><%= reservation.notes || '—' %></td>
+                          <td>
+                            <div class="reservation-row-actions">
+                              <form method="POST" action="/reservations/<%= reservation.id %>/status" class="reservation-status-form">
+                                <select name="status" class="form-control reservation-status-select">
+                                  <option value="pending" <%= reservation.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                  <option value="confirmed" <%= reservation.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                                  <option value="cancelled" <%= reservation.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                </select>
+                                <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+                              </form>
+
+                              <form method="POST" action="/reservations/<%= reservation.id %>/archive">
+                                <button type="submit" class="btn btn-secondary btn-sm">Archive</button>
+                              </form>
+
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm js-delete-reservation-trigger"
+                                data-delete-action="/reservations/<%= reservation.id %>/delete"
+                                data-event-title="<%= reservation.event_title %>"
+                                data-reserver-name="<%= reservation.customer_username %>"
+                              >Delete</button>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <div class="reservations-section-head" style="margin-top: 24px;">
+          <div>
+            <h2>Archived Reservations</h2>
+            <p>Archived reservations are retained temporarily, then deleted 7 days after event end.</p>
+          </div>
+        </div>
+
+        <% if (!archivedReservations || !archivedReservations.length) { %>
+          <p class="muted-text">No archived reservations.</p>
+        <% } else { %>
+          <div style="overflow-x:auto;">
+            <table class="settings-table reservations-table">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Guest</th>
+                  <th>Guests</th>
+                  <th>Status</th>
+                  <th>Archived At</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% archivedReservations.forEach(reservation => { %>
+                  <tr>
+                    <td><%= reservation.event_title %></td>
+                    <td><%= reservation.customer_username %><br><small><%= reservation.customer_email %></small></td>
+                    <td><%= reservation.guest_count %></td>
+                    <td><span class="badge-status badge-<%= reservation.status %>"><%= reservation.status %></span></td>
+                    <td><%= reservation.archived_at ? formatDate(reservation.archived_at) : '—' %></td>
+                    <td><%= reservation.notes || '—' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      <% } else if (!reservations.length) { %>
+        <p class="muted-text">No reservations on file.</p>
+      <% } else { %>
+        <div style="overflow-x:auto;">
+          <table class="settings-table reservations-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <% if (isStaffView) { %><th>Guest</th><% } %>
+                <th>Guests</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <% if (isStaffView) { %><th>Actions</th><% } %>
+              </tr>
+            </thead>
+            <tbody>
+              <% reservations.forEach(reservation => { %>
+                <tr>
+                  <td><%= reservation.event_title %></td>
+                  <td><%= formatDate(reservation.start_at) %></td>
+                  <% if (isStaffView) { %>
+                    <td><%= reservation.customer_username %><br><small><%= reservation.customer_email %></small></td>
+                  <% } %>
+                  <td><%= reservation.guest_count %></td>
+                  <td>
+                    <span class="badge-status badge-<%= reservation.status %>"><%= reservation.status %></span>
+                  </td>
+                  <td><%= reservation.notes || '—' %></td>
+                  <% if (isStaffView) { %>
+                    <td>
+                      <div class="reservation-row-actions">
+                        <form method="POST" action="/reservations/<%= reservation.id %>/status" class="reservation-status-form">
+                          <select name="status" class="form-control reservation-status-select">
+                            <option value="pending" <%= reservation.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="confirmed" <%= reservation.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                            <option value="cancelled" <%= reservation.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                          </select>
+                          <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+                        </form>
+
+                        <% if (isAdminUser) { %>
+                          <form method="POST" action="/reservations/<%= reservation.id %>/archive">
+                            <button type="submit" class="btn btn-secondary btn-sm">Archive</button>
+                          </form>
+                          <button
+                            type="button"
+                            class="btn btn-danger btn-sm js-delete-reservation-trigger"
+                            data-delete-action="/reservations/<%= reservation.id %>/delete"
+                            data-event-title="<%= reservation.event_title %>"
+                            data-reserver-name="<%= reservation.customer_username %>"
+                          >Delete</button>
+                        <% } %>
+                      </div>
+                    </td>
+                  <% } %>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="reservationModal" hidden>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reservationModalTitle">
+      <div class="modal-dialog-head">
+        <h2 id="reservationModalTitle">Reserve Event</h2>
+        <button type="button" class="modal-close" id="reservationModalClose" aria-label="Close reservation dialog">×</button>
+      </div>
+      <p class="modal-copy" id="reservationModalCopy">Complete your reservation details below.</p>
+
+      <form method="POST" action="/reservations" id="reservationModalForm">
+        <input type="hidden" name="eventId" id="reservationEventId">
+
+        <% if (isGuestReservationMode) { %>
+          <div class="form-group">
+            <label for="reservationGuestName">Your Name</label>
+            <input type="text" id="reservationGuestName" name="guestName" placeholder="Full name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reservationGuestEmail">Email</label>
+            <input type="email" id="reservationGuestEmail" name="guestEmail" placeholder="you@example.com" required>
+          </div>
+        <% } %>
+
+        <div class="form-group">
+          <label for="reservationGuestCount">Guests</label>
+          <select id="reservationGuestCount" name="guestCount">
+            <% for (let guestOption = 1; guestOption <= 10; guestOption += 1) { %>
+              <option value="<%= guestOption %>"><%= guestOption %></option>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reservationNotes">Notes</label>
+          <input type="text" id="reservationNotes" name="notes" placeholder="Accessibility, timing, or party notes">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="reservationModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Reservation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <% if (isStaffView && isAdminUser) { %>
+    <div class="modal-backdrop" id="reservationDeleteModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="reservationDeleteModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="reservationDeleteModalTitle">Delete Reservation</h2>
+          <button type="button" class="modal-close" id="reservationDeleteModalClose" aria-label="Close delete reservation dialog">×</button>
+        </div>
+        <p class="modal-copy" id="reservationDeleteModalCopy">Delete this reservation permanently?</p>
+        <p class="modal-copy modal-copy-soft">This action cannot be undone. Consider Archive if you may need this history later.</p>
+
+        <form method="POST" action="/reservations/0/delete" id="reservationDeleteModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="reservationDeleteModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete Permanently</button>
+        </form>
+      </div>
+    </div>
+  <% } %>
+
+  <script>
+  (function () {
+    const openModals = [];
+
+    const setBodyModalState = function () {
+      if (openModals.length) {
+        document.body.classList.add('modal-open');
+      } else {
+        document.body.classList.remove('modal-open');
+      }
+    };
+
+    const reservationModal = document.getElementById('reservationModal');
+    const reservationCloseButton = document.getElementById('reservationModalClose');
+    const reservationCancelButton = document.getElementById('reservationModalCancel');
+    const reservationCopy = document.getElementById('reservationModalCopy');
+    const reservationEventIdInput = document.getElementById('reservationEventId');
+    const reservationGuestCountSelect = document.getElementById('reservationGuestCount');
+    const reservationNotesInput = document.getElementById('reservationNotes');
+    const reserveTriggers = document.querySelectorAll('.js-reserve-popup-trigger');
+
+    let lastReservationTrigger = null;
+
+    const closeReservationModal = function () {
+      if (!reservationModal) return;
+      reservationModal.hidden = true;
+      const modalIndex = openModals.indexOf(reservationModal);
+      if (modalIndex >= 0) {
+        openModals.splice(modalIndex, 1);
+      }
+      setBodyModalState();
+      if (lastReservationTrigger) {
+        lastReservationTrigger.focus();
+      }
+    };
+
+    if (
+      reservationModal &&
+      reservationCloseButton &&
+      reservationCancelButton &&
+      reservationCopy &&
+      reservationEventIdInput &&
+      reservationGuestCountSelect &&
+      reservationNotesInput &&
+      reserveTriggers.length
+    ) {
+      reserveTriggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          lastReservationTrigger = trigger;
+          reservationEventIdInput.value = trigger.getAttribute('data-event-id');
+          reservationCopy.textContent = 'Reserve space for "' + trigger.getAttribute('data-event-title') + '".';
+          reservationGuestCountSelect.value = trigger.getAttribute('data-my-guest-count') || '1';
+          reservationNotesInput.value = trigger.getAttribute('data-my-notes') || '';
+          reservationModal.hidden = false;
+          if (!openModals.includes(reservationModal)) {
+            openModals.push(reservationModal);
+          }
+          setBodyModalState();
+          reservationCloseButton.focus();
+        });
+      });
+
+      reservationCloseButton.addEventListener('click', closeReservationModal);
+      reservationCancelButton.addEventListener('click', closeReservationModal);
+      reservationModal.addEventListener('click', function (event) {
+        if (event.target === reservationModal) {
+          closeReservationModal();
+        }
+      });
+    }
+
+    const deleteModal = document.getElementById('reservationDeleteModal');
+    const deleteModalClose = document.getElementById('reservationDeleteModalClose');
+    const deleteModalCancel = document.getElementById('reservationDeleteModalCancel');
+    const deleteModalCopy = document.getElementById('reservationDeleteModalCopy');
+    const deleteModalForm = document.getElementById('reservationDeleteModalForm');
+    const deleteTriggers = document.querySelectorAll('.js-delete-reservation-trigger');
+
+    let lastDeleteTrigger = null;
+
+    const closeDeleteModal = function () {
+      if (!deleteModal) return;
+      deleteModal.hidden = true;
+      const modalIndex = openModals.indexOf(deleteModal);
+      if (modalIndex >= 0) {
+        openModals.splice(modalIndex, 1);
+      }
+      setBodyModalState();
+      if (lastDeleteTrigger) {
+        lastDeleteTrigger.focus();
+      }
+    };
+
+    if (deleteModal && deleteModalClose && deleteModalCancel && deleteModalCopy && deleteModalForm && deleteTriggers.length) {
+      deleteTriggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          lastDeleteTrigger = trigger;
+          const eventTitle = trigger.getAttribute('data-event-title') || 'this event';
+          const reserverName = trigger.getAttribute('data-reserver-name') || 'this guest';
+          deleteModalForm.action = trigger.getAttribute('data-delete-action');
+          deleteModalCopy.textContent = 'Delete reservation for "' + reserverName + '" on "' + eventTitle + '" permanently?';
+          deleteModal.hidden = false;
+          if (!openModals.includes(deleteModal)) {
+            openModals.push(deleteModal);
+          }
+          setBodyModalState();
+          deleteModalClose.focus();
+        });
+      });
+
+      deleteModalClose.addEventListener('click', closeDeleteModal);
+      deleteModalCancel.addEventListener('click', closeDeleteModal);
+      deleteModal.addEventListener('click', function (event) {
+        if (event.target === deleteModal) {
+          closeDeleteModal();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
+      const topModal = openModals[openModals.length - 1];
+      if (!topModal) {
+        return;
+      }
+
+      if (topModal === deleteModal) {
+        closeDeleteModal();
+        return;
+      }
+
+      if (topModal === reservationModal) {
+        closeReservationModal();
+      }
+    });
+  })();
+  </script>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

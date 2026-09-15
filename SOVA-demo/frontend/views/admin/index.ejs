@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% const workspaceRole = (user && user.role ? user.role.toLowerCase() : 'admin'); %>
+  <% const isManagementWorkspace = workspaceRole === 'management'; %>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= isManagementWorkspace ? 'Management Workspace' : 'Admin & Development Workspace' %> - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-admin">
+    <section class="workspace-hero workspace-hero-admin">
+      <div class="container">
+        <h1><%= isManagementWorkspace ? 'Management Workspace' : 'Administrator & Development Interface' %></h1>
+        <p><%= isManagementWorkspace ? 'Employee operations and monitoring tools for day-to-day management.' : 'Employee operations plus platform controls, governance, and system maintenance tools.' %></p>
+        <div class="workspace-location-banner">
+          <span class="badge-status badge-city">Active Location: <%= city %></span>
+          <span class="workspace-location-copy">Boards and staff tools are currently scoped to this property.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="container workspace-grid">
+      <% if (canViewInviteCodes) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>Employee Invite Codes</h2>
+        <p>Generate and manage onboarding invite codes in a dedicated management page.</p>
+        <a href="/admin/invite-codes" class="btn btn-danger">Open Invite Code Manager</a>
+      </div>
+      <% } %>
+
+      <% if (canViewTeamOperations) { %>
+      <div class="workspace-card">
+        <h2>Team Operations</h2>
+        <p>View the employee workspace and oversee concierge workflows across shifts.</p>
+        <a href="/employee" class="btn btn-secondary">Employee Workspace</a>
+      </div>
+      <% } %>
+
+      <% if (canViewInactiveEvents) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>Inactive Events</h2>
+        <p>Review hidden or completed events, reactivate them for editing, or delete them permanently.</p>
+        <p>
+          <span class="badge-status badge-pending"><%= inactiveEventsCount || 0 %> inactive in <%= city %></span>
+        </p>
+        <a href="/events/admin/inactive" class="btn btn-danger">Open Inactive Events</a>
+      </div>
+      <% } %>
+
+      <% if (canViewGovernance) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>User Governance</h2>
+        <p>Review account roles, access scopes, and policy compliance for all users.</p>
+        <a href="/admin/users" class="btn btn-danger">Open Governance</a>
+      </div>
+      <% } %>
+
+      <% if (canViewPlatformConfig) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>Platform Configuration</h2>
+        <p>Review platform settings, city configuration, and system documentation.</p>
+        <a href="/admin/platform-config" class="btn btn-danger">Open Platform Config</a>
+      </div>
+      <% } %>
+
+      <% if (canViewSuggestionInbox) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>Suggestion Inbox</h2>
+        <p>Review all submitted platform suggestions from guests and staff.</p>
+        <p>
+          <span class="badge-status badge-pending"><%= suggestionInboxCount || 0 %> total suggestions</span>
+          <span class="badge-status badge-approved"><%= recentSuggestionCount || 0 %> in last 7 days</span>
+        </p>
+        <a href="/admin/suggestions" class="btn btn-danger">Open Suggestion Inbox</a>
+      </div>
+      <% } %>
+
+      <% if (canViewAudit) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>Audit & Monitoring</h2>
+        <p>Track reservations, event changes, and recommendation activity across the platform.</p>
+        <a href="/admin/audit" class="btn btn-danger">Open Audit View</a>
+      </div>
+      <% } %>
+
+      <% if (canViewDiagnostics) { %>
+      <div class="workspace-card workspace-card-critical">
+        <h2>System Diagnostics</h2>
+        <p>Check application and database health, uptime, and connectivity diagnostics.</p>
+        <a href="/admin/diagnostics" class="btn btn-danger">Open Diagnostics</a>
+      </div>
+      <% } %>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

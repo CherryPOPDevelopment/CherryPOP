@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Employee Account - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (recaptchaSiteKey) { %>
+    <% if (recaptchaMode === 'v3') { %>
+      <script src="https://www.google.com/recaptcha/api.js?render=<%= recaptchaSiteKey %>"></script>
+    <% } else { %>
+      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <% } %>
+  <% } %>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>Create Employee Account</h1>
+
+      <% if (message) { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/register-employee" class="js-recaptcha-v3-form" data-recaptcha-action="register_employee">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" value="<%= formData?.firstName || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" value="<%= formData?.lastName || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" value="<%= formData?.email || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" minlength="8" required>
+        </div>
+
+        <div class="form-group">
+          <label for="passwordConfirm">Confirm Password</label>
+          <input type="password" id="passwordConfirm" name="passwordConfirm" minlength="8" required>
+        </div>
+
+        <div class="form-group">
+          <label for="inviteCode">Employee Invite Code</label>
+          <input type="text" id="inviteCode" name="inviteCode" value="<%= formData?.inviteCode || '' %>" placeholder="Required unless an admin is creating the account">
+        </div>
+
+        <% if (recaptchaSiteKey) { %>
+          <% if (recaptchaMode === 'v3') { %>
+            <input type="hidden" name="g-recaptcha-response" class="js-recaptcha-token" value="">
+            <div class="alert alert-error js-recaptcha-error" style="display:none; margin-top:0.75rem;"></div>
+          <% } else { %>
+            <div class="form-group">
+              <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+            </div>
+          <% } %>
+        <% } %>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Employee Account</button>
+      </form>
+
+      <p class="auth-link">Already have an account? <a href="/auth/login">Login here</a></p>
+    </div>
+  </div>
+
+  <% if (recaptchaSiteKey && recaptchaMode === 'v3') { %>
+  <script>
+    (() => {
+      const forms = Array.from(document.querySelectorAll('.js-recaptcha-v3-form'));
+      if (!forms.length || typeof grecaptcha === 'undefined') {
+        return;
+      }
+
+      forms.forEach((form) => {
+        form.addEventListener('submit', (event) => {
+          const tokenField = form.querySelector('.js-recaptcha-token');
+          const errorBox = form.querySelector('.js-recaptcha-error');
+
+          const showRecaptchaError = (message) => {
+            if (!errorBox) {
+              return;
+            }
+
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
+          };
+
+          if (errorBox) {
+            errorBox.style.display = 'none';
+            errorBox.textContent = '';
+          }
+
+          if (!tokenField || tokenField.value) {
+            return;
+          }
+
+          if (typeof grecaptcha === 'undefined') {
+            event.preventDefault();
+            showRecaptchaError('reCAPTCHA is not available right now. Disable ad blockers for this site and refresh the page.');
+            return;
+          }
+
+          event.preventDefault();
+          const action = form.getAttribute('data-recaptcha-action') || 'submit';
+
+          grecaptcha.ready(() => {
+            grecaptcha.execute('<%= recaptchaSiteKey %>', { action }).then((token) => {
+              tokenField.value = token || '';
+              form.submit();
+            }).catch(() => {
+              showRecaptchaError('reCAPTCHA is not available for this domain yet. Verify allowed domains in Google reCAPTCHA settings and try again.');
+            });
+          });
+        });
+      });
+    })();
+  </script>
+  <% } %>
+</body>
+</html>

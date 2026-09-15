@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOVA Scoop - Personalized City Recommendations</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+  
+  <main>
+    <% if (maintenanceMode) { %>
+      <div style="background-color: #fff3cd; border-bottom: 2px solid #ffc107; padding: 16px; text-align: center; margin-bottom: 20px;">
+        <p style="margin: 0; color: #333;">
+          <strong>⚠️ Maintenance Mode:</strong> The website is currently running with limited functionality. 
+          <% if (databaseError) { %>
+            Database connection issue: <%= databaseError %>
+          <% } %>
+          Please ensure XAMPP MySQL service is running.
+        </p>
+      </div>
+    <% } %>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>Discover <%= city %> Like a Local</h1>
+        <p>Personalized recommendations for the best dining, entertainment, and experiences in <%= city %></p>
+        <a href="/places" class="btn btn-hero">Browse Recommendations</a>
+      </div>
+    </section>
+
+
+
+    <!-- Services Section -->
+    <section class="services">
+      <div class="container">
+        <div class="section-header">
+          <h2>Our Concierge Services</h2>
+          <p>Curated experiences tailored to your preferences</p>
+        </div>
+        <div class="services-grid">
+          <a href="/services/fine-dining" class="service-card">
+            <div class="service-icon">🍽️</div>
+            <h3>Fine Dining & Cuisine</h3>
+            <p>Explore world-class restaurants and culinary experiences from every corner of the city</p>
+          </a>
+          <a href="/services/bars-entertainment" class="service-card">
+            <div class="service-icon">🍷</div>
+            <h3>Bars & Entertainment</h3>
+            <p>Discover cocktail bars, lounges, and exclusive venues for an unforgettable night out</p>
+          </a>
+          <a href="/services/culture-events" class="service-card">
+            <div class="service-icon">🎭</div>
+            <h3>Culture & Events</h3>
+            <p>Find museums, theaters, galleries, and attractions that define the city's character</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <h2>How It Works</h2>
+          <p>Simple steps to find your next favorite place</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Browse Recommendations</h3>
+            <p>Explore our curated collection of restaurants, bars, and attractions</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Filter by Interest</h3>
+            <p>Find exactly what you're looking for with our powerful search and filters</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Share & Create</h3>
+            <p>Register to add your own recommendations and share favorites with others</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Travel Guide Recommendations Section -->
+    <section class="travel-guide">
+      <div class="container">
+        <div class="section-header">
+          <h2>Travel Guide Recommendations</h2>
+          <p>Expert curated guides for unforgettable experiences</p>
+        </div>
+        <div class="travel-grid">
+          <a href="/travel/city-highlights" class="travel-card">
+            <div class="travel-icon">✈️</div>
+            <h3>City Highlights</h3>
+            <p>Essential destinations no visitor should miss - iconic landmarks and must-see attractions</p>
+          </a>
+          <a href="/travel/neighborhood-guides" class="travel-card">
+            <div class="travel-icon">🗺️</div>
+            <h3>Neighborhood Guides</h3>
+            <p>Explore distinct neighborhoods with insider knowledge and local recommendations</p>
+          </a>
+          <a href="/travel/day-trips" class="travel-card">
+            <div class="travel-icon">🎒</div>
+            <h3>Day Trip Ideas</h3>
+            <p>Discover nearby destinations perfect for day trips and weekend getaways</p>
+          </a>
+          <a href="/travel/walking-tours" class="travel-card">
+            <div class="travel-icon">🚶</div>
+            <h3>Walking Tours</h3>
+            <p>Self-guided and curated walking routes through the city's most beautiful areas</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOVA Events Section -->
+    <section class="sova-events">
+      <div class="container">
+        <div class="section-header">
+          <h2>SOVA Events</h2>
+          <p>Stay updated on the current SOVA events available in <%= city %></p>
+        </div>
+        <% if (sovaEvents && sovaEvents.length) { %>
+          <div class="events-showcase">
+            <% sovaEvents.forEach((event, index) => { %>
+              <article class="event-card <%= index === 0 ? 'event-featured' : '' %>">
+                <% if (index === 0) { %>
+                  <div class="event-tag">Current</div>
+                <% } %>
+                <div class="event-date">
+                  <span class="event-day"><%= formatDate(event.start_at, { month: 'short' }) %></span>
+                  <span class="event-num"><%= formatDate(event.start_at, { day: '2-digit' }) %></span>
+                </div>
+                <h3><%= event.title %></h3>
+                <p><%= event.description %></p>
+                <p class="muted-text">
+                  <strong><%= event.location %></strong>
+                  <% if (event.recurrence_type === 'recurring' && event.recurring_days) { %>
+                    • Repeats <%= event.recurring_days.toUpperCase().split(',').join(', ') %>
+                  <% } else { %>
+                    • <%= formatTime(event.start_at) %>
+                  <% } %>
+                </p>
+                <div class="place-actions" style="margin-top:16px;">
+                  <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Event</a>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="event-card event-featured">
+            <h3>No current events</h3>
+            <p>There are no live SOVA events scheduled in <%= city %> right now. Check back soon for new programming.</p>
+            <a href="/events" class="btn btn-primary btn-sm">Browse Events</a>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="sova-events">
+      <div class="container">
+        <div class="section-header">
+          <h2><%= city %> Events</h2>
+          <p>Explore city events separately from SOVA-hosted programming.</p>
+        </div>
+        <% if (cityEvents && cityEvents.length) { %>
+          <div class="events-showcase">
+            <% cityEvents.forEach((event, index) => { %>
+              <article class="event-card <%= index === 0 ? 'event-featured' : '' %>">
+                <div class="event-date">
+                  <span class="event-day"><%= formatDate(event.start_at, { month: 'short' }) %></span>
+                  <span class="event-num"><%= formatDate(event.start_at, { day: '2-digit' }) %></span>
+                </div>
+                <h3><%= event.title %></h3>
+                <p><%= event.description %></p>
+                <p class="muted-text">
+                  <strong><%= event.location %></strong>
+                  <% if (event.recurrence_type === 'recurring' && event.recurring_days) { %>
+                    • Repeats <%= event.recurring_days.toUpperCase().split(',').join(', ') %>
+                  <% } else { %>
+                    • <%= formatTime(event.start_at) %>
+                  <% } %>
+                </p>
+                <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Event</a>
+              </article>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="event-card event-featured">
+            <h3>No current city events</h3>
+            <p>There are no additional city events scheduled in <%= city %> right now.</p>
+            <a href="/events" class="btn btn-primary btn-sm">Browse Events</a>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container">
+        <h2>Ready to Explore?</h2>
+        <p>Start discovering the best places in the city</p>
+        <div class="cta-buttons">
+          <a href="/places" class="btn btn-primary btn-large">View All Recommendations</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('./partials/footer') %>
+  <%- include('./partials/coming-soon-modal') %>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="container">
+    <div class="events-page-header">
+      <div>
+        <h1>SOVA Events</h1>
+        <p class="muted-text">Browse SOVA-hosted events first, then explore the separate Dallas events section below.</p>
+      </div>
+    </div>
+
+    <% if (user && user.role === 'admin' && !isDemoUser) { %>
+      <section class="workspace-card" style="margin-bottom: 20px;">
+        <h2>Create a New Event</h2>
+        <p>Add a one-time or recurring event directly from this page, or review events that have been hidden or automatically archived after they ended.</p>
+        <div class="queue-card-actions" style="margin-top: 16px;">
+          <a href="/events/new/form" class="btn btn-primary">+ Create Event</a>
+          <a href="/events/admin/inactive" class="btn btn-secondary">Inactive Events</a>
+        </div>
+      </section>
+    <% } %>
+
+    <section class="events-list-section">
+      <div class="events-list-section-head">
+        <div>
+          <h2>SOVA Events</h2>
+          <p class="muted-text">Displaying only SOVA events in this section.</p>
+        </div>
+        <span class="badge-status badge-city-soft"><%= (sovaEvents || []).length %> live event<%= (sovaEvents || []).length === 1 ? '' : 's' %></span>
+      </div>
+
+    <% if (sovaEvents && sovaEvents.length > 0) { %>
+      <section class="events-list-section">
+      <div class="events-showcase">
+        <% sovaEvents.forEach((event, index) => { %>
+          <div class="event-card <%= index === 0 ? 'event-featured' : '' %>">
+            <span class="event-tag"><%= event.category %></span>
+
+            <% if (event.start_at) { %>
+              <div class="event-date">
+                <span class="event-day"><%= formatDate(event.start_at, { weekday: 'short' }).toUpperCase() %></span>
+                <span class="event-num"><%= formatDate(event.start_at, { day: 'numeric' }) %></span>
+              </div>
+            <% } %>
+
+            <h3><a href="/events/<%= event.id %>" style="color:inherit;text-decoration:none;"><%= event.title %></a></h3>
+
+            <% if (event.tags) { %>
+              <div class="place-tags" style="margin-top: 0.35rem;">
+                <% event.tags.split(',').map((tag) => tag.trim()).filter(Boolean).forEach((tag) => { %>
+                  <span class="tag-pill"><%= tag %></span>
+                <% }) %>
+              </div>
+            <% } %>
+
+            <% if (event.related_place_id && event.related_place_title) { %>
+              <p class="muted-text" style="margin-top: 0.35rem;">
+                🔗 <% if ((event.related_place_relation || '').toLowerCase() === 'at') { %>At<% } else if ((event.related_place_relation || '').toLowerCase() === 'by') { %>By<% } else { %>Linked to<% } %>
+                <a href="/places/<%= event.related_place_id %>"><%= event.related_place_title %></a>
+              </p>
+            <% } %>
+
+            <p>📍 <%= event.location %></p>
+            <% if (event.start_at) { %>
+              <p>🕐 <%= formatTime(event.start_at) %>
+                <% if (event.end_at) { %> – <%= formatTime(event.end_at) %><% } %>
+              </p>
+            <% } %>
+            <p>🔁 <%= (event.recurrence_type || 'one_time') === 'recurring' ? 'Recurring Event' : 'One-time Event' %></p>
+            <p>👥 Up to <%= event.capacity %> guests</p>
+
+            <p><%= event.description.substring(0, 90) %>...</p>
+
+            <div class="place-actions" style="margin-top:16px;">
+              <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Details</a>
+              <% if (user && user.role === 'admin') { %>
+                <a href="/events/<%= event.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm js-archive-trigger"
+                    data-event-title="<%= event.title %>"
+                    data-archive-action="/events/<%= event.id %>/archive"
+                  >Archive</button>
+                </form>
+                <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE" style="display:inline;">
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm js-delete-trigger"
+                    data-event-title="<%= event.title %>"
+                    data-delete-action="/events/<%= event.id %>/delete?_method=DELETE"
+                  >Delete</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      </section>
+    <% } else { %>
+      <div class="empty-state">
+        <p>No SOVA events scheduled right now.
+          <% if (user && user.role === 'admin') { %>
+            <a href="/events/new/form">Create the first event!</a>
+          <% } %>
+        </p>
+      </div>
+    <% } %>
+    </section>
+
+    <section class="events-list-section">
+      <div class="events-list-section-head">
+        <div>
+          <h2>Dallas Events</h2>
+          <p class="muted-text">Current events and recurring favorites happening in <strong>Dallas</strong>.</p>
+        </div>
+        <span class="badge-status badge-city-soft"><%= (dallasEvents || []).length %> live event<%= (dallasEvents || []).length === 1 ? '' : 's' %></span>
+      </div>
+
+    <% if (dallasEvents && dallasEvents.length > 0) { %>
+      <div class="events-showcase">
+        <% dallasEvents.forEach((event, index) => { %>
+          <div class="event-card <%= index === 0 ? 'event-featured' : '' %>">
+            <span class="event-tag"><%= event.category %></span>
+
+            <% if (event.start_at) { %>
+              <div class="event-date">
+                <span class="event-day"><%= formatDate(event.start_at, { weekday: 'short' }).toUpperCase() %></span>
+                <span class="event-num"><%= formatDate(event.start_at, { day: 'numeric' }) %></span>
+              </div>
+            <% } %>
+
+            <h3><a href="/events/<%= event.id %>" style="color:inherit;text-decoration:none;"><%= event.title %></a></h3>
+
+            <% if (event.tags) { %>
+              <div class="place-tags" style="margin-top: 0.35rem;">
+                <% event.tags.split(',').map((tag) => tag.trim()).filter(Boolean).forEach((tag) => { %>
+                  <span class="tag-pill"><%= tag %></span>
+                <% }) %>
+              </div>
+            <% } %>
+
+            <% if (event.related_place_id && event.related_place_title) { %>
+              <p class="muted-text" style="margin-top: 0.35rem;">
+                🔗 <% if ((event.related_place_relation || '').toLowerCase() === 'at') { %>At<% } else if ((event.related_place_relation || '').toLowerCase() === 'by') { %>By<% } else { %>Linked to<% } %>
+                <a href="/places/<%= event.related_place_id %>"><%= event.related_place_title %></a>
+              </p>
+            <% } %>
+
+            <p>📍 <%= event.location %></p>
+            <% if (event.start_at) { %>
+              <p>🕐 <%= formatTime(event.start_at) %>
+                <% if (event.end_at) { %> – <%= formatTime(event.end_at) %><% } %>
+              </p>
+            <% } %>
+            <p>🔁 <%= (event.recurrence_type || 'one_time') === 'recurring' ? 'Recurring Event' : 'One-time Event' %></p>
+            <p>👥 Up to <%= event.capacity %> guests</p>
+
+            <p><%= event.description.substring(0, 90) %>...</p>
+
+            <div class="place-actions" style="margin-top:16px;">
+              <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Details</a>
+              <% if (user && user.role === 'admin') { %>
+                <a href="/events/<%= event.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm js-archive-trigger"
+                    data-event-title="<%= event.title %>"
+                    data-archive-action="/events/<%= event.id %>/archive"
+                  >Archive</button>
+                </form>
+                <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE" style="display:inline;">
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm js-delete-trigger"
+                    data-event-title="<%= event.title %>"
+                    data-delete-action="/events/<%= event.id %>/delete?_method=DELETE"
+                  >Delete</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p>No Dallas events available right now.</p>
+      </div>
+    <% } %>
+    </section>
+  </main>
+
+  <% if (user && user.role === 'admin') { %>
+    <div class="modal-backdrop" id="archiveModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="archiveModalTitle">Archive Event</h2>
+          <button type="button" class="modal-close" id="archiveModalClose" aria-label="Close archive dialog">×</button>
+        </div>
+        <p class="modal-copy" id="archiveModalCopy">Move this event into inactive events?</p>
+        <p class="modal-copy modal-copy-soft">Archived events are removed from the live events list and can be reactivated later from the admin inactive-events page.</p>
+        <form method="POST" action="/events/0/archive" id="archiveModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="archiveModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Archive Event</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="deleteModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="deleteModalTitle">Delete Event</h2>
+          <button type="button" class="modal-close" id="deleteModalClose" aria-label="Close delete dialog">×</button>
+        </div>
+        <p class="modal-copy" id="deleteModalCopy">Delete this event permanently?</p>
+        <p class="modal-copy modal-copy-soft">This permanently removes the event and any related reservation history tied to it cannot be restored from the events workspace.</p>
+        <form method="POST" action="/events/0/delete?_method=DELETE" id="deleteModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="deleteModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete Event</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      const activeModals = [];
+
+      const setupModal = function (options) {
+        const modal = document.getElementById(options.modalId);
+        const modalForm = document.getElementById(options.formId);
+        const modalCopy = document.getElementById(options.copyId);
+        const closeButton = document.getElementById(options.closeId);
+        const cancelButton = document.getElementById(options.cancelId);
+        const triggers = document.querySelectorAll(options.triggerSelector);
+
+        if (!modal || !modalForm || !modalCopy || !closeButton || !cancelButton || !triggers.length) {
+          return;
+        }
+
+        let lastTrigger = null;
+
+        const closeModal = function () {
+          modal.hidden = true;
+          const modalIndex = activeModals.indexOf(closeModal);
+          if (modalIndex >= 0) {
+            activeModals.splice(modalIndex, 1);
+          }
+          if (!activeModals.length) {
+            document.body.classList.remove('modal-open');
+          }
+          if (lastTrigger) {
+            lastTrigger.focus();
+          }
+        };
+
+        triggers.forEach(function (trigger) {
+          trigger.addEventListener('click', function () {
+            lastTrigger = trigger;
+            modalForm.action = trigger.getAttribute(options.actionAttribute);
+            modalCopy.textContent = options.getCopy(trigger);
+            modal.hidden = false;
+            if (!activeModals.includes(closeModal)) {
+              activeModals.push(closeModal);
+            }
+            document.body.classList.add('modal-open');
+            closeButton.focus();
+          });
+        });
+
+        closeButton.addEventListener('click', closeModal);
+        cancelButton.addEventListener('click', closeModal);
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+
+        return closeModal;
+      };
+
+      const closeArchiveModal = setupModal({
+        modalId: 'archiveModal',
+        formId: 'archiveModalForm',
+        copyId: 'archiveModalCopy',
+        closeId: 'archiveModalClose',
+        cancelId: 'archiveModalCancel',
+        triggerSelector: '.js-archive-trigger',
+        actionAttribute: 'data-archive-action',
+        getCopy: function (trigger) {
+          return 'Move "' + trigger.getAttribute('data-event-title') + '" into inactive events?';
+        }
+      });
+
+      const closeDeleteModal = setupModal({
+        modalId: 'deleteModal',
+        formId: 'deleteModalForm',
+        copyId: 'deleteModalCopy',
+        closeId: 'deleteModalClose',
+        cancelId: 'deleteModalCancel',
+        triggerSelector: '.js-delete-trigger',
+        actionAttribute: 'data-delete-action',
+        getCopy: function (trigger) {
+          return 'Delete "' + trigger.getAttribute('data-event-title') + '" permanently?';
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') {
+          return;
+        }
+
+        const closeModal = activeModals[activeModals.length - 1];
+        if (closeModal) {
+          closeModal();
+        }
+      });
+    })();
+    </script>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

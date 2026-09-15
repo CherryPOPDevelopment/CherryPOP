@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Diagnostics - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-admin">
+    <section class="workspace-hero workspace-hero-admin">
+      <div class="container">
+        <h1>System Diagnostics</h1>
+        <p>Operational health overview for application runtime and database connectivity.</p>
+      </div>
+    </section>
+
+    <section class="container workspace-grid">
+      <div class="workspace-card">
+        <h2>Service Status</h2>
+        <p><strong><%= diagnostics.serviceStatus %></strong></p>
+        <p>App Time: <%= diagnostics.appTime %></p>
+        <p>Uptime: <%= diagnostics.uptimeSeconds %> seconds</p>
+        <p>Node: <%= diagnostics.nodeVersion %></p>
+        <p>Environment: <%= diagnostics.environment %></p>
+      </div>
+
+      <div class="workspace-card <%= diagnostics.dbProbe.connected ? '' : 'workspace-card-critical' %>">
+        <h2>Database Connectivity</h2>
+        <p><strong><%= diagnostics.dbProbe.connected ? 'Connected' : 'Disconnected' %></strong></p>
+        <p>Latency: <%= diagnostics.dbProbe.latencyMs %> ms</p>
+        <p>Version: <%= diagnostics.dbProbe.version || 'Unavailable' %></p>
+        <p>Database Time: <%= diagnostics.dbProbe.dbTime || 'Unavailable' %></p>
+        <% if (diagnostics.dbProbe.error) { %>
+          <p><strong>Error Code:</strong> <%= diagnostics.dbProbe.error.code || 'N/A' %></p>
+          <p><strong>Error Message:</strong> <%= diagnostics.dbProbe.error.message %></p>
+        <% } %>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Quick Links</h2>
+        <p>JSON Health Endpoint for automation and monitoring:</p>
+        <p><a href="/health" class="btn btn-primary">Open /health</a></p>
+        <p><a href="/admin" class="btn btn-secondary">Back to Admin Workspace</a></p>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

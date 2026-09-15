@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Event - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="container">
+    <div class="form-container">
+      <h1>Add New Event</h1>
+      
+      <% if (typeof message !== 'undefined') { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <% const eventData = formData || {}; %>
+      <form method="POST" action="/events/new/create" id="event-form">
+        <div class="form-group">
+          <label for="title">Event Title *</label>
+          <input type="text" id="title" name="title" value="<%= eventData.title || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" name="category" required>
+            <option value="">Select a category</option>
+            <option value="Concert" <%= eventData.category === 'Concert' ? 'selected' : '' %>>Concert</option>
+            <option value="Conference" <%= eventData.category === 'Conference' ? 'selected' : '' %>>Conference</option>
+            <option value="Dinner" <%= eventData.category === 'Dinner' ? 'selected' : '' %>>Dinner</option>
+            <option value="Workshop" <%= eventData.category === 'Workshop' ? 'selected' : '' %>>Workshop</option>
+            <option value="Networking" <%= eventData.category === 'Networking' ? 'selected' : '' %>>Networking</option>
+            <option value="Speakeasy" <%= eventData.category === 'Speakeasy' ? 'selected' : '' %>>Speakeasy</option>
+            <option value="Other" <%= eventData.category === 'Other' ? 'selected' : '' %>>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" name="description" rows="6" required><%= eventData.description || '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location/Venue *</label>
+          <input type="text" id="location" name="location" value="<%= eventData.location || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="tags">Event Tags</label>
+          <input type="text" id="tags" name="tags" value="<%= eventData.tags || '' %>" placeholder="music, rooftop, brunch, family-friendly">
+          <small class="form-hint">Comma-separated tags make events easier to discover.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="related_place_id">Link To Recommendation</label>
+          <select id="related_place_id" name="related_place_id">
+            <option value="">No linked recommendation</option>
+            <% (placeOptions || []).forEach((placeOption) => { %>
+              <option value="<%= placeOption.id %>" <%= String(eventData.related_place_id || '') === String(placeOption.id) ? 'selected' : '' %>>
+                <%= placeOption.title %> (<%= placeOption.location %>)
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="related_place_relation">Recommendation Relationship</label>
+          <select id="related_place_relation" name="related_place_relation">
+            <option value="">Select relationship (optional)</option>
+            <option value="at" <%= String(eventData.related_place_relation || '').toLowerCase() === 'at' ? 'selected' : '' %>>At this recommendation location</option>
+            <option value="by" <%= String(eventData.related_place_relation || '').toLowerCase() === 'by' ? 'selected' : '' %>>By this recommendation (hosted/organized)</option>
+          </select>
+          <small class="form-hint">Use this when the event happens at or is hosted by a listed recommendation.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="recurrence_type">Event Type *</label>
+          <select id="recurrence_type" name="recurrence_type" required>
+            <option value="one_time" <%= (eventData.recurrence_type || 'one_time') === 'one_time' ? 'selected' : '' %>>One-time (auto hide after next day)</option>
+            <option value="recurring" <%= eventData.recurrence_type === 'recurring' ? 'selected' : '' %>>Recurring (stays listed permanently)</option>
+          </select>
+        </div>
+
+        <div id="one-time-fields" class="form-group">
+          <label for="event_date">Event Date *</label>
+          <input type="date" id="event_date" name="event_date" value="<%= eventData.event_date || '' %>" required>
+        </div>
+
+        <div id="recurring-fields" class="form-group" style="display:none;">
+          <label>Days of Week *</label>
+          <div class="weekday-grid">
+            <% const selectedRecurringDays = Array.isArray(eventData['recurring_days[]']) ? eventData['recurring_days[]'] : (eventData.recurring_days ? String(eventData.recurring_days).split(',') : []); %>
+            <label><input type="checkbox" name="recurring_days[]" value="mon" <%= selectedRecurringDays.includes('mon') ? 'checked' : '' %>> Mon</label>
+            <label><input type="checkbox" name="recurring_days[]" value="tue" <%= selectedRecurringDays.includes('tue') ? 'checked' : '' %>> Tue</label>
+            <label><input type="checkbox" name="recurring_days[]" value="wed" <%= selectedRecurringDays.includes('wed') ? 'checked' : '' %>> Wed</label>
+            <label><input type="checkbox" name="recurring_days[]" value="thu" <%= selectedRecurringDays.includes('thu') ? 'checked' : '' %>> Thu</label>
+            <label><input type="checkbox" name="recurring_days[]" value="fri" <%= selectedRecurringDays.includes('fri') ? 'checked' : '' %>> Fri</label>
+            <label><input type="checkbox" name="recurring_days[]" value="sat" <%= selectedRecurringDays.includes('sat') ? 'checked' : '' %>> Sat</label>
+            <label><input type="checkbox" name="recurring_days[]" value="sun" <%= selectedRecurringDays.includes('sun') ? 'checked' : '' %>> Sun</label>
+          </div>
+          <small class="form-hint">Select at least one day for recurring events.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="start_time">Start Time *</label>
+          <input type="time" id="start_time" name="start_time" value="<%= eventData.start_time || '19:00' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="end_time">End Time</label>
+          <input type="time" id="end_time" name="end_time" value="<%= eventData.end_time || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="capacity">Capacity (number of guests) *</label>
+          <input type="number" id="capacity" name="capacity" min="1" value="<%= eventData.capacity || '' %>" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create Event</button>
+          <a href="/events" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('event-form');
+    const recurrenceType = document.getElementById('recurrence_type');
+    const oneTimeFields = document.getElementById('one-time-fields');
+    const recurringFields = document.getElementById('recurring-fields');
+    const eventDate = document.getElementById('event_date');
+
+    function updateScheduleFields() {
+      const recurring = recurrenceType.value === 'recurring';
+      oneTimeFields.style.display = recurring ? 'none' : 'block';
+      recurringFields.style.display = recurring ? 'block' : 'none';
+      eventDate.required = !recurring;
+    }
+
+    recurrenceType.addEventListener('change', updateScheduleFields);
+    updateScheduleFields();
+
+    form.addEventListener('submit', function (event) {
+      if (recurrenceType.value !== 'recurring') {
+        return;
+      }
+
+      const checkedDays = document.querySelectorAll('input[name="recurring_days[]"]:checked');
+      if (checkedDays.length < 1) {
+        event.preventDefault();
+        alert('Please select at least one day of the week for recurring events.');
+      }
+    });
+  </script>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

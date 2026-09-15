@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Discussion Post - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .post-form-container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .form-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-card h1 {
+      margin-top: 0;
+      color: #333;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .form-hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .submit-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .btn-submit {
+      flex: 1;
+      padding: 12px 20px;
+      background-color: #667eea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn-submit:hover {
+      background-color: #5568d3;
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 12px 20px;
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .btn-cancel:hover {
+      background-color: #e8e8e8;
+    }
+
+    .post-type-info {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .tags-help {
+      background-color: #f9f9f9;
+      padding: 12px;
+      border-left: 4px solid #667eea;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .error-message {
+      background-color: #fee;
+      color: #c33;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .tags-input-wrap {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      min-height: 44px;
+    }
+
+    .tags-input-wrap:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e8f0ff;
+      color: #2c3e80;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tag-remove-btn {
+      border: none;
+      background: transparent;
+      color: #2c3e80;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .tag-entry-input {
+      border: none;
+      outline: none;
+      flex: 1;
+      min-width: 180px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      padding: 4px;
+    }
+
+    .suggested-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .suggested-tag-btn {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .suggested-tag-btn:hover {
+      border-color: #94a3b8;
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <% const draftData = draft || {}; %>
+  <% const initialTags = draftData.tags ? draftData.tags.split(',').map(tag => tag.trim()).filter(Boolean) : []; %>
+
+  <div class="post-form-container">
+    <div class="form-card">
+      <h1><%= formMode === 'edit' ? 'Continue Draft' : 'Share a Recommendation' %></h1>
+      <div class="discussion-city-banner discussion-city-banner-compact">
+        <span class="badge-status badge-city">Posting To: <%= city %></span>
+        <span>This post will only appear in the <%= city %> discussion workspace.</span>
+      </div>
+
+      <form method="POST" action="/discussion/new">
+        <% if (draftData.id) { %>
+          <input type="hidden" name="draft_id" value="<%= draftData.id %>">
+        <% } %>
+        <div class="tags-help">
+          💡 <strong>Tip:</strong> Share places you recommend or events you think your team should know about. Save a draft if you are not ready to publish yet.
+        </div>
+
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            required 
+            placeholder="e.g., Amazing New Brunch Spot Downtown"
+            maxlength="255"
+            value="<%= draftData.title || '' %>"
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="post_type">Type *</label>
+            <select id="post_type" name="post_type" required>
+              <option value="">Select type...</option>
+              <option value="place" <%= draftData.post_type === 'place' ? 'selected' : '' %>>Place</option>
+              <option value="event" <%= draftData.post_type === 'event' ? 'selected' : '' %>>Event</option>
+              <option value="attraction" <%= draftData.post_type === 'attraction' ? 'selected' : '' %>>Attraction</option>
+            </select>
+            <div class="post-type-info">
+              Choose the high-level recommendation type.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="item_id" id="item_label">Select Category *</label>
+            <select id="item_id" name="item_id" required>
+              <option value="">Choose a category type first...</option>
+            </select>
+            <div class="form-hint" id="item_hint">Pick a category (for example museum, aquarium, bar, or restaurant).</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="content">Details & Recommendation *</label>
+          <textarea 
+            id="content" 
+            name="content" 
+            required 
+            placeholder="Share your experience, why you recommend this, special notes for guests, etc."
+          ><%= draftData.content || '' %></textarea>
+          <div class="form-hint">Be specific! Share what makes this place/event special.</div>
+        </div>
+
+        <% if (user && user.role === 'admin') { %>
+          <div class="form-group">
+            <label class="draft-checkbox-row" for="is_pinned">
+              <input type="checkbox" id="is_pinned" name="is_pinned" value="1" <%= draftData.is_pinned ? 'checked' : '' %>>
+              <span>Pin this post in the discussion board sidebar</span>
+            </label>
+            <div class="form-hint">Pinned posts appear in the dedicated sidebar tab for quick access.</div>
+          </div>
+        <% } %>
+
+        <div class="form-group">
+          <label for="tag_input">Tags (Optional)</label>
+          <div class="tags-input-wrap" id="tags_input_wrap">
+            <input
+              type="text"
+              id="tag_input"
+              class="tag-entry-input"
+              placeholder="Type a tag and press Enter"
+              autocomplete="off"
+            >
+          </div>
+          <input type="hidden" id="tags" name="tags" value="<%= draftData.tags || '' %>">
+          <div class="form-hint">Press Enter to add each tag. Up to 10 tags.</div>
+          <div class="suggested-tags" id="suggested_tags">
+            <button type="button" class="suggested-tag-btn" data-tag="family-friendly">#family-friendly</button>
+            <button type="button" class="suggested-tag-btn" data-tag="romantic">#romantic</button>
+            <button type="button" class="suggested-tag-btn" data-tag="live-music">#live-music</button>
+            <button type="button" class="suggested-tag-btn" data-tag="upscale">#upscale</button>
+            <button type="button" class="suggested-tag-btn" data-tag="budget-friendly">#budget-friendly</button>
+            <button type="button" class="suggested-tag-btn" data-tag="group-friendly">#group-friendly</button>
+          </div>
+        </div>
+
+        <div class="submit-group">
+          <a href="/discussion" class="btn-cancel">Cancel</a>
+          <button type="submit" formaction="/discussion/drafts/save" formnovalidate class="btn-cancel"><%= formMode === 'edit' ? 'Update Draft' : 'Save Draft' %></button>
+          <button type="submit" class="btn-submit"><%= formMode === 'edit' ? 'Publish Draft' : 'Share Recommendation' %></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script id="discussion-draft-config" type="application/json"><%- JSON.stringify({
+    postType: draftData.post_type || '',
+    itemId: draftData.item_id || '',
+    tags: initialTags,
+    itemOptionsByType: itemOptionsByType || {}
+  }).replace(/</g, '\\u003c') %></script>
+
+  <script>
+    const draftConfig = JSON.parse(document.getElementById('discussion-draft-config').textContent || '{}');
+    const tagsHiddenInput = document.getElementById('tags');
+    const tagInput = document.getElementById('tag_input');
+    const tagsInputWrap = document.getElementById('tags_input_wrap');
+    const itemHint = document.getElementById('item_hint');
+    const tagsList = [];
+    const initialPostType = draftConfig.postType || '';
+    const initialItemId = draftConfig.itemId ? String(draftConfig.itemId) : '';
+    const initialTags = Array.isArray(draftConfig.tags) ? draftConfig.tags : [];
+
+    const itemOptionsByType = draftConfig.itemOptionsByType || {};
+
+    function syncTagsToHiddenInput() {
+      tagsHiddenInput.value = tagsList.join(',');
+    }
+
+    function removeTag(tagValue) {
+      const index = tagsList.findIndex(tag => tag.toLowerCase() === tagValue.toLowerCase());
+      if (index >= 0) {
+        tagsList.splice(index, 1);
+        renderTags();
+      }
+    }
+
+    function renderTags() {
+      const existingChips = tagsInputWrap.querySelectorAll('.tag-chip');
+      existingChips.forEach(chip => chip.remove());
+
+      tagsList.forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        chip.textContent = `#${tag}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'tag-remove-btn';
+        removeBtn.setAttribute('aria-label', `Remove tag ${tag}`);
+        removeBtn.textContent = 'x';
+        removeBtn.addEventListener('click', () => removeTag(tag));
+
+        chip.appendChild(removeBtn);
+        tagsInputWrap.insertBefore(chip, tagInput);
+      });
+
+      syncTagsToHiddenInput();
+    }
+
+    function addTag(rawValue) {
+      const tagValue = rawValue.trim().replace(/^#+/, '');
+      if (!tagValue) return;
+
+      const isDuplicate = tagsList.some(tag => tag.toLowerCase() === tagValue.toLowerCase());
+      if (isDuplicate) return;
+
+      if (tagsList.length >= 10) {
+        alert('Maximum 10 tags allowed');
+        return;
+      }
+
+      if (tagValue.length > 50) {
+        alert('Tag is too long (max 50 characters)');
+        return;
+      }
+
+      tagsList.push(tagValue);
+      renderTags();
+    }
+
+    function updateItemsList(selectedValue = '') {
+      const type = document.getElementById('post_type').value;
+      const itemLabel = document.getElementById('item_label');
+      const itemSelect = document.getElementById('item_id');
+      
+      itemSelect.innerHTML = '<option value="">Choose...</option>';
+
+      itemLabel.textContent = 'Select Category *';
+      const options = itemOptionsByType[type] || [];
+
+      if (!options.length) {
+        itemHint.textContent = 'Pick a type first to see descriptive item categories.';
+        return;
+      }
+
+      itemHint.textContent = 'Choose the category that best fits your recommendation.';
+      options.forEach(item => {
+        const option = document.createElement('option');
+        option.value = String(item.value);
+        option.textContent = item.label;
+        if (selectedValue && selectedValue === String(item.value)) {
+          option.selected = true;
+        }
+        itemSelect.appendChild(option);
+      });
+    }
+
+    document.getElementById('post_type').addEventListener('change', updateItemsList);
+
+    tagInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addTag(tagInput.value);
+        tagInput.value = '';
+      } else if (e.key === 'Backspace' && !tagInput.value && tagsList.length > 0) {
+        tagsList.pop();
+        renderTags();
+      }
+    });
+
+    tagsInputWrap.addEventListener('click', function() {
+      tagInput.focus();
+    });
+
+    document.querySelectorAll('.suggested-tag-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        addTag(this.dataset.tag || '');
+        tagInput.focus();
+      });
+    });
+
+    initialTags.forEach(addTag);
+
+    if (initialPostType) {
+      updateItemsList(initialItemId);
+    }
+
+    // Forms validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+      if (tagInput.value.trim()) {
+        addTag(tagInput.value);
+        tagInput.value = '';
+      }
+
+      if (tagsList.length > 10) {
+        e.preventDefault();
+        alert('Maximum 10 tags allowed');
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>

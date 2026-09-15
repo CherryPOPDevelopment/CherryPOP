@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Notes Archive - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-admin">
+    <section class="workspace-hero workspace-hero-admin">
+      <div class="container">
+        <h1>Shift Notes Archive</h1>
+        <p>Archived handoff notes resolved by staff or automatically archived after 24 hours.</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <section class="workspace-card">
+        <div class="shift-notes-list-head">
+          <h2>Archived Notes</h2>
+          <a href="/employee/shift-notes" class="btn btn-secondary btn-sm">Back to Active Notes</a>
+        </div>
+
+        <% if (message) { %>
+          <p class="admin-inline-message"><%= message %></p>
+        <% } %>
+
+        <% if (archivedNotes && archivedNotes.length > 0) { %>
+          <div class="shift-notes-list">
+            <% archivedNotes.forEach(note => { %>
+              <article class="shift-note-item shift-note-item-archived">
+                <div class="shift-note-head">
+                  <div>
+                    <strong><%= new Date(note.shift_date).toLocaleDateString() %> • <%= note.shift_label.charAt(0).toUpperCase() + note.shift_label.slice(1) %></strong>
+                    <p>Created by <%= note.created_by_username %> • Archived <%= new Date(note.archived_at).toLocaleString() %></p>
+                  </div>
+                  <div class="shift-note-badges">
+                    <span class="badge-status <%= note.note_category === 'guest' ? 'badge-note-guest' : note.note_category === 'management_maintenance' ? 'badge-note-management' : 'badge-note-employees' %>">
+                      <%= note.note_category === 'guest' ? 'Guest' : note.note_category === 'management_maintenance' ? 'Mgmt/Maintenance' : 'Employees' %>
+                    </span>
+                    <span class="badge-status <%= note.priority === 'urgent' ? 'badge-cancelled' : 'badge-confirmed' %>"><%= note.priority %></span>
+                    <span class="badge-status <%= note.archived_reason === 'resolved' ? 'badge-confirmed' : 'badge-pending' %>">
+                      <%= note.archived_reason === 'resolved' ? 'Resolved' : 'Auto-Archived' %>
+                    </span>
+                  </div>
+                </div>
+
+                <p class="shift-note-body"><%= note.note_text %></p>
+
+                <% if (note.archived_reason === 'resolved' && note.resolved_by_username) { %>
+                  <p class="shift-note-meta">Resolved by <strong><%= note.resolved_by_username %></strong></p>
+                <% } %>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="muted-text">No archived notes yet.</p>
+        <% } %>
+      </section>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

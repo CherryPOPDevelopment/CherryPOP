@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (recaptchaSiteKey) { %>
+    <% if (recaptchaMode === 'v3') { %>
+      <script src="https://www.google.com/recaptcha/api.js?render=<%= recaptchaSiteKey %>"></script>
+    <% } else { %>
+      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <% } %>
+  <% } %>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>Login</h1>
+      
+      <% if (message) { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/login" class="js-recaptcha-v3-form" data-recaptcha-action="login">
+        <div class="form-group">
+          <label for="email">Email or Username</label>
+          <input type="text" id="email" name="email" value="<%= identifier || '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+
+        <% if (recaptchaSiteKey) { %>
+          <% if (recaptchaMode === 'v3') { %>
+            <input type="hidden" name="g-recaptcha-response" class="js-recaptcha-token" value="">
+            <div class="alert alert-error js-recaptcha-error" style="display:none; margin-top:0.75rem;"></div>
+          <% } else { %>
+            <div class="form-group">
+              <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+            </div>
+          <% } %>
+        <% } %>
+
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+      </form>
+
+      <div class="auth-link auth-link-secondary">
+        <a href="/support/contact">Forgot username?</a>
+        <span>•</span>
+        <a href="/support/contact">Forgot password?</a>
+      </div>
+
+      <div class="auth-link" style="margin-top: 0.75rem; color:#888; font-size:0.85rem;">
+        Registration is disabled in the demo.
+      </div>
+      
+      <div class="demo-credentials">
+        <p><strong>Demo Site — use any of these accounts:</strong></p>
+        <p>Email: <strong>demo@sova.com</strong> | Password: <strong>Demo1234</strong> | <em>Customer</em></p>
+        <p>Email: <strong>employee@sova.com</strong> | Password: <strong>Employee1234</strong> | <em>Employee</em></p>
+        <p>Email: <strong>admin@sova.com</strong> | Password: <strong>Admin1234</strong> | <em>Admin</em></p>
+        <p style="margin-top:0.5rem;color:#888;font-size:0.8rem;">All accounts are read-only. No data is saved.</p>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/coming-soon-modal') %>
+
+  <% if (recaptchaSiteKey && recaptchaMode === 'v3') { %>
+  <script>
+    (() => {
+      const forms = Array.from(document.querySelectorAll('.js-recaptcha-v3-form'));
+      console.log('reCAPTCHA Debug - Forms found:', forms.length);
+      console.log('reCAPTCHA Debug - grecaptcha available:', typeof grecaptcha !== 'undefined');
+      
+      if (!forms.length || typeof grecaptcha === 'undefined') {
+        console.warn('reCAPTCHA Debug - Skipping: forms=' + forms.length + ', grecaptcha=' + typeof grecaptcha);
+        return;
+      }
+
+      forms.forEach((form) => {
+        form.addEventListener('submit', (event) => {
+          const tokenField = form.querySelector('.js-recaptcha-token');
+          const errorBox = form.querySelector('.js-recaptcha-error');
+
+          const showRecaptchaError = (message) => {
+            console.error('reCAPTCHA Error:', message);
+            if (!errorBox) {
+              return;
+            }
+
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
+          };
+
+          if (errorBox) {
+            errorBox.style.display = 'none';
+            errorBox.textContent = '';
+          }
+
+          if (!tokenField) {
+            console.warn('reCAPTCHA Debug - No token field found');
+            return;
+          }
+
+          if (tokenField.value) {
+            console.log('reCAPTCHA Debug - Token already present, allowing submission');
+            return;
+          }
+
+          if (typeof grecaptcha === 'undefined') {
+            event.preventDefault();
+            showRecaptchaError('reCAPTCHA is not available right now. Disable ad blockers for this site and refresh the page.');
+            return;
+          }
+
+          console.log('reCAPTCHA Debug - Starting token generation');
+          event.preventDefault();
+          const action = form.getAttribute('data-recaptcha-action') || 'submit';
+
+          grecaptcha.ready(() => {
+            console.log('reCAPTCHA Debug - grecaptcha.ready called, executing with action:', action);
+            grecaptcha.execute('<%= recaptchaSiteKey %>', { action }).then((token) => {
+              console.log('reCAPTCHA Debug - Token generated successfully:', token ? 'yes' : 'no');
+              tokenField.value = token || '';
+              form.submit();
+            }).catch((err) => {
+              console.error('reCAPTCHA Debug - Token generation failed:', err);
+              showRecaptchaError('reCAPTCHA is not available for this domain yet. Verify allowed domains in Google reCAPTCHA settings and try again.');
+            });
+          });
+        });
+      });
+    })();
+  </script>
+  <% } %>
+</body>
+</html>

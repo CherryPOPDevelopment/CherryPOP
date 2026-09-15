@@ -13,5 +13,16 @@ module.exports = {
       restart_delay: 3000,
       max_restarts: 10
     },
+    {
+      name: 'sova-demo',
+      script: 'backend/app.js',
+      cwd: path.join(__dirname, 'SOVA-demo'),
+      env: {
+        NODE_ENV: 'production',
+        PORT: 4000
+      },
+      restart_delay: 3000,
+      max_restarts: 10
+    },
   ]
 };

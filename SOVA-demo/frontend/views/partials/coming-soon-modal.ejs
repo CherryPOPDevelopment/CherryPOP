@@ -1,0 +1,63 @@
+<div class="modal-backdrop" id="comingSoonModal" hidden>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="comingSoonTitle">
+    <div class="modal-dialog-head">
+      <h2 id="comingSoonTitle">Coming Soon</h2>
+      <button type="button" class="modal-close" id="comingSoonClose" aria-label="Close coming soon dialog">×</button>
+    </div>
+    <p class="modal-copy" id="comingSoonCopy">This feature is currently in progress.</p>
+    <p class="modal-copy modal-copy-soft">You can keep using the currently available tools while we finish this experience.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" id="comingSoonAcknowledge">Got it</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const modal = document.getElementById('comingSoonModal');
+  const title = document.getElementById('comingSoonTitle');
+  const copy = document.getElementById('comingSoonCopy');
+  const closeButton = document.getElementById('comingSoonClose');
+  const acknowledgeButton = document.getElementById('comingSoonAcknowledge');
+
+  if (!modal || !title || !copy || !closeButton || !acknowledgeButton) {
+    return;
+  }
+
+  let lastTrigger = null;
+
+  const closeModal = function () {
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    if (lastTrigger) {
+      lastTrigger.focus();
+    }
+  };
+
+  document.querySelectorAll('[data-coming-soon]').forEach(function (trigger) {
+    trigger.addEventListener('click', function (event) {
+      event.preventDefault();
+      lastTrigger = trigger;
+      title.textContent = trigger.getAttribute('data-coming-soon-title') || 'Coming Soon';
+      copy.textContent = trigger.getAttribute('data-coming-soon') || 'This feature is currently in progress.';
+      modal.hidden = false;
+      document.body.classList.add('modal-open');
+      acknowledgeButton.focus();
+    });
+  });
+
+  closeButton.addEventListener('click', closeModal);
+  acknowledgeButton.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !modal.hidden) {
+      closeModal();
+    }
+  });
+})();
+</script>

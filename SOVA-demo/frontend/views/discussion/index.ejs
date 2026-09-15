@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discussion Board - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="discussion-page container">
+    <section class="discussion-hero-panel">
+      <h1>Discussion Board</h1>
+      <p>Live recommendation activity from the concierge team, based on the newest comments and active threads.</p>
+      <div class="discussion-city-banner">
+        <span class="badge-status badge-city">Active Location: <%= city %></span>
+        <span>Showing the most current recommendation conversations for this property.</span>
+      </div>
+    </section>
+
+    <div class="discussion-layout">
+      <section class="discussion-main-column">
+        <section class="discussion-header-row">
+          <div>
+            <h2>Most Recent Recommendation Comments</h2>
+            <p class="muted-text">Newest concierge notes and follow-ups from recommendation detail pages.</p>
+          </div>
+          <a href="/places" class="btn btn-secondary">View Recommendations</a>
+        </section>
+
+        <section class="discussion-posts-list">
+          <% if (commentFeed && commentFeed.length > 0) { %>
+            <% commentFeed.forEach((entry) => { %>
+              <article class="discussion-post-card" id="comment-<%= entry.id %>">
+                <div class="discussion-post-head">
+                  <div class="discussion-post-heading">
+                    <h3><a href="/places/<%= entry.place_id %>"><%= entry.place_title %></a></h3>
+                    <p class="discussion-post-meta">
+                      Comment by <strong><%= entry.username %></strong> on <%= new Date(entry.created_at).toLocaleString() %>
+                    </p>
+                  </div>
+                  <div class="discussion-post-badges">
+                    <span class="badge-status badge-city-soft"><%= city %></span>
+                    <span class="badge-status badge-<%= (entry.role || 'user').toLowerCase() %>"><%= entry.role || 'user' %></span>
+                    <span class="badge-status"><%= entry.place_category %></span>
+                  </div>
+                </div>
+
+                <div class="discussion-post-content">
+                  <p><%= entry.comment_text %></p>
+                </div>
+
+                <div class="discussion-post-footer">
+                  <div class="discussion-vote-text">
+                    <strong><%= entry.thread_comment_count %></strong> comment<%= entry.thread_comment_count === 1 ? '' : 's' %>
+                    in this thread • <strong><%= entry.thread_like_count %></strong> like<%= entry.thread_like_count === 1 ? '' : 's' %>
+                  </div>
+                  <a href="/places/<%= entry.place_id %>#recommendation-comments" class="btn btn-primary btn-sm">Open Thread</a>
+                </div>
+              </article>
+            <% }) %>
+          <% } else { %>
+            <div class="empty-state">
+              <div class="empty-state-icon">Notes</div>
+              <p>No recommendation comments yet for this location.</p>
+              <a href="/places" class="btn btn-primary">Browse Recommendations</a>
+            </div>
+          <% } %>
+        </section>
+      </section>
+
+      <aside class="discussion-sidebar">
+        <div class="discussion-sidebar-card">
+          <div class="discussion-sidebar-tablist" role="tablist" aria-label="Discussion sidebar views">
+            <button type="button" class="discussion-sidebar-tab active" data-sidebar-tab="active" role="tab" aria-selected="true">Active Threads</button>
+            <button type="button" class="discussion-sidebar-tab" data-sidebar-tab="recent" role="tab" aria-selected="false">Most Recent</button>
+            <button type="button" class="discussion-sidebar-tab" data-sidebar-tab="mine" role="tab" aria-selected="false">My Comments</button>
+          </div>
+
+          <section class="discussion-sidebar-panel active" data-sidebar-panel="active" role="tabpanel">
+            <div class="discussion-sidebar-panel-head">
+              <h3>Active Threads</h3>
+            </div>
+            <% if (sidebar.activeRecommendations.length > 0) { %>
+              <div class="discussion-sidebar-list">
+                <% sidebar.activeRecommendations.forEach((item) => { %>
+                  <a href="<%= item.href %>" class="discussion-sidebar-item">
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <p><%= item.recentCommentCount %> comment<%= item.recentCommentCount === 1 ? '' : 's' %> in last 7 days</p>
+                    </div>
+                    <div class="discussion-sidebar-item-badges">
+                      <span class="badge-status"><%= item.category %></span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="muted-text">No active threads yet.</p>
+            <% } %>
+          </section>
+
+          <section class="discussion-sidebar-panel" data-sidebar-panel="recent" role="tabpanel" hidden>
+            <div class="discussion-sidebar-panel-head">
+              <h3>Most Recent Threads</h3>
+            </div>
+            <% if (sidebar.recentDiscussions.length > 0) { %>
+              <div class="discussion-sidebar-list">
+                <% sidebar.recentDiscussions.forEach((item) => { %>
+                  <a href="<%= item.href %>" class="discussion-sidebar-item">
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <p>Last comment: <%= new Date(item.lastCommentAt).toLocaleDateString() %></p>
+                    </div>
+                    <div class="discussion-sidebar-item-badges">
+                      <span class="badge-status"><%= item.commentCount %> total</span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="muted-text">No recent discussion activity yet.</p>
+            <% } %>
+          </section>
+
+          <section class="discussion-sidebar-panel" data-sidebar-panel="mine" role="tabpanel" hidden>
+            <div class="discussion-sidebar-panel-head">
+              <h3>My Recent Comments</h3>
+            </div>
+            <% if (user) { %>
+              <% if (sidebar.myComments.length > 0) { %>
+                <div class="discussion-sidebar-list">
+                  <% sidebar.myComments.forEach((item) => { %>
+                    <a href="<%= item.href %>" class="discussion-sidebar-item">
+                      <div>
+                        <strong><%= item.placeTitle %></strong>
+                        <p><%= new Date(item.createdAt).toLocaleDateString() %></p>
+                        <p class="muted-text"><%= item.commentText.length > 80 ? `${item.commentText.slice(0, 80)}...` : item.commentText %></p>
+                      </div>
+                      <div class="discussion-sidebar-item-badges">
+                        <span class="badge-status"><%= item.placeCategory %></span>
+                      </div>
+                    </a>
+                  <% }) %>
+                </div>
+              <% } else { %>
+                <p class="muted-text">You have not posted recommendation comments yet.</p>
+              <% } %>
+            <% } else { %>
+              <p class="muted-text">Log in to view your comment activity.</p>
+            <% } %>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    function activateSidebarTab(tabName) {
+      document.querySelectorAll('[data-sidebar-tab]').forEach((button) => {
+        const isActive = button.getAttribute('data-sidebar-tab') === tabName;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+      });
+
+      document.querySelectorAll('[data-sidebar-panel]').forEach((panel) => {
+        const isActive = panel.getAttribute('data-sidebar-panel') === tabName;
+        panel.classList.toggle('active', isActive);
+        panel.hidden = !isActive;
+      });
+    }
+
+    document.querySelectorAll('[data-sidebar-tab]').forEach((button) => {
+      button.addEventListener('click', function () {
+        activateSidebarTab(this.getAttribute('data-sidebar-tab'));
+      });
+    });
+  </script>
+</body>
+</html>

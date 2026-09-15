@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Settings - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <% const memberSince = new Date(account.created_at).toLocaleDateString(); %>
+  <% const twoFactorEnabledAt = security.two_factor_enabled_at ? new Date(security.two_factor_enabled_at).toLocaleString() : null; %>
+  <% const activeThemeLabel = settings.interface_theme === 'dark' ? 'Dark' : 'Light'; %>
+  <% const accountRole = (account.role || 'user').toLowerCase(); %>
+  <% const isStaffAccount = accountRole === 'employee' || accountRole === 'management' || accountRole === 'admin'; %>
+  <% const appearanceTabLabel = isStaffAccount ? 'Workspace' : 'Preferences'; %>
+  <% const appearanceHeading = isStaffAccount ? 'Workspace & Appearance' : 'Preferences & Appearance'; %>
+  <% const appearanceIntro = isStaffAccount ? 'Set your default operating city, interface theme, timezone, and recommendation focus.' : 'Set your preferred city, interface theme, timezone, and recommendation focus.'; %>
+  <% const overviewIntro = isStaffAccount ? 'Use this workspace to jump into the part of your account that needs attention now.' : 'Use this page to manage the parts of your guest account that matter right now.'; %>
+  <% const presenceLabel = isStaffAccount ? 'Public Presence' : 'Profile Visibility'; %>
+  <% const presenceCopy = isStaffAccount ? 'Current profile visibility determines who can see your identity details.' : 'Choose whether other signed-in members can see your identity details.'; %>
+
+  <main class="container account-settings-page">
+    <section class="account-settings-hero">
+      <div>
+        <h1>Account Settings</h1>
+        <p>Manage your profile, preferences, login security, and deletion controls from one place.</p>
+      </div>
+      <div class="account-settings-meta">
+        <span class="badge-status badge-<%= account.role %>"><%= account.role %></span>
+        <span>Member since <%= new Date(account.created_at).toLocaleDateString() %></span>
+      </div>
+    </section>
+
+    <% if (success) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <section class="account-settings-command-center">
+      <div class="account-command-card">
+        <div class="account-command-profile">
+          <div class="account-command-avatar account-avatar-shell">
+            <% if (settings.avatar_url) { %>
+              <img src="<%= settings.avatar_url %>" alt="<%= account.username %> avatar" class="account-avatar-image">
+            <% } else { %>
+              <span><%= (settings.display_name || account.username).charAt(0).toUpperCase() %></span>
+            <% } %>
+          </div>
+          <div>
+            <span class="account-command-kicker">Account Control Center</span>
+            <h2><%= settings.display_name || account.username %></h2>
+            <p><%= account.email %> · <%= settings.home_city %> · <%= security.two_factor_enabled ? '2FA enabled' : '2FA available' %></p>
+          </div>
+        </div>
+
+        <div class="account-command-stats">
+          <div class="account-command-stat">
+            <span>Visibility</span>
+            <strong><%= settings.profile_visibility %></strong>
+          </div>
+          <div class="account-command-stat">
+            <span>Theme</span>
+            <strong><%= activeThemeLabel %></strong>
+          </div>
+          <div class="account-command-stat">
+            <span>Joined</span>
+            <strong><%= memberSince %></strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-tablist account-tablist-top" role="tablist" aria-label="Account setting sections">
+        <button type="button" class="account-tab active" data-account-tab="overview" role="tab" aria-selected="true">Overview</button>
+        <button type="button" class="account-tab" data-account-tab="profile" role="tab" aria-selected="false">Identity</button>
+        <button type="button" class="account-tab" data-account-tab="appearance" role="tab" aria-selected="false"><%= appearanceTabLabel %></button>
+        <button type="button" class="account-tab" data-account-tab="notifications" role="tab" aria-selected="false">Alerts</button>
+        <button type="button" class="account-tab" data-account-tab="security" role="tab" aria-selected="false">Security</button>
+        <button type="button" class="account-tab account-tab-danger" data-account-tab="danger" role="tab" aria-selected="false">Danger Zone</button>
+      </div>
+
+      <div class="account-panel-stack">
+        <article class="account-tab-panel active" data-account-panel="overview" role="tabpanel">
+          <div class="account-panel account-panel-overview">
+            <div class="account-panel-head">
+              <h2>Overview</h2>
+              <p><%= overviewIntro %></p>
+            </div>
+
+            <div class="account-overview-grid">
+              <button type="button" class="account-overview-tile" data-account-jump="profile">
+                <span class="account-overview-tile-label">Identity</span>
+                <strong><%= settings.display_name || account.username %></strong>
+                <p>Update photo, name, bio, language, and visibility.</p>
+              </button>
+
+              <button type="button" class="account-overview-tile" data-account-jump="appearance">
+                <span class="account-overview-tile-label"><%= appearanceTabLabel %></span>
+                <strong><%= settings.home_city %> · <%= activeThemeLabel %></strong>
+                <p>Adjust theme, timezone, city, and recommendation defaults.</p>
+              </button>
+
+              <button type="button" class="account-overview-tile" data-account-jump="notifications">
+                <span class="account-overview-tile-label">Alerts</span>
+                <strong><%= settings.email_notifications ? 'Email on' : 'Email off' %></strong>
+                <p>Choose which updates arrive in your inbox or digest.</p>
+              </button>
+
+              <button type="button" class="account-overview-tile" data-account-jump="security">
+                <span class="account-overview-tile-label">Security</span>
+                <strong><%= security.two_factor_enabled ? 'Protected with 2FA' : 'Password only' %></strong>
+                <p>Change your password and manage authenticator access.</p>
+              </button>
+            </div>
+
+            <div class="account-overview-summary-grid">
+              <div class="account-summary-card">
+                <span>Profile Photo</span>
+                <strong><%= settings.avatar_url ? 'Configured' : 'Missing' %></strong>
+                <p><%= settings.avatar_url ? 'Your photo is live across the experience.' : 'Add a photo to make your account easier to recognize.' %></p>
+              </div>
+              <div class="account-summary-card">
+                <span><%= presenceLabel %></span>
+                <strong><%= settings.profile_visibility %></strong>
+                <p><%= presenceCopy %></p>
+              </div>
+              <% if (isStaffAccount) { %>
+                <div class="account-summary-card">
+                  <span>Discussion Digest</span>
+                  <strong><%= settings.discussion_digest ? 'Enabled' : 'Disabled' %></strong>
+                  <p>Digest email summaries for team discussion activity.</p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </article>
+
+        <article class="account-tab-panel" data-account-panel="profile" role="tabpanel" hidden>
+          <div class="account-panel account-panel-featured">
+            <div class="account-panel-head">
+              <h2>Identity & Profile</h2>
+              <p>Control how your name, photo, biography, and public-facing account information appear.</p>
+            </div>
+
+            <form action="/account/settings/profile" method="POST" enctype="multipart/form-data" class="account-profile-grid">
+              <input type="hidden" name="section" value="profile">
+              <input type="hidden" name="avatar_crop_data" id="account-avatar-crop-data">
+
+              <div class="account-avatar-editor">
+                <div class="account-avatar-editor-preview">
+                  <% if (settings.avatar_url) { %>
+                    <img src="<%= settings.avatar_url %>" alt="<%= account.username %> profile photo" class="account-avatar-preview-large" id="accountAvatarPreview" data-avatar-original="<%= settings.avatar_url %>">
+                  <% } else { %>
+                    <div class="account-avatar-preview-large account-avatar-fallback-large" id="accountAvatarPreview" data-avatar-original="">
+                      <span><%= (settings.display_name || account.username).charAt(0).toUpperCase() %></span>
+                    </div>
+                  <% } %>
+                </div>
+
+                <div class="account-avatar-editor-copy">
+                  <div class="account-avatar-editor-head">
+                    <div>
+                      <h3>Profile Photo</h3>
+                      <p>Upload a square image for the cleanest result. Works with phone camera, photo library, or desktop files.</p>
+                    </div>
+                    <span class="badge-status badge-city-soft">Max 3MB</span>
+                  </div>
+
+                  <div class="account-upload-card">
+                    <input type="file" id="avatar" name="avatar" accept="image/*" class="account-file-input" aria-describedby="account-avatar-help account-avatar-file-name">
+                    <label for="avatar" class="account-upload-trigger">
+                      <span class="account-upload-trigger-title">Choose a Photo</span>
+                      <span class="account-upload-trigger-copy">Tap to upload from your device</span>
+                    </label>
+
+                    <div class="account-upload-meta">
+                      <span class="account-upload-file-name" id="account-avatar-file-name"><%= settings.avatar_url ? 'Current photo in use' : 'No file selected yet' %></span>
+                      <span class="account-upload-help" id="account-avatar-help">JPG, PNG, GIF, or WebP. Mobile browsers can use camera or gallery.</span>
+                    </div>
+
+                    <div class="account-upload-actions">
+                      <button type="button" class="btn btn-secondary btn-sm" id="account-avatar-clear">Clear Selection</button>
+                    </div>
+
+                  </div>
+
+                  <div class="account-avatar-cropper" id="account-avatar-cropper" hidden aria-hidden="true">
+                    <div class="account-avatar-cropper-backdrop" data-avatar-crop-close></div>
+                    <div class="account-avatar-cropper-dialog" role="dialog" aria-modal="true" aria-labelledby="account-avatar-crop-title">
+                      <div class="account-avatar-cropper-head">
+                        <div>
+                          <strong id="account-avatar-crop-title">Move Your Photo</strong>
+                          <span>Everything inside the circle will become your profile photo.</span>
+                        </div>
+                        <button type="button" class="account-avatar-cropper-close" id="account-avatar-crop-close" aria-label="Close photo crop popup">Close</button>
+                      </div>
+
+                      <div class="account-avatar-crop-stage">
+                        <div class="account-avatar-crop-frame" id="account-avatar-crop-frame">
+                          <img src="" alt="Avatar crop preview" id="account-avatar-crop-image" class="account-avatar-crop-image" hidden>
+                        </div>
+                      </div>
+
+                      <div class="account-avatar-crop-toolbar">
+                        <div class="account-avatar-crop-actions" role="group" aria-label="Avatar zoom controls">
+                          <button type="button" class="btn btn-secondary btn-sm" id="account-avatar-zoom-out">Zoom Out</button>
+                          <button type="button" class="btn btn-secondary btn-sm" id="account-avatar-reset">Reset</button>
+                          <button type="button" class="btn btn-secondary btn-sm" id="account-avatar-zoom-in">Zoom In</button>
+                        </div>
+                        <p class="account-avatar-crop-tip" id="account-avatar-crop-tip">Drag the full photo in any direction. Use zoom if you want a tighter crop.</p>
+                      </div>
+
+                      <div class="account-avatar-crop-footer">
+                        <button type="button" class="btn btn-link" id="account-avatar-cancel">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="account-avatar-apply">Use This Photo</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <details class="account-avatar-advanced">
+                    <summary>Use an external image instead</summary>
+                    <div class="form-group">
+                      <label for="avatar_url">External Image URL</label>
+                      <input type="url" id="avatar_url" name="avatar_url" value="<%= settings.avatar_url || '' %>" placeholder="https://...">
+                    </div>
+                  </details>
+
+                  <label class="check-card account-inline-check account-remove-photo-option">
+                    <input type="checkbox" name="remove_avatar" value="1" id="account-remove-avatar">
+                    <span>
+                      <strong>Remove current photo</strong>
+                      <small>Revert to your initials avatar until a new image is saved.</small>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="account-panel-section">
+                <h3>Identity</h3>
+                <div class="account-form-grid">
+                  <div class="form-group">
+                    <label for="username_readonly">Username</label>
+                    <input type="text" id="username_readonly" value="<%= account.username %>" readonly>
+                    <small class="muted-text"><%= isStaffAccount ? 'Usernames are managed by admins in governance.' : 'Usernames cannot be edited from account settings.' %></small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<%= account.email %>" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="display_name">Display Name</label>
+                    <input type="text" id="display_name" name="display_name" value="<%= settings.display_name || '' %>">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="profile_visibility">Profile Visibility</label>
+                    <select id="profile_visibility" name="profile_visibility">
+                      <option value="team" <%= settings.profile_visibility === 'team' ? 'selected' : '' %>><%= isStaffAccount ? 'Team only' : 'Members only' %></option>
+                      <option value="private" <%= settings.profile_visibility === 'private' ? 'selected' : '' %>>Private</option>
+                      <option value="public" <%= settings.profile_visibility === 'public' ? 'selected' : '' %>>Public</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="language">Language</label>
+                    <select id="language" name="language">
+                      <option value="en" <%= settings.language === 'en' ? 'selected' : '' %>>English</option>
+                      <option value="es" <%= settings.language === 'es' ? 'selected' : '' %>>Spanish</option>
+                      <option value="de" <%= settings.language === 'de' ? 'selected' : '' %>>German</option>
+                      <option value="fr" <%= settings.language === 'fr' ? 'selected' : '' %>>French</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group form-group-full">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" name="bio" rows="5"><%= settings.bio || '' %></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions form-group-full">
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <article class="account-tab-panel" data-account-panel="appearance" role="tabpanel" hidden>
+          <div class="account-panel">
+            <div class="account-panel-head">
+              <h2><%= appearanceHeading %></h2>
+              <p><%= appearanceIntro %></p>
+            </div>
+
+            <form action="/account/settings/profile" method="POST" class="account-form-grid">
+              <input type="hidden" name="section" value="appearance">
+              <input type="hidden" name="username" value="<%= account.username %>">
+              <input type="hidden" name="email" value="<%= account.email %>">
+              <div class="account-customization-grid form-group-full">
+                <div class="account-panel-section">
+                  <h3><%= isStaffAccount ? 'Workspace Defaults' : 'Guest Defaults' %></h3>
+                  <div class="account-form-grid">
+                    <div class="form-group">
+                      <label for="preferences_home_city">Home City</label>
+                      <select id="preferences_home_city" name="home_city">
+                        <option value="DALLAS" <%= settings.home_city === 'DALLAS' ? 'selected' : '' %>>Dallas</option>
+                        <option value="AUSTIN" <%= settings.home_city === 'AUSTIN' ? 'selected' : '' %>>Austin</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="preferences_timezone">Timezone</label>
+                      <input type="text" id="preferences_timezone" name="timezone" value="<%= settings.timezone || 'UTC' %>">
+                    </div>
+
+                    <div class="form-group">
+                      <label for="preferences_interface_theme">Interface Theme</label>
+                      <select id="preferences_interface_theme" name="interface_theme">
+                        <option value="light" <%= settings.interface_theme === 'light' ? 'selected' : '' %>>Light</option>
+                        <option value="dark" <%= settings.interface_theme === 'dark' ? 'selected' : '' %>>Dark</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="account-preview-card">
+                  <span class="account-preview-label">Live Configuration</span>
+                  <h3><%= settings.display_name || account.username %></h3>
+                  <p>City: <strong><%= settings.home_city %></strong></p>
+                  <p>Theme: <strong><%= activeThemeLabel %></strong></p>
+                  <div class="account-theme-swatches">
+                    <span class="theme-swatch theme-swatch-light <%= settings.interface_theme === 'light' ? 'active' : '' %>"></span>
+                    <span class="theme-swatch theme-swatch-dark <%= settings.interface_theme === 'dark' ? 'active' : '' %>"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions form-group-full">
+                <button type="submit" class="btn btn-primary">Save <%= appearanceTabLabel %></button>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <article class="account-tab-panel" data-account-panel="notifications" role="tabpanel" hidden>
+          <div class="account-panel">
+            <div class="account-panel-head">
+              <h2>Alerts & Messaging</h2>
+              <p>Choose which platform updates reach you and which communications stay enabled.</p>
+            </div>
+
+            <form action="/account/settings/profile" method="POST" class="account-form-grid">
+              <input type="hidden" name="section" value="notifications">
+
+              <div class="form-group form-group-full account-notification-stack">
+                <label class="check-card account-notification-card">
+                  <input type="checkbox" name="email_notifications" value="1" <%= settings.email_notifications ? 'checked' : '' %>>
+                  <span>
+                    <strong>Email Notifications</strong>
+                    <small>Receive important account and booking-related notices by email.</small>
+                  </span>
+                </label>
+
+                <% if (isStaffAccount) { %>
+                  <label class="check-card account-notification-card">
+                    <input type="checkbox" name="discussion_digest" value="1" <%= settings.discussion_digest ? 'checked' : '' %>>
+                    <span>
+                      <strong>Discussion Digest</strong>
+                      <small>Get recurring summaries for team updates and recommendation discussions.</small>
+                    </span>
+                  </label>
+                <% } %>
+
+                <label class="check-card account-notification-card">
+                  <input type="checkbox" name="marketing_notifications" value="1" <%= settings.marketing_notifications ? 'checked' : '' %>>
+                  <span>
+                    <strong>Marketing Updates</strong>
+                    <small>Allow promotional and feature-announcement emails about new concierge capabilities.</small>
+                  </span>
+                </label>
+              </div>
+
+              <div class="form-actions form-group-full">
+                <button type="submit" class="btn btn-primary">Save Notifications</button>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <article class="account-tab-panel" data-account-panel="security" role="tabpanel" hidden>
+          <div class="account-panel-stack-inner">
+            <div class="account-panel">
+              <div class="account-panel-head">
+                <h2>Password</h2>
+                <p>Use a strong password and rotate it when access changes or you suspect exposure.</p>
+              </div>
+
+              <form action="/account/settings/password" method="POST" class="account-form-grid">
+                <div class="form-group form-group-full">
+                  <label for="currentPassword">Current Password</label>
+                  <input type="password" id="currentPassword" name="currentPassword" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="newPassword">New Password</label>
+                  <input type="password" id="newPassword" name="newPassword" minlength="8" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="confirmPassword">Confirm New Password</label>
+                  <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" required>
+                </div>
+
+                <div class="form-actions form-group-full">
+                  <button type="submit" class="btn btn-secondary">Update Password</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="account-panel">
+              <div class="account-panel-head">
+                <h2>Two-Factor Authentication</h2>
+                <p>Protect sign-in with a time-based code from your authenticator app.</p>
+              </div>
+
+              <% if (security.two_factor_enabled) { %>
+                <div class="account-status-card success-state">
+                  <strong>2FA is enabled.</strong>
+                  <p>Enabled on <%= twoFactorEnabledAt %>.</p>
+                </div>
+
+                <form action="/account/settings/2fa/disable" method="POST" class="account-form-grid">
+                  <div class="form-group">
+                    <label for="disableCurrentPassword">Current Password</label>
+                    <input type="password" id="disableCurrentPassword" name="currentPassword" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="disableVerificationCode">Authenticator Code</label>
+                    <input type="text" id="disableVerificationCode" name="verificationCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+                  </div>
+                  <div class="form-actions form-group-full">
+                    <button type="submit" class="btn btn-secondary">Disable 2FA</button>
+                  </div>
+                </form>
+              <% } else { %>
+                <div class="account-status-card info-state">
+                  <strong>2FA is not enabled.</strong>
+                  <p>Generate a setup key to add authenticator-based login verification.</p>
+                </div>
+
+                <form action="/account/settings/2fa/setup" method="POST" class="form-actions">
+                  <button type="submit" class="btn btn-primary">Generate 2FA Setup</button>
+                </form>
+
+                <% if (twoFactorSetup) { %>
+                  <div class="two-factor-setup-card">
+                    <img src="<%= twoFactorSetup.qrCodeDataUrl %>" alt="Two-factor setup QR code" class="two-factor-qr">
+                    <div>
+                      <p>Scan this QR code with Google Authenticator, 1Password, Microsoft Authenticator, or any TOTP app.</p>
+                      <p><strong>Manual key:</strong> <%= twoFactorSetup.manualKey %></p>
+                    </div>
+                  </div>
+
+                  <form action="/account/settings/2fa/enable" method="POST" class="account-form-grid">
+                    <div class="form-group">
+                      <label for="enableCurrentPassword">Current Password</label>
+                      <input type="password" id="enableCurrentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="enableVerificationCode">Authenticator Code</label>
+                      <input type="text" id="enableVerificationCode" name="verificationCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+                    </div>
+                    <div class="form-actions form-group-full">
+                      <button type="submit" class="btn btn-primary">Enable 2FA</button>
+                    </div>
+                  </form>
+                <% } %>
+              <% } %>
+            </div>
+          </div>
+        </article>
+
+        <article class="account-tab-panel" data-account-panel="danger" role="tabpanel" hidden>
+          <div class="account-panel account-panel-danger">
+            <div class="account-panel-head">
+              <h2>Danger Zone</h2>
+              <p>Delete this account permanently from active use. This immediately disables sign-in and ends your session.</p>
+            </div>
+
+            <div class="account-danger-note">
+              <strong>Before you continue</strong>
+              <p>Deleting your account removes access, clears active security setup, and renames the account record for audit safety.</p>
+            </div>
+
+            <form action="/account/settings/delete" method="POST" class="account-form-grid">
+              <div class="form-group form-group-full">
+                <label for="deleteCurrentPassword">Current Password</label>
+                <input type="password" id="deleteCurrentPassword" name="currentPassword" required>
+              </div>
+
+              <% if (security.two_factor_enabled) { %>
+                <div class="form-group form-group-full">
+                  <label for="deleteVerificationCode">Authenticator Code</label>
+                  <input type="text" id="deleteVerificationCode" name="verificationCode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+                </div>
+              <% } %>
+
+              <div class="form-group form-group-full">
+                <label for="confirmationText">Type DELETE to confirm</label>
+                <input type="text" id="confirmationText" name="confirmationText" placeholder="DELETE" required>
+              </div>
+
+              <div class="form-actions form-group-full">
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+              </div>
+            </form>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll('[data-account-tab]'));
+      const panels = Array.from(document.querySelectorAll('[data-account-panel]'));
+      const jumpButtons = Array.from(document.querySelectorAll('[data-account-jump]'));
+      const avatarInput = document.getElementById('avatar');
+      const avatarPreview = document.getElementById('accountAvatarPreview');
+      const avatarFileName = document.getElementById('account-avatar-file-name');
+      const avatarClearButton = document.getElementById('account-avatar-clear');
+      const removeAvatarCheckbox = document.getElementById('account-remove-avatar');
+      const avatarUrlInput = document.getElementById('avatar_url');
+      const avatarCropper = document.getElementById('account-avatar-cropper');
+      const avatarCropFrame = document.getElementById('account-avatar-crop-frame');
+      const avatarCropImage = document.getElementById('account-avatar-crop-image');
+      const avatarCropData = document.getElementById('account-avatar-crop-data');
+      const avatarCropCloseButton = document.getElementById('account-avatar-crop-close');
+      const avatarCropCancelButton = document.getElementById('account-avatar-cancel');
+      const avatarCropApplyButton = document.getElementById('account-avatar-apply');
+      const avatarZoomOutButton = document.getElementById('account-avatar-zoom-out');
+      const avatarZoomInButton = document.getElementById('account-avatar-zoom-in');
+      const avatarResetButton = document.getElementById('account-avatar-reset');
+      const profileForm = document.querySelector('form[action="/account/settings/profile"]');
+      const avatarCropState = {
+        source: '',
+        image: null,
+        zoom: 1,
+        offsetX: 0,
+        offsetY: 0,
+        pointerId: null,
+        dragOriginX: 0,
+        dragOriginY: 0,
+        startOffsetX: 0,
+        startOffsetY: 0,
+        isOpen: false,
+        pendingFileName: '',
+        appliedDataUrl: ''
+      };
+
+      const activateTab = (tabName) => {
+        window.sessionStorage.setItem('accountSettingsActiveTab', tabName);
+
+        tabs.forEach((tab) => {
+          const isActive = tab.dataset.accountTab === tabName;
+          tab.classList.toggle('active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        panels.forEach((panel) => {
+          const isActive = panel.dataset.accountPanel === tabName;
+          panel.classList.toggle('active', isActive);
+          panel.hidden = !isActive;
+        });
+      };
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => activateTab(tab.dataset.accountTab));
+      });
+
+      jumpButtons.forEach((button) => {
+        button.addEventListener('click', () => activateTab(button.dataset.accountJump));
+      });
+
+      const createFallbackPreview = () => {
+        const fallback = document.createElement('div');
+        fallback.id = 'accountAvatarPreview';
+        fallback.dataset.avatarOriginal = avatarPreview ? avatarPreview.dataset.avatarOriginal || '' : '';
+        fallback.className = 'account-avatar-preview-large account-avatar-fallback-large';
+        const label = document.getElementById('display_name');
+        const fallbackLetter = ((label && label.value) || '<%= (settings.display_name || account.username).charAt(0).toUpperCase() %>').trim().charAt(0).toUpperCase() || '<%= account.username.charAt(0).toUpperCase() %>';
+        fallback.innerHTML = `<span>${fallbackLetter}</span>`;
+        return fallback;
+      };
+
+      const resetAvatarPreview = () => {
+        const preview = document.getElementById('accountAvatarPreview');
+        const original = preview ? preview.dataset.avatarOriginal || '' : '';
+        const previewContainer = preview ? preview.parentElement : null;
+        if (!previewContainer) return;
+
+        if (original) {
+          const image = document.createElement('img');
+          image.id = 'accountAvatarPreview';
+          image.className = 'account-avatar-preview-large';
+          image.alt = '<%= account.username %> profile photo';
+          image.src = original;
+          image.dataset.avatarOriginal = original;
+          preview.replaceWith(image);
+        } else {
+          preview.replaceWith(createFallbackPreview());
+        }
+      };
+
+      const resetCropControls = () => {
+        avatarCropState.zoom = 1;
+        avatarCropState.offsetX = 0;
+        avatarCropState.offsetY = 0;
+        avatarCropState.pointerId = null;
+      };
+
+      const openCropper = () => {
+        if (!avatarCropper) {
+          return;
+        }
+
+        avatarCropState.isOpen = true;
+        avatarCropper.hidden = false;
+        avatarCropper.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('account-avatar-crop-open');
+      };
+
+      const closeCropper = ({ clearPendingFile = false, restoreAppliedPreview = false } = {}) => {
+        if (avatarCropper) {
+          avatarCropper.hidden = true;
+          avatarCropper.setAttribute('aria-hidden', 'true');
+        }
+
+        document.body.classList.remove('account-avatar-crop-open');
+        avatarCropState.isOpen = false;
+        avatarCropState.pointerId = null;
+        if (avatarCropFrame) {
+          avatarCropFrame.classList.remove('is-dragging');
+        }
+        if (avatarCropImage) {
+          avatarCropImage.classList.remove('is-dragging');
+        }
+
+        if (clearPendingFile && avatarInput) {
+          avatarInput.value = '';
+          avatarCropState.pendingFileName = '';
+        }
+
+        if (restoreAppliedPreview) {
+          if (avatarCropState.appliedDataUrl) {
+            const preview = document.getElementById('accountAvatarPreview');
+            if (preview) {
+              const image = document.createElement('img');
+              image.id = 'accountAvatarPreview';
+              image.className = 'account-avatar-preview-large';
+              image.alt = '<%= account.username %> cropped profile photo preview';
+              image.src = avatarCropState.appliedDataUrl;
+              image.dataset.avatarOriginal = preview.dataset.avatarOriginal || '';
+              preview.replaceWith(image);
+            }
+          } else {
+            resetAvatarPreview();
+          }
+        }
+      };
+
+      const clampCropOffsets = () => {
+        if (!avatarCropState.image || !avatarCropFrame) {
+          return;
+        }
+
+        const cropSize = avatarCropFrame.clientWidth || 220;
+        const naturalWidth = avatarCropState.image.naturalWidth || 1;
+        const naturalHeight = avatarCropState.image.naturalHeight || 1;
+        const baseScale = Math.max(cropSize / naturalWidth, cropSize / naturalHeight);
+        const displayWidth = naturalWidth * baseScale * avatarCropState.zoom;
+        const displayHeight = naturalHeight * baseScale * avatarCropState.zoom;
+        const maxOffsetX = Math.max(0, (displayWidth - cropSize) / 2);
+        const maxOffsetY = Math.max(0, (displayHeight - cropSize) / 2);
+
+        avatarCropState.offsetX = Math.min(maxOffsetX, Math.max(-maxOffsetX, avatarCropState.offsetX));
+        avatarCropState.offsetY = Math.min(maxOffsetY, Math.max(-maxOffsetY, avatarCropState.offsetY));
+      };
+
+      const clearCropper = () => {
+        avatarCropState.source = '';
+        avatarCropState.image = null;
+        resetCropControls();
+        if (avatarCropData) {
+          avatarCropData.value = '';
+        }
+        if (avatarCropImage) {
+          avatarCropImage.src = '';
+          avatarCropImage.hidden = true;
+          avatarCropImage.classList.remove('is-dragging');
+        }
+        closeCropper();
+      };
+
+      const buildCroppedAvatarDataUrl = () => {
+        if (!avatarCropState.image || !avatarCropFrame) {
+          return '';
+        }
+
+        const cropSize = avatarCropFrame.clientWidth || 220;
+        const outputSize = 512;
+        const naturalWidth = avatarCropState.image.naturalWidth || 1;
+        const naturalHeight = avatarCropState.image.naturalHeight || 1;
+        const baseScale = Math.max(cropSize / naturalWidth, cropSize / naturalHeight);
+        const displayWidth = naturalWidth * baseScale * avatarCropState.zoom;
+        const displayHeight = naturalHeight * baseScale * avatarCropState.zoom;
+        const ratio = outputSize / cropSize;
+        const drawX = ((cropSize - displayWidth) / 2 + avatarCropState.offsetX) * ratio;
+        const drawY = ((cropSize - displayHeight) / 2 + avatarCropState.offsetY) * ratio;
+        const drawWidth = displayWidth * ratio;
+        const drawHeight = displayHeight * ratio;
+        const canvas = document.createElement('canvas');
+        canvas.width = outputSize;
+        canvas.height = outputSize;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, outputSize, outputSize);
+        context.save();
+        context.beginPath();
+        context.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2);
+        context.closePath();
+        context.clip();
+        context.drawImage(avatarCropState.image, drawX, drawY, drawWidth, drawHeight);
+        context.restore();
+        return canvas.toDataURL('image/png');
+      };
+
+      const applyCropperImageStyles = () => {
+        if (!avatarCropState.image || !avatarCropImage || !avatarCropFrame) {
+          return;
+        }
+
+        const cropSize = avatarCropFrame.clientWidth || 220;
+        const naturalWidth = avatarCropState.image.naturalWidth || 1;
+        const naturalHeight = avatarCropState.image.naturalHeight || 1;
+        const baseScale = Math.max(cropSize / naturalWidth, cropSize / naturalHeight);
+        const displayWidth = naturalWidth * baseScale * avatarCropState.zoom;
+        const displayHeight = naturalHeight * baseScale * avatarCropState.zoom;
+        clampCropOffsets();
+
+        avatarCropImage.hidden = false;
+        avatarCropImage.style.width = `${displayWidth}px`;
+        avatarCropImage.style.height = `${displayHeight}px`;
+        avatarCropImage.style.transform = `translate(-50%, -50%) translate(${avatarCropState.offsetX}px, ${avatarCropState.offsetY}px)`;
+
+        const croppedDataUrl = buildCroppedAvatarDataUrl();
+        if (avatarCropData) {
+          avatarCropData.value = croppedDataUrl;
+        }
+      };
+
+      const loadCropperFromSource = (source) => {
+        if (!avatarCropper || !avatarCropImage || !source) {
+          return;
+        }
+
+        resetCropControls();
+        avatarCropState.source = source;
+        openCropper();
+        avatarCropImage.src = source;
+
+        const image = new Image();
+        image.onload = () => {
+          avatarCropState.image = image;
+          applyCropperImageStyles();
+        };
+        image.src = source;
+      };
+
+      const applyCroppedPreview = () => {
+        const croppedDataUrl = buildCroppedAvatarDataUrl();
+        const preview = document.getElementById('accountAvatarPreview');
+
+        if (!croppedDataUrl || !preview) {
+          return;
+        }
+
+        avatarCropState.appliedDataUrl = croppedDataUrl;
+        if (avatarCropData) {
+          avatarCropData.value = croppedDataUrl;
+        }
+
+        const image = document.createElement('img');
+        image.id = 'accountAvatarPreview';
+        image.className = 'account-avatar-preview-large';
+        image.alt = '<%= account.username %> cropped profile photo preview';
+        image.src = croppedDataUrl;
+        image.dataset.avatarOriginal = preview.dataset.avatarOriginal || '';
+        preview.replaceWith(image);
+      };
+
+      const stepAvatarZoom = (direction) => {
+        const nextZoom = avatarCropState.zoom + (direction * 0.12);
+        avatarCropState.zoom = Math.min(2.4, Math.max(1, Number(nextZoom.toFixed(2))));
+        applyCropperImageStyles();
+      };
+
+      if (avatarZoomOutButton) {
+        avatarZoomOutButton.addEventListener('click', () => stepAvatarZoom(-1));
+      }
+
+      if (avatarZoomInButton) {
+        avatarZoomInButton.addEventListener('click', () => stepAvatarZoom(1));
+      }
+
+      if (avatarResetButton) {
+        avatarResetButton.addEventListener('click', () => {
+          resetCropControls();
+          applyCropperImageStyles();
+        });
+      }
+
+      if (avatarCropApplyButton) {
+        avatarCropApplyButton.addEventListener('click', () => {
+          applyCroppedPreview();
+          if (avatarFileName) {
+            avatarFileName.textContent = avatarCropState.pendingFileName || 'Photo ready to save';
+          }
+          closeCropper();
+        });
+      }
+
+      [avatarCropCloseButton, avatarCropCancelButton].forEach((button) => {
+        if (!button) {
+          return;
+        }
+
+        button.addEventListener('click', () => {
+          closeCropper({ clearPendingFile: true, restoreAppliedPreview: true });
+        });
+      });
+
+      if (avatarCropper) {
+        avatarCropper.querySelectorAll('[data-avatar-crop-close]').forEach((element) => {
+          element.addEventListener('click', () => {
+            closeCropper({ clearPendingFile: true, restoreAppliedPreview: true });
+          });
+        });
+      }
+
+      if (avatarCropFrame) {
+        avatarCropFrame.addEventListener('pointerdown', (event) => {
+          if (!avatarCropState.image || !avatarCropImage) {
+            return;
+          }
+
+          avatarCropState.pointerId = event.pointerId;
+          avatarCropState.dragOriginX = event.clientX;
+          avatarCropState.dragOriginY = event.clientY;
+          avatarCropState.startOffsetX = avatarCropState.offsetX;
+          avatarCropState.startOffsetY = avatarCropState.offsetY;
+          avatarCropImage.classList.add('is-dragging');
+          avatarCropFrame.classList.add('is-dragging');
+          avatarCropFrame.setPointerCapture(event.pointerId);
+        });
+
+        avatarCropFrame.addEventListener('pointermove', (event) => {
+          if (avatarCropState.pointerId !== event.pointerId || !avatarCropState.image) {
+            return;
+          }
+
+          avatarCropState.offsetX = avatarCropState.startOffsetX + (event.clientX - avatarCropState.dragOriginX);
+          avatarCropState.offsetY = avatarCropState.startOffsetY + (event.clientY - avatarCropState.dragOriginY);
+          applyCropperImageStyles();
+        });
+
+        const releasePointerDrag = (event) => {
+          if (avatarCropState.pointerId !== event.pointerId) {
+            return;
+          }
+
+          avatarCropState.pointerId = null;
+          avatarCropFrame.classList.remove('is-dragging');
+          if (avatarCropImage) {
+            avatarCropImage.classList.remove('is-dragging');
+          }
+
+          if (avatarCropFrame.hasPointerCapture(event.pointerId)) {
+            avatarCropFrame.releasePointerCapture(event.pointerId);
+          }
+        };
+
+        avatarCropFrame.addEventListener('pointerup', releasePointerDrag);
+        avatarCropFrame.addEventListener('pointercancel', releasePointerDrag);
+        avatarCropFrame.addEventListener('pointerleave', (event) => {
+          if (event.pointerType === 'mouse') {
+            releasePointerDrag(event);
+          }
+        });
+
+        avatarCropFrame.addEventListener('wheel', (event) => {
+          if (!avatarCropState.image) {
+            return;
+          }
+
+          event.preventDefault();
+          stepAvatarZoom(event.deltaY > 0 ? -1 : 1);
+        }, { passive: false });
+      }
+
+      if (avatarInput && avatarPreview && avatarFileName) {
+        avatarInput.addEventListener('change', () => {
+          const [file] = avatarInput.files || [];
+
+          if (!file) {
+            avatarFileName.textContent = avatarPreview.dataset.avatarOriginal ? 'Current photo in use' : 'No file selected yet';
+            clearCropper();
+            resetAvatarPreview();
+            return;
+          }
+
+          avatarFileName.textContent = file.name;
+          avatarCropState.pendingFileName = file.name;
+          if (removeAvatarCheckbox) {
+            removeAvatarCheckbox.checked = false;
+          }
+          if (avatarUrlInput) {
+            avatarUrlInput.value = '';
+          }
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            loadCropperFromSource(event.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      if (avatarClearButton && avatarInput) {
+        avatarClearButton.addEventListener('click', () => {
+          avatarInput.value = '';
+          avatarCropState.pendingFileName = '';
+          avatarCropState.appliedDataUrl = '';
+          clearCropper();
+          if (avatarFileName) {
+            const preview = document.getElementById('accountAvatarPreview');
+            avatarFileName.textContent = preview && preview.dataset.avatarOriginal ? 'Current photo in use' : 'No file selected yet';
+          }
+          resetAvatarPreview();
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (avatarCropState.image && avatarCropState.isOpen) {
+          applyCropperImageStyles();
+        }
+      });
+
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && avatarCropState.isOpen) {
+          closeCropper({ clearPendingFile: true, restoreAppliedPreview: true });
+        }
+      });
+
+      if (avatarUrlInput) {
+        avatarUrlInput.addEventListener('input', () => {
+          if (!avatarUrlInput.value.trim()) {
+            return;
+          }
+
+          if (avatarInput) {
+            avatarInput.value = '';
+          }
+          avatarCropState.pendingFileName = '';
+          avatarCropState.appliedDataUrl = '';
+          clearCropper();
+          if (avatarFileName) {
+            avatarFileName.textContent = 'External image URL will be used';
+          }
+          if (removeAvatarCheckbox) {
+            removeAvatarCheckbox.checked = false;
+          }
+          resetAvatarPreview();
+        });
+      }
+
+      if (removeAvatarCheckbox) {
+        removeAvatarCheckbox.addEventListener('change', () => {
+          if (!removeAvatarCheckbox.checked) return;
+          if (avatarInput) {
+            avatarInput.value = '';
+          }
+          avatarCropState.pendingFileName = '';
+          avatarCropState.appliedDataUrl = '';
+          clearCropper();
+          if (avatarFileName) {
+            avatarFileName.textContent = 'Current photo will be removed when you save';
+          }
+          resetAvatarPreview();
+        });
+      }
+
+      if (profileForm) {
+        profileForm.addEventListener('submit', () => {
+          if (!avatarCropData) {
+            return;
+          }
+
+          if (removeAvatarCheckbox && removeAvatarCheckbox.checked) {
+            avatarCropData.value = '';
+            return;
+          }
+
+          if (avatarInput && avatarInput.files && avatarInput.files.length) {
+            avatarCropData.value = avatarCropState.appliedDataUrl || buildCroppedAvatarDataUrl();
+          } else if (!avatarUrlInput || !avatarUrlInput.value.trim()) {
+            avatarCropData.value = '';
+          }
+        });
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const targetTab = params.get('tab');
+      if (targetTab && tabs.some((tab) => tab.dataset.accountTab === targetTab)) {
+        activateTab(targetTab);
+        return;
+      }
+
+      const storedTab = window.sessionStorage.getItem('accountSettingsActiveTab');
+      if (storedTab && tabs.some((tab) => tab.dataset.accountTab === storedTab)) {
+        activateTab(storedTab);
+        return;
+      }
+
+      activateTab('overview');
+    })();
+  </script>
+</body>
+</html>

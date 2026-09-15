@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+
+  <main class="container">
+    <div class="content-page support-page">
+      <div class="support-hero">
+        <div>
+          <p class="support-eyebrow"><%= faqContent.audienceLabel %></p>
+          <h1><%= faqContent.title %></h1>
+          <p><%= faqContent.description %></p>
+        </div>
+        <div class="support-quick-links">
+          <a class="support-chip" href="/support">Support Home</a>
+          <a class="support-chip" href="/support/contact">Contact</a>
+          <a class="support-chip" href="/support/suggestions">Suggestion Box</a>
+        </div>
+      </div>
+
+      <section class="support-section">
+        <div class="support-faq-list">
+          <% faqContent.items.forEach((item, index) => { %>
+            <details class="support-faq-item" <%= index === 0 ? 'open' : '' %>>
+              <summary class="support-faq-question"><%= item.question %></summary>
+              <div class="support-faq-answer">
+                <p><%= item.answer %></p>
+              </div>
+            </details>
+          <% }) %>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('./partials/footer') %>
+</body>
+</html>

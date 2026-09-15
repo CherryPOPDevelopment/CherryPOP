@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= displayName %> - Staff Account</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container account-profile-view">
+    <section class="account-profile-hero">
+      <div class="account-profile-card-head">
+        <div class="account-profile-avatar">
+          <% if (settings.avatar_url) { %>
+            <img src="<%= settings.avatar_url %>" alt="<%= displayName %> avatar">
+          <% } else { %>
+            <span><%= initials %></span>
+          <% } %>
+        </div>
+        <div>
+          <h1><%= displayName %></h1>
+          <p class="account-profile-subtitle"><%= account.email %></p>
+          <div class="account-city-list">
+            <span class="badge-status badge-<%= account.role %>"><%= account.role %></span>
+            <% if (canEditSelf) { %>
+              <span class="badge-status badge-city-soft">Your Account</span>
+            <% } %>
+            <% accessibleCities.forEach((cityName) => { %>
+              <span class="badge-status badge-city"><%= cityName %></span>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <div class="account-profile-actions">
+        <a href="/account/team" class="btn btn-secondary">Back to Team Directory</a>
+        <% if (canEditSelf) { %>
+          <a href="/account/settings" class="btn btn-primary">Edit My Settings</a>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="account-profile-grid">
+      <article class="account-profile-card">
+        <h2>About</h2>
+        <p class="account-profile-bio"><%= settings.bio || 'No bio has been added for this staff account yet.' %></p>
+      </article>
+
+      <article class="account-profile-card">
+        <h2>Quick Info</h2>
+        <div class="account-profile-summary">
+          <div>
+            <span>Department</span>
+            <strong><%= employeeProfile.department || 'Not assigned' %></strong>
+          </div>
+          <div>
+            <span>Title</span>
+            <strong><%= employeeProfile.title || 'Not assigned' %></strong>
+          </div>
+          <div>
+            <span>Language</span>
+            <strong><%= settings.language ? settings.language.toUpperCase() : 'EN' %></strong>
+          </div>
+          <div>
+            <span>Visibility</span>
+            <strong><%= settings.profile_visibility %></strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="account-profile-grid">
+      <article class="account-profile-card">
+        <h2>Account Details</h2>
+        <div class="account-profile-meta">
+          <div>
+            <span>Username</span>
+            <strong><%= account.username %></strong>
+          </div>
+          <div>
+            <span>Member Since</span>
+            <strong><%= new Date(account.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) %></strong>
+          </div>
+          <div>
+            <span>Primary City</span>
+            <strong><%= employeeProfile.primary_city || settings.home_city || 'DALLAS' %></strong>
+          </div>
+          <div>
+            <span>Hire Date</span>
+            <strong><%= employeeProfile.hire_date ? new Date(employeeProfile.hire_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Not recorded' %></strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="account-profile-card">
+        <h2>Workspace Scope</h2>
+        <div class="account-profile-meta">
+          <div>
+            <span>Accessible Cities</span>
+            <div class="account-city-list">
+              <% accessibleCities.forEach((cityName) => { %>
+                <span class="badge-status badge-city"><%= cityName %></span>
+              <% }) %>
+            </div>
+          </div>
+          <div>
+            <span>Contact</span>
+            <strong><%= account.email %></strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="account-profile-grid">
+      <article class="account-profile-card">
+        <h2>Recent Recommendations</h2>
+        <% if (recommendations && recommendations.length) { %>
+          <div class="account-activity-list">
+            <% recommendations.forEach((item) => { %>
+              <div class="account-activity-item">
+                <div>
+                  <strong><a href="/places/<%= item.id %>"><%= item.title %></a></strong>
+                  <p><%= item.category %> • <%= item.city %> • <%= formatDate(item.created_at) %></p>
+                </div>
+                <span class="badge-status badge-city-soft">Recommendation</span>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="account-profile-bio">No recommendations submitted yet.</p>
+        <% } %>
+      </article>
+
+      <article class="account-profile-card">
+        <h2>Recent Discussion Posts</h2>
+        <% if (discussionPosts && discussionPosts.length) { %>
+          <div class="account-activity-list">
+            <% discussionPosts.forEach((post) => { %>
+              <div class="account-activity-item">
+                <div>
+                  <strong><a href="/discussion#post-<%= post.id %>"><%= post.title %></a></strong>
+                  <p><%= post.city %> • <%= formatDate(post.created_at) %></p>
+                </div>
+                <span class="badge-status badge-city-soft"><%= Number(post.vote_count || 0) %> vote<%= Number(post.vote_count || 0) === 1 ? '' : 's' %></span>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="account-profile-bio">No discussion posts published yet.</p>
+        <% } %>
+      </article>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

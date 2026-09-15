@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= place.title %> - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="container">
+    <div class="place-detail">
+      <div class="place-detail-nav">
+        <a href="/places" class="btn btn-secondary">← Back to Recommendations</a>
+        <a href="/" class="btn btn-secondary">Home</a>
+      </div>
+
+      <div class="detail-header">
+        <% if (Number(place.is_coming_soon || 0) === 1) { %>
+          <p><span class="badge-status badge-pending">Coming Soon</span></p>
+        <% } %>
+        <h1><%= place.title %></h1>
+        <span class="category-badge"><%= place.category %></span>
+        <% if (place.rating) { %>
+          <div class="rating">⭐ <%= place.rating %>/5.0</div>
+        <% } %>
+      </div>
+
+      <% if (place.tags) { %>
+        <div class="place-tags detail-tags">
+          <% place.tags.split(',').map(t => t.trim()).filter(t => t).forEach(tag => { %>
+            <a href="/places?search=<%= encodeURIComponent(tag) %>" class="tag-pill"><%= tag %></a>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <div class="detail-info">
+        <div class="info-section">
+          <h3>Location</h3>
+          <p><%= place.location %></p>
+          <% if (place.address) { %>
+            <p><strong>Address:</strong> <%= place.address %></p>
+          <% } %>
+        </div>
+
+        <% if (place.phone) { %>
+          <div class="info-section">
+            <h3>Phone</h3>
+            <p><a href="tel:<%= place.phone %>"><%= place.phone %></a></p>
+          </div>
+        <% } %>
+
+        <% if (place.website) { %>
+          <div class="info-section">
+            <h3>Website</h3>
+            <p><a href="<%= place.website %>" target="_blank"><%= place.website %></a></p>
+          </div>
+        <% } %>
+
+        <% if (place.hasBusinessHours) { %>
+          <div class="info-section">
+            <h3>Business Hours</h3>
+            <p><%= place.businessHoursLabel %></p>
+            <p><span class="badge-status <%= place.isOpenNow ? 'badge-approved' : 'badge-draft' %>"><%= place.openStatusLabel %></span></p>
+            <% if (place.closedDaysLabel) { %>
+              <p><strong>Closed:</strong> <%= place.closedDaysLabel %></p>
+            <% } %>
+            <% if (place.holidayNotice) { %>
+              <p class="muted-text">Holiday might affect these hours</p>
+            <% } %>
+          </div>
+        <% } else if (place.closedDaysLabel) { %>
+          <div class="info-section">
+            <h3>Closed Days</h3>
+            <p><%= place.closedDaysLabel %></p>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="detail-description">
+        <h2>About</h2>
+        <p><%= place.detailed_description %></p>
+      </div>
+
+      <% if (place.walking_directions || place.google_maps_link || place.transit_lines) { %>
+        <div class="detail-description">
+          <h2>Getting There</h2>
+          <% if (place.walking_directions) { %>
+            <p><strong>Walking Directions:</strong> <%= place.walking_directions %></p>
+          <% } %>
+          <% if (place.transit_lines) { %>
+            <p><strong>Bus and Train Lines:</strong> <%= place.transit_lines %></p>
+          <% } %>
+          <% if (place.google_maps_link) { %>
+            <p><strong>Map:</strong> <a href="<%= place.google_maps_link %>" target="_blank" rel="noopener noreferrer">Open in Google Maps</a></p>
+          <% } %>
+        </div>
+      <% } %>
+
+      <% if (relatedEvents && relatedEvents.length) { %>
+        <div class="detail-description">
+          <h2>Related Events</h2>
+          <div class="discussion-comments-list">
+            <% relatedEvents.forEach((event) => { %>
+              <article class="discussion-comment-card">
+                <div class="discussion-comment-body" style="padding-left:0;">
+                  <div class="discussion-comment-meta">
+                    <strong><a href="/events/<%= event.id %>"><%= event.title %></a></strong>
+                    <span class="badge-status badge-city-soft"><%= event.category %></span>
+                    <% if ((event.related_place_relation || '').toLowerCase() === 'at') { %>
+                      <span>At this location</span>
+                    <% } else if ((event.related_place_relation || '').toLowerCase() === 'by') { %>
+                      <span>Hosted by this place</span>
+                    <% } %>
+                  </div>
+                  <p class="muted-text">
+                    <% if (event.start_at) { %>
+                      <%= formatDate(event.start_at, { month: 'short', day: 'numeric', year: 'numeric' }) %> at <%= formatTime(event.start_at) %>
+                    <% } %>
+                    <% if (event.end_at) { %>
+                      - <%= formatTime(event.end_at) %>
+                    <% } %>
+                    • <%= (event.recurrence_type || 'one_time') === 'recurring' ? 'Recurring' : 'One-time' %>
+                  </p>
+                  <% if (event.tags) { %>
+                    <div class="place-tags" style="margin-top: 0.35rem;">
+                      <% event.tags.split(',').map((tag) => tag.trim()).filter(Boolean).forEach((tag) => { %>
+                        <span class="tag-pill"><%= tag %></span>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <div class="detail-description">
+        <h2>Community</h2>
+        <p><strong><%= likes.length %></strong> like<%= likes.length === 1 ? '' : 's' %> • <strong><%= comments.length %></strong> comment<%= comments.length === 1 ? '' : 's' %></p>
+
+        <% if (user) { %>
+          <form method="POST" action="/places/<%= place.id %>/like" style="margin-top: 0.75rem;">
+            <button type="submit" class="btn btn-secondary"><%= userLiked ? 'Unlike' : 'Like' %> Recommendation</button>
+          </form>
+        <% } else { %>
+          <p class="muted-text" style="margin-top: 0.75rem;">Log in to like and comment.</p>
+        <% } %>
+
+        <% if (likes.length) { %>
+          <p class="muted-text" style="margin-top: 0.75rem;">
+            Liked by: <%= likes.map((entry) => entry.username).join(', ') %>
+          </p>
+        <% } %>
+      </div>
+
+      <div class="detail-description">
+        <h2>Employee Rating</h2>
+        <% if (employeeRatingCount > 0) { %>
+          <p><strong><%= employeeRatingAverage.toFixed(1) %></strong>/5 from <%= employeeRatingCount %> staff rating<%= employeeRatingCount === 1 ? '' : 's' %>.</p>
+        <% } else { %>
+          <p class="muted-text">No employee ratings yet.</p>
+        <% } %>
+
+        <% if (user && (user.role === 'employee' || user.role === 'management' || user.role === 'admin')) { %>
+          <form method="POST" action="/places/<%= place.id %>/employee-rating" style="margin-top: 0.75rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+            <label for="employee-rating"><strong>Your rating</strong></label>
+            <select id="employee-rating" name="rating" required>
+              <% for (let value = 1; value <= 5; value += 1) { %>
+                <option value="<%= value %>" <%= userEmployeeRating === value ? 'selected' : '' %>><%= value %></option>
+              <% } %>
+            </select>
+            <button type="submit" class="btn btn-secondary"><%= userEmployeeRating ? 'Update Rating' : 'Save Rating' %></button>
+          </form>
+        <% } %>
+      </div>
+
+      <div class="detail-description" id="recommendation-comments">
+        <h2>Comments</h2>
+        <% if (comments.length) { %>
+          <div class="discussion-comments-list">
+            <% comments.forEach((comment) => { %>
+              <article class="discussion-comment-card">
+                <div class="discussion-comment-avatar"><%= (comment.username || '?').charAt(0).toUpperCase() %></div>
+                <div class="discussion-comment-body">
+                  <div class="discussion-comment-meta">
+                    <strong><%= comment.username %></strong>
+                    <span class="badge-status badge-<%= (comment.role || 'user').toLowerCase() %>"><%= comment.role || 'user' %></span>
+                    <span><%= new Date(comment.created_at).toLocaleDateString() %></span>
+                  </div>
+                  <p><%= comment.comment_text %></p>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="muted-text">No comments yet.</p>
+        <% } %>
+
+        <% if (user) { %>
+          <form method="POST" action="/places/<%= place.id %>/comments" class="discussion-comment-form" style="margin-top: 1rem;">
+            <label for="recommendation-comment" class="discussion-comment-label">Add a comment</label>
+            <div class="discussion-comment-composer">
+              <textarea id="recommendation-comment" name="comment_text" rows="4" maxlength="1000" required placeholder="Share what guests should know."></textarea>
+              <div class="discussion-comment-actions">
+                <span class="discussion-comment-helper">Keep it specific and useful for the concierge team.</span>
+                <button type="submit" class="btn btn-primary btn-sm">Post Comment</button>
+              </div>
+            </div>
+          </form>
+        <% } %>
+      </div>
+
+      <!-- Reserve a Visit -->
+      <div class="reservation-cta">
+        <h2>Ready to Visit?</h2>
+        <% if (place.reservation_link || place.menu_link || place.events_link) { %>
+          <p>Book a table, browse the menu, or check out upcoming events.</p>
+          <div class="reservation-cta-actions">
+            <% if (place.reservation_link) { %>
+              <a href="<%= place.reservation_link %>" class="reservation-text-link" target="_blank" rel="noopener noreferrer">Make a Reservation</a>
+            <% } %>
+            <% if (place.menu_link) { %>
+              <a href="<%= place.menu_link %>" class="reservation-text-link" target="_blank" rel="noopener noreferrer">View Menu</a>
+            <% } %>
+            <% if (place.events_link) { %>
+              <a href="<%= place.events_link %>" class="reservation-text-link" target="_blank" rel="noopener noreferrer">View Events</a>
+            <% } %>
+          </div>
+        <% } else { %>
+          <p class="reservation-empty">No available links yet, check back soon!</p>
+        <% } %>
+        <% if (user && (user.role === 'employee' || user.role === 'management' || user.role === 'admin')) { %>
+          <a href="/places/<%= place.id %>/edit" class="reservation-edit-link">+ Add or Edit Links</a>
+        <% } %>
+      </div>
+
+      <div class="place-actions">
+        <a href="/places" class="btn btn-secondary">← Back to Recommendations</a>
+        <% const role = user ? (user.role || '').toLowerCase() : ''; %>
+        <% const canEditPlace = user && (role === 'employee' || role === 'management' || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
+        <% const canDeletePlace = user && (role === 'admin' || Number(place.created_by) === Number(user.id)); %>
+        <% if (canEditPlace) { %>
+          <a href="/places/<%= place.id %>/edit" class="btn btn-primary">Edit</a>
+        <% } %>
+        <% if (canDeletePlace) { %>
+          <form method="POST" action="/places/<%= place.id %>/delete?_method=DELETE" style="display:inline;">
+            <button
+              type="button"
+              class="btn btn-danger js-delete-trigger"
+              data-delete-action="/places/<%= place.id %>/delete?_method=DELETE"
+              data-place-title="<%= place.title %>"
+            >Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <% if (canDeletePlace) { %>
+    <div class="modal-backdrop" id="placeDeleteModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="placeDeleteModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="placeDeleteModalTitle">Delete Recommendation</h2>
+          <button type="button" class="modal-close" id="placeDeleteModalClose" aria-label="Close delete dialog">×</button>
+        </div>
+        <p class="modal-copy" id="placeDeleteModalCopy">Delete this recommendation permanently?</p>
+        <p class="modal-copy modal-copy-soft">This permanently removes the recommendation and cannot be undone from the recommendations workspace.</p>
+        <form method="POST" action="/places/<%= place.id %>/delete?_method=DELETE" id="placeDeleteModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="placeDeleteModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete Recommendation</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      const modal = document.getElementById('placeDeleteModal');
+      const modalForm = document.getElementById('placeDeleteModalForm');
+      const modalCopy = document.getElementById('placeDeleteModalCopy');
+      const closeButton = document.getElementById('placeDeleteModalClose');
+      const cancelButton = document.getElementById('placeDeleteModalCancel');
+      const trigger = document.querySelector('.js-delete-trigger');
+
+      if (!modal || !modalForm || !modalCopy || !closeButton || !cancelButton || !trigger) {
+        return;
+      }
+
+      const closeModal = function () {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+        trigger.focus();
+      };
+
+      trigger.addEventListener('click', function () {
+        modalForm.action = trigger.getAttribute('data-delete-action');
+        modalCopy.textContent = 'Delete "' + trigger.getAttribute('data-place-title') + '" permanently?';
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+        closeButton.focus();
+      });
+
+      closeButton.addEventListener('click', closeModal);
+      cancelButton.addEventListener('click', closeModal);
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !modal.hidden) {
+          closeModal();
+        }
+      });
+    })();
+    </script>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

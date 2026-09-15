@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inactive Events - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container queue-page">
+    <div class="queue-page-header">
+      <div>
+        <h1>Inactive Events</h1>
+        <p class="queue-page-intro">Review hidden or completed events for <strong><%= city %></strong>. Ended one-time events are moved here automatically, and admins can reactivate them for editing or delete them permanently.</p>
+      </div>
+      <div class="queue-card-actions" style="margin-top: 0;">
+        <a href="/admin" class="btn btn-secondary">Back to <%= user && user.role === 'management' ? 'Management Workspace' : 'Admin' %></a>
+        <a href="/events" class="btn btn-primary">View Active Events</a>
+      </div>
+    </div>
+
+    <% if (message) { %>
+      <div class="alert alert-success"><%= message %></div>
+    <% } %>
+
+    <% if (events && events.length > 0) { %>
+      <div class="queue-list">
+        <% events.forEach(event => { %>
+          <article class="queue-card">
+            <div class="queue-card-head">
+              <div>
+                <h2><%= event.title %></h2>
+                <div class="queue-card-meta">
+                  <span><strong>Category:</strong> <%= event.category %></span>
+                  <span><strong>Location:</strong> <%= event.location %></span>
+                  <span><strong>Created by:</strong> <%= event.created_by_username || 'Unknown' %></span>
+                </div>
+              </div>
+              <div class="place-card-badges">
+                <span class="badge-status <%= event.archived_reason === 'expired' ? 'badge-info' : 'badge-pending' %>">
+                  <%= event.archived_reason === 'expired' ? 'Completed Event' : 'Hidden Event' %>
+                </span>
+                <span class="badge-status badge-city"><%= event.city %></span>
+              </div>
+            </div>
+
+            <p><%= event.description %></p>
+
+            <div class="queue-card-meta">
+              <span><strong>Starts:</strong> <%= new Date(event.start_at).toLocaleString() %></span>
+              <% if (event.end_at) { %>
+                <span><strong>Ends:</strong> <%= new Date(event.end_at).toLocaleString() %></span>
+              <% } %>
+              <span><strong>Type:</strong> <%= (event.recurrence_type || 'one_time') === 'recurring' ? 'Recurring' : 'One-time' %></span>
+              <% if (event.archived_at) { %>
+                <span><strong>Archived:</strong> <%= new Date(event.archived_at).toLocaleString() %></span>
+              <% } %>
+            </div>
+
+            <div class="queue-card-actions">
+              <a href="/events/<%= event.id %>" class="btn btn-secondary btn-sm">View</a>
+              <form method="POST" action="/events/<%= event.id %>/reactivate" class="queue-inline-form">
+                <button type="submit" class="btn btn-primary btn-sm">Reactivate</button>
+              </form>
+              <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE&redirect=inactive" class="queue-inline-form">
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm js-delete-trigger"
+                  data-event-title="<%= event.title %>"
+                  data-delete-action="/events/<%= event.id %>/delete?_method=DELETE&redirect=inactive"
+                >Delete</button>
+              </form>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="audit-empty-state">
+        <strong>No inactive events for <%= city %>.</strong>
+        <p>Hidden events and completed one-time events will appear here automatically.</p>
+      </div>
+    <% } %>
+  </main>
+
+  <% if (user && (user.role === 'admin' || user.role === 'management')) { %>
+    <div class="modal-backdrop" id="deleteModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="deleteModalTitle">Delete Inactive Event</h2>
+          <button type="button" class="modal-close" id="deleteModalClose" aria-label="Close delete dialog">×</button>
+        </div>
+        <p class="modal-copy" id="deleteModalCopy">Delete this inactive event permanently?</p>
+        <p class="modal-copy modal-copy-soft">This permanently removes the event from the inactive list and it cannot be reactivated afterward.</p>
+        <form method="POST" action="/events/0/delete?_method=DELETE&redirect=inactive" id="deleteModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="deleteModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete Event</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      const modal = document.getElementById('deleteModal');
+      const modalForm = document.getElementById('deleteModalForm');
+      const modalCopy = document.getElementById('deleteModalCopy');
+      const closeButton = document.getElementById('deleteModalClose');
+      const cancelButton = document.getElementById('deleteModalCancel');
+      const triggers = document.querySelectorAll('.js-delete-trigger');
+
+      if (!modal || !modalForm || !modalCopy || !closeButton || !cancelButton || !triggers.length) {
+        return;
+      }
+
+      let lastTrigger = null;
+
+      const closeModal = function () {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+        if (lastTrigger) {
+          lastTrigger.focus();
+        }
+      };
+
+      triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          lastTrigger = trigger;
+          modalForm.action = trigger.getAttribute('data-delete-action');
+          modalCopy.textContent = 'Delete "' + trigger.getAttribute('data-event-title') + '" permanently?';
+          modal.hidden = false;
+          document.body.classList.add('modal-open');
+          closeButton.focus();
+        });
+      });
+
+      closeButton.addEventListener('click', closeModal);
+      cancelButton.addEventListener('click', closeModal);
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !modal.hidden) {
+          closeModal();
+        }
+      });
+    })();
+    </script>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

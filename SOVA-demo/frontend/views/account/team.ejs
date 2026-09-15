@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Directory - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container account-directory-page">
+    <section class="team-directory-hero">
+      <div>
+        <h1>Team Directory</h1>
+        <p>
+          <% if (viewerRole === 'admin' || viewerRole === 'management') { %>
+            Review internal staff accounts across all active properties.
+          <% } else { %>
+            View coworker account details for <strong><%= activeCity %></strong> without opening anyone else’s settings workspace.
+          <% } %>
+        </p>
+      </div>
+      <div class="account-profile-actions">
+        <a href="/employee" class="btn btn-secondary">Back to Workspace</a>
+        <a href="/account/settings" class="btn btn-primary">My Settings</a>
+      </div>
+    </section>
+
+    <% if (teamMembers && teamMembers.length) { %>
+      <section class="team-directory-grid">
+        <% teamMembers.forEach((member) => { %>
+          <article class="team-member-card">
+            <div class="team-member-card-head">
+              <div class="team-member-avatar">
+                <% if (member.avatar_url) { %>
+                  <img src="<%= member.avatar_url %>" alt="<%= member.displayName %> avatar">
+                <% } else { %>
+                  <span><%= member.initials %></span>
+                <% } %>
+              </div>
+              <div>
+                <h2><%= member.displayName %></h2>
+                <p class="team-member-subtitle"><%= member.email %></p>
+                <div class="team-city-list">
+                  <span class="badge-status badge-<%= member.role %>"><%= member.role %></span>
+                  <% if (member.isCurrentUser) { %>
+                    <span class="badge-status badge-city-soft">Your Account</span>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-member-meta">
+              <div>
+                <span>Role</span>
+                <strong><%= member.department ? member.department : member.role %><%= member.title ? ' - ' + member.title : '' %></strong>
+              </div>
+              <div>
+                <span>Joined</span>
+                <strong><%= new Date(member.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></strong>
+              </div>
+              <div>
+                <span>City Access</span>
+                <div class="team-city-list">
+                  <% member.cities.forEach((cityName) => { %>
+                    <span class="badge-status badge-city"><%= cityName %></span>
+                  <% }) %>
+                </div>
+              </div>
+              <div>
+                <span>Activity</span>
+                <div class="team-city-list">
+                  <span class="badge-status badge-city-soft"><%= member.recommendationCount %> recommendation<%= member.recommendationCount === 1 ? '' : 's' %></span>
+                  <span class="badge-status badge-pending"><%= member.discussionPostCount %> discussion post<%= member.discussionPostCount === 1 ? '' : 's' %></span>
+                </div>
+              </div>
+            </div>
+
+            <% if (member.bio) { %>
+              <p class="account-profile-bio"><%= member.bio %></p>
+            <% } %>
+
+            <div class="account-activity-list">
+              <div class="account-activity-item">
+                <div>
+                  <strong>Recent Recommendations</strong>
+                  <% if (member.recentRecommendations && member.recentRecommendations.length) { %>
+                    <% member.recentRecommendations.forEach((item) => { %>
+                      <p><a href="/places/<%= item.id %>"><%= item.title %></a></p>
+                    <% }) %>
+                  <% } else { %>
+                    <p>No recommendations yet.</p>
+                  <% } %>
+                </div>
+              </div>
+
+              <div class="account-activity-item">
+                <div>
+                  <strong>Recent Discussion Posts</strong>
+                  <% if (member.recentDiscussionPosts && member.recentDiscussionPosts.length) { %>
+                    <% member.recentDiscussionPosts.forEach((post) => { %>
+                      <p><a href="/discussion#post-<%= post.id %>"><%= post.title %></a></p>
+                    <% }) %>
+                  <% } else { %>
+                    <p>No discussion posts yet.</p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-directory-actions">
+              <a href="/account/team/<%= member.id %>" class="btn btn-primary btn-sm">View Account</a>
+              <% if (member.isCurrentUser) { %>
+                <a href="/account/settings" class="btn btn-secondary btn-sm">Edit My Settings</a>
+              <% } %>
+            </div>
+          </article>
+        <% }) %>
+      </section>
+    <% } else { %>
+      <section class="account-directory-empty">
+        <strong>No staff accounts are visible in this workspace scope.</strong>
+        <p>Switch locations if your team works across another property, or ask an admin to review staff city access.</p>
+      </section>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

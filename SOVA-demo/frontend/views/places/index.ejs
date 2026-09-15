@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommendations - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="discussion-page container">
+    <div class="places-header">
+      <div class="places-header-top">
+        <a href="/" class="btn btn-secondary">← Back to Home</a>
+        <% if (user && !isDemoUser) { %>
+          <a href="/places/new/form" class="btn btn-primary">+ Add Recommendation</a>
+        <% } %>
+      </div>
+
+      <h1>Recommendations</h1>
+
+      <div class="filter-section">
+        <form method="GET" action="/places" class="filter-form">
+          <select name="category" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            <option value="Restaurant" <% if (category === 'Restaurant') { %>selected<% } %>>Restaurant</option>
+            <option value="Bar" <% if (category === 'Bar') { %>selected<% } %>>Bar</option>
+            <option value="Speakeasy" <% if (category === 'Speakeasy') { %>selected<% } %>>Speakeasy</option>
+            <option value="Entertainment" <% if (category === 'Entertainment') { %>selected<% } %>>Entertainment</option>
+            <option value="Cafe" <% if (category === 'Cafe') { %>selected<% } %>>Cafe</option>
+            <option value="Shop" <% if (category === 'Shop') { %>selected<% } %>>Shop</option>
+            <option value="Business" <% if (category === 'Business') { %>selected<% } %>>Business</option>
+            <option value="Tour" <% if (category === 'Tour') { %>selected<% } %>>Tour</option>
+            <option value="Experience" <% if (category === 'Experience') { %>selected<% } %>>Experience</option>
+            <option value="Grocery Store" <% if (category === 'Grocery Store') { %>selected<% } %>>Grocery Store</option>
+            <option value="Market" <% if (category === 'Market') { %>selected<% } %>>Market</option>
+            <option value="Mall" <% if (category === 'Mall') { %>selected<% } %>>Mall</option>
+            <option value="Library" <% if (category === 'Library') { %>selected<% } %>>Library</option>
+            <option value="Gym" <% if (category === 'Gym') { %>selected<% } %>>Gym</option>
+            <option value="Other" <% if (category === 'Other') { %>selected<% } %>>Other</option>
+          </select>
+
+          <input type="text" name="search" placeholder="Search by name, description, or tags..." value="<%= search %>">
+          <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="discussion-layout">
+      <section class="discussion-main-column">
+        <% if (places.length > 0) { %>
+          <div class="places-grid">
+            <% places.forEach(place => { %>
+              <% const role = user ? (user.role || '').toLowerCase() : ''; %>
+              <% const canEditPlace = user && !isDemoUser && (role === 'employee' || role === 'management' || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
+              <% const canDeletePlace = user && !isDemoUser && (role === 'admin' || Number(place.created_by) === Number(user.id)); %>
+              <div class="place-card">
+                <% if (Number(place.is_coming_soon || 0) === 1) { %>
+                  <p><span class="badge-status badge-pending">Coming Soon</span></p>
+                <% } %>
+                <div class="place-header">
+                  <h2><a href="/places/<%= place.id %>"><%= place.title %></a></h2>
+                  <div class="place-card-badges">
+                    <span class="category-badge"><%= place.category %></span>
+                  </div>
+                </div>
+
+                <p class="place-location">📍 <%= place.location %></p>
+
+                <% if (place.rating) { %>
+                  <div class="rating">
+                    ⭐ <%= place.rating %>/5.0
+                  </div>
+                <% } %>
+
+                <% if (place.hasBusinessHours) { %>
+                  <p class="muted-text"><strong>Hours:</strong> <%= place.businessHoursLabel %></p>
+                  <p>
+                    <span class="badge-status <%= place.isOpenNow ? 'badge-approved' : 'badge-draft' %>"><%= place.openStatusLabel %></span>
+                  </p>
+                  <% if (place.holidayNotice) { %>
+                    <p class="muted-text">Holiday might affect these hours</p>
+                  <% } %>
+                <% } %>
+
+                <p class="place-description"><%= place.short_description %></p>
+
+                <p class="muted-text"><strong><%= Number(place.like_count || 0) %></strong> likes • <strong><%= Number(place.comment_count || 0) %></strong> comments</p>
+                <% if (place.employee_rating_count) { %>
+                  <p class="muted-text">Employee rating: <strong><%= Number(place.employee_rating_avg || 0).toFixed(1) %>/5</strong> (<%= Number(place.employee_rating_count || 0) %>)</p>
+                <% } %>
+
+                <% if (place.tags) { %>
+                  <div class="place-tags">
+                    <% place.tags.split(',').map(t => t.trim()).filter(t => t).forEach(tag => { %>
+                      <span class="tag-pill"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                <% } %>
+
+                <div class="place-actions">
+                  <a href="/places/<%= place.id %>" class="btn btn-primary">View Details</a>
+                  <% if (canEditPlace) { %>
+                    <a href="/places/<%= place.id %>/edit" class="btn btn-secondary">Edit</a>
+                  <% } %>
+                  <% if (canDeletePlace) { %>
+                    <form
+                      method="POST"
+                      action="/places/<%= place.id %>/delete?_method=DELETE"
+                      style="display:inline;"
+                      onsubmit="return confirm('Delete this recommendation permanently?');"
+                    >
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <p>No recommendations found. <% if (user) { %><a href="/places/new/form">Add the first recommendation!</a><% } %></p>
+          </div>
+        <% } %>
+      </section>
+
+      <aside class="discussion-sidebar">
+        <div class="discussion-sidebar-card">
+          <div class="discussion-sidebar-tablist" role="tablist" aria-label="Recommendations sidebar views">
+            <button type="button" class="discussion-sidebar-tab active" data-rec-tab="trending-hot" role="tab" aria-selected="true">Trending/Hot</button>
+            <button type="button" class="discussion-sidebar-tab" data-rec-tab="top-rated" role="tab" aria-selected="false">Top Rated</button>
+            <button type="button" class="discussion-sidebar-tab" data-rec-tab="most-liked" role="tab" aria-selected="false">Most Liked</button>
+          </div>
+
+          <section class="discussion-sidebar-panel active" data-rec-panel="trending-hot" role="tabpanel">
+            <div class="discussion-sidebar-panel-head">
+              <h3>Trending/Hot</h3>
+            </div>
+            <% if (sidebar && sidebar.trendingHot && sidebar.trendingHot.length > 0) { %>
+              <div class="discussion-sidebar-list">
+                <% sidebar.trendingHot.forEach(item => { %>
+                  <a href="<%= item.href %>" class="discussion-sidebar-item">
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <p><%= item.category %> • <%= item.likeCount %> likes • <%= item.commentCount %> comments</p>
+                    </div>
+                    <div class="discussion-sidebar-item-badges">
+                      <span class="badge-status badge-city-soft">Hot Score: <%= item.hotScore %></span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="muted-text">No trending recommendations yet.</p>
+            <% } %>
+          </section>
+
+          <section class="discussion-sidebar-panel" data-rec-panel="top-rated" role="tabpanel" hidden>
+            <div class="discussion-sidebar-panel-head">
+              <h3>Top Rated</h3>
+            </div>
+            <% if (sidebar && sidebar.topRated && sidebar.topRated.length > 0) { %>
+              <div class="discussion-sidebar-list">
+                <% sidebar.topRated.forEach(item => { %>
+                  <a href="<%= item.href %>" class="discussion-sidebar-item">
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <p><%= item.category %> • <%= item.avgRating.toFixed(1) %>/5</p>
+                    </div>
+                    <div class="discussion-sidebar-item-badges">
+                      <span class="badge-status badge-approved"><%= item.ratingCount %> ratings</span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="muted-text">No employee ratings yet.</p>
+            <% } %>
+          </section>
+
+          <section class="discussion-sidebar-panel" data-rec-panel="most-liked" role="tabpanel" hidden>
+            <div class="discussion-sidebar-panel-head">
+              <h3>Most Liked</h3>
+            </div>
+            <% if (sidebar && sidebar.mostLiked && sidebar.mostLiked.length > 0) { %>
+              <div class="discussion-sidebar-list">
+                <% sidebar.mostLiked.forEach(item => { %>
+                  <a href="<%= item.href %>" class="discussion-sidebar-item">
+                    <div>
+                      <strong><%= item.title %></strong>
+                      <p><%= item.category %></p>
+                    </div>
+                    <div class="discussion-sidebar-item-badges">
+                      <span class="badge-status badge-city-soft"><%= item.likeCount %> likes</span>
+                    </div>
+                  </a>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="muted-text">No likes yet.</p>
+            <% } %>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const activateTab = (tabName) => {
+        document.querySelectorAll('[data-rec-tab]').forEach((button) => {
+          const isActive = button.getAttribute('data-rec-tab') === tabName;
+          button.classList.toggle('active', isActive);
+          button.setAttribute('aria-selected', String(isActive));
+        });
+
+        document.querySelectorAll('[data-rec-panel]').forEach((panel) => {
+          const isActive = panel.getAttribute('data-rec-panel') === tabName;
+          panel.classList.toggle('active', isActive);
+          panel.hidden = !isActive;
+        });
+      };
+
+      document.querySelectorAll('[data-rec-tab]').forEach((button) => {
+        button.addEventListener('click', () => activateTab(button.getAttribute('data-rec-tab')));
+      });
+    })();
+  </script>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

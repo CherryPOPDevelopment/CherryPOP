@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Notes - SOVA Employee</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-employee">
+    <section class="workspace-hero">
+      <div class="container">
+        <h1>Shift Notes</h1>
+        <p>Capture handoff details so the next concierge shift can pick up instantly.</p>
+      </div>
+    </section>
+
+    <section class="container shift-notes-layout">
+      <section class="workspace-card shift-notes-form-card">
+        <h2>New Shift Note</h2>
+        <% if (isDemoUser) { %>
+          <p class="muted-text">Shift note submission is disabled in demo mode.</p>
+        <% } else { %>
+        <% if (message) { %>
+          <p class="admin-inline-message"><%= message %></p>
+        <% } %>
+
+        <form method="POST" action="/employee/shift-notes" class="shift-notes-form">
+          <div class="shift-notes-row">
+            <div class="form-group">
+              <label for="shiftDate">Date</label>
+              <input id="shiftDate" name="shiftDate" type="date" required>
+            </div>
+
+            <div class="form-group">
+              <label for="shiftLabel">Shift</label>
+              <select id="shiftLabel" name="shiftLabel" required>
+                <option value="morning">Morning</option>
+                <option value="afternoon" selected>Afternoon</option>
+                <option value="night">Night</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Priority</label>
+              <select id="priority" name="priority" required>
+                <option value="normal" selected>Normal</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="noteCategory">Category</label>
+            <select id="noteCategory" name="noteCategory" required>
+              <option value="guest">Guest</option>
+              <option value="employees" selected>Employees</option>
+              <option value="management_maintenance">Management / Maintenance</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="noteText">Note</label>
+            <textarea id="noteText" name="noteText" maxlength="2000" rows="6" required placeholder="Include unresolved guest needs, recommendations to follow up, and anything the next shift should know."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Shift Note</button>
+        </form>
+        <% } %>
+      </section>
+
+      <section class="workspace-card shift-notes-list-card">
+        <div class="shift-notes-list-head">
+          <h2>Active Shift Notes</h2>
+          <% if (isAdmin) { %>
+            <a href="/admin/shift-notes/archive" class="btn btn-secondary btn-sm">View Archive</a>
+          <% } %>
+        </div>
+        <p class="muted-text">Notes auto-archive after 24 hours if not resolved.</p>
+        <% if (notes && notes.length > 0) { %>
+          <div class="shift-notes-list">
+            <% notes.forEach(note => { %>
+              <% const isOwnNote = user && user.id === note.created_by; %>
+              <% const canEditWithinWindow = isOwnNote && Number(note.age_seconds || 0) <= 300; %>
+              <% const initials = (note.username || '')
+                .split(/[\s._-]+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part.charAt(0).toUpperCase())
+                .join('') || '?'; %>
+              <article class="shift-note-item">
+                <div class="shift-note-head">
+                  <div>
+                    <strong><%= new Date(note.shift_date).toLocaleDateString() %> • <%= note.shift_label.charAt(0).toUpperCase() + note.shift_label.slice(1) %></strong>
+                    <p>By <%= note.username %> • <%= new Date(note.created_at).toLocaleString() %></p>
+                  </div>
+                  <div class="shift-note-badges">
+                    <span class="badge-status <%= note.note_category === 'guest' ? 'badge-note-guest' : note.note_category === 'management_maintenance' ? 'badge-note-management' : 'badge-note-employees' %>">
+                      <%= note.note_category === 'guest' ? 'Guest' : note.note_category === 'management_maintenance' ? 'Mgmt/Maintenance' : 'Employees' %>
+                    </span>
+                    <span class="badge-status <%= note.priority === 'urgent' ? 'badge-cancelled' : 'badge-confirmed' %>"><%= note.priority %></span>
+                    <span class="badge-status badge-city-soft"><%= initials %></span>
+                  </div>
+                </div>
+
+                <% if (canEditWithinWindow) { %>
+                  <form method="POST" action="/employee/shift-notes/<%= note.id %>/edit" class="shift-note-edit-form">
+                    <label for="edit-note-<%= note.id %>" class="muted-text">Edit note (within 5 minutes of submission)</label>
+                    <textarea id="edit-note-<%= note.id %>" name="noteText" maxlength="2000" rows="4" required><%= note.note_text %></textarea>
+                    <button type="submit" class="btn btn-secondary btn-sm">Save Edit</button>
+                  </form>
+                <% } else { %>
+                  <p class="shift-note-body"><%= note.note_text %></p>
+                <% } %>
+
+                <div class="shift-note-actions">
+                  <form method="POST" action="/employee/shift-notes/<%= note.id %>/resolve" class="shift-note-resolve">
+                    <button type="submit" class="btn btn-primary btn-sm">Mark Resolved</button>
+                  </form>
+
+                  <% if (user && (((user.role || '').toLowerCase() === 'admin') || user.id === note.created_by)) { %>
+                    <form method="POST" action="/employee/shift-notes/<%= note.id %>/delete" class="shift-note-delete">
+                      <button type="submit" class="btn btn-secondary btn-sm">Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="muted-text">No shift notes yet. Add the first handoff note.</p>
+        <% } %>
+      </section>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    const dateInput = document.getElementById('shiftDate');
+    if (dateInput && !dateInput.value) {
+      dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+  </script>
+</body>
+</html>

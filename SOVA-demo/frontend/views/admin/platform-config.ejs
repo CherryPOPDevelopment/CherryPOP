@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Configuration - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container platform-config-page">
+    <section class="platform-config-hero">
+      <div class="platform-config-hero-copy">
+        <p class="platform-config-eyebrow">Admin Control Surface</p>
+        <h1>Platform Configuration</h1>
+        <p>Manage workspace identity, location routing, and system-level settings from one dashboard.</p>
+        <div class="platform-config-quick-links">
+          <a href="#platformSettings" class="support-chip">Platform Settings</a>
+          <a href="#cityConfiguration" class="support-chip">City Configuration</a>
+          <a href="#systemSnapshot" class="support-chip">System Snapshot</a>
+          <a href="#systemDocumentation" class="support-chip">Documentation</a>
+        </div>
+      </div>
+      <div class="platform-config-hero-actions">
+        <a href="/admin" class="btn btn-secondary">← Back to Workspace</a>
+      </div>
+    </section>
+
+    <% if (message) { %>
+      <div class="alert alert-success"><%= message %></div>
+    <% } %>
+
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <section class="platform-config-summary-grid">
+      <article class="platform-summary-pill">
+        <span>Access</span>
+        <strong>Admin Only</strong>
+      </article>
+      <article class="platform-summary-pill">
+        <span>Default City</span>
+        <strong><%= platform.default_city %></strong>
+      </article>
+      <article class="platform-summary-pill">
+        <span>Enabled Locations</span>
+        <strong><%= enabledCities.length %></strong>
+      </article>
+      <article class="platform-summary-pill">
+        <span>Support Email</span>
+        <strong><%= platform.support_email %></strong>
+      </article>
+    </section>
+
+    <section class="platform-config-layout">
+      <article class="platform-config-panel" id="platformSettings">
+        <div class="platform-config-panel-head">
+          <div>
+            <h2>Platform Settings</h2>
+            <p>These values are live. The platform name updates the navigation brand, and the default city becomes the fallback session location when no city is selected.</p>
+          </div>
+        </div>
+
+        <form method="POST" action="/admin/platform-config/platform" class="platform-config-form">
+          <div class="platform-config-form-grid">
+            <label class="platform-config-field platform-config-field-wide">
+              <span>Platform Name</span>
+              <input type="text" name="platform_name" class="form-control" value="<%= platform.platform_name %>" maxlength="120" required>
+            </label>
+
+            <label class="platform-config-field">
+              <span>Support Email</span>
+              <input type="email" name="support_email" class="form-control" value="<%= platform.support_email %>" maxlength="120" required>
+            </label>
+
+            <label class="platform-config-field">
+              <span>Default City</span>
+              <select name="default_city" class="form-control" required>
+                <% cities.forEach(cityOption => { %>
+                  <option value="<%= cityOption.city %>" <%= platform.default_city === cityOption.city ? 'selected' : '' %>><%= cityOption.city %> — <%= cityOption.display_name %></option>
+                <% }) %>
+              </select>
+            </label>
+          </div>
+
+          <div class="platform-config-actions">
+            <p class="muted-text">If the selected default city is later disabled, the system automatically falls back to the first enabled property.</p>
+            <% if (!isDemoUser) { %><button type="submit" class="btn btn-primary">Save Platform Settings</button><% } else { %><p class="muted-text">Saving is disabled in demo mode.</p><% } %>
+          </div>
+        </form>
+      </article>
+
+      <article class="platform-config-panel" id="cityConfiguration">
+        <div class="platform-config-panel-head">
+          <div>
+            <h2>City Configuration</h2>
+            <p>Enabled cities are available in login routing and the location switcher. Disabled cities are removed from active workspace selection.</p>
+          </div>
+        </div>
+
+        <form method="POST" action="/admin/platform-config/cities" class="platform-config-form">
+          <div class="platform-config-city-grid">
+            <% cities.forEach(cityOption => { %>
+              <% const citySlug = cityOption.city.toLowerCase(); %>
+              <section class="platform-city-card <%= cityOption.is_enabled ? 'platform-city-card-enabled' : 'platform-city-card-disabled' %>">
+                <div class="platform-city-card-head">
+                  <div>
+                    <h3><%= cityOption.city %></h3>
+                    <p><%= cityOption.display_name %></p>
+                  </div>
+                  <span class="badge-status <%= cityOption.is_enabled ? 'badge-approved' : 'badge-draft' %>"><%= cityOption.is_enabled ? 'enabled' : 'disabled' %></span>
+                </div>
+
+                <label>
+                  <span>Property Label</span>
+                  <input type="text" name="<%= citySlug %>_display_name" class="form-control" value="<%= cityOption.display_name %>" maxlength="80" required>
+                </label>
+
+                <label class="platform-config-toggle">
+                  <input type="checkbox" name="<%= citySlug %>_is_enabled" value="1" <%= cityOption.is_enabled ? 'checked' : '' %>>
+                  <span>Enable for routing and location switcher</span>
+                </label>
+              </section>
+            <% }) %>
+          </div>
+
+          <div class="platform-config-actions">
+            <p class="muted-text">At least one city must stay enabled at all times.</p>
+            <% if (!isDemoUser) { %><button type="submit" class="btn btn-primary">Save City Configuration</button><% } else { %><p class="muted-text">Saving is disabled in demo mode.</p><% } %>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section class="platform-config-layout">
+      <article class="platform-config-panel" id="systemSnapshot">
+        <div class="platform-config-panel-head">
+          <div>
+            <h2>System Snapshot</h2>
+            <p>Current operational totals and runtime context for this deployment.</p>
+          </div>
+        </div>
+
+        <div class="platform-stats-grid">
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.usersTotal %></strong>
+            <span>Total Accounts</span>
+          </div>
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.staffTotal %></strong>
+            <span>Staff Accounts</span>
+          </div>
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.recommendationTotal %></strong>
+            <span>Recommendations</span>
+          </div>
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.eventTotal %></strong>
+            <span>Events</span>
+          </div>
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.discussionTotal %></strong>
+            <span>Discussion Posts</span>
+          </div>
+          <div class="platform-stat-card">
+            <strong><%= systemSnapshot.port %></strong>
+            <span>Active Port</span>
+          </div>
+        </div>
+
+        <div class="platform-config-runtime-meta">
+          <span class="badge-status badge-user">Environment: <%= systemSnapshot.nodeEnv %></span>
+          <% if (platform.updated_at) { %>
+            <span class="badge-status badge-city-soft">Last Updated: <%= new Date(platform.updated_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) %></span>
+          <% } %>
+        </div>
+      </article>
+
+      <article class="platform-config-panel" id="systemDocumentation">
+        <div class="platform-config-panel-head">
+          <div>
+            <h2>System Documentation</h2>
+            <p>Operational reference for what this screen controls today.</p>
+          </div>
+        </div>
+
+        <div class="platform-doc-list">
+          <div class="platform-doc-item">
+            <h3>Platform Identity</h3>
+            <p>The platform name is shown in the primary navigation. The support email serves as the current system contact reference for administrators.</p>
+          </div>
+          <div class="platform-doc-item">
+            <h3>Default City</h3>
+            <p>The configured default city is used whenever a session does not already have a valid active location.</p>
+          </div>
+          <div class="platform-doc-item">
+            <h3>Enabled Cities</h3>
+            <p>Only enabled cities appear in login location selection and the workspace location switcher. Disabled cities remain in the database but cannot be actively selected.</p>
+          </div>
+          <div class="platform-doc-item">
+            <h3>Scope Boundaries</h3>
+            <p>This screen currently governs platform identity and location availability. Content moderation, user access, and audits remain in their dedicated admin tools.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

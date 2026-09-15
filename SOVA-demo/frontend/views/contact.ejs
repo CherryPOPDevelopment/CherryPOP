@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Support - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+
+  <main class="container">
+    <div class="content-page support-page">
+      <div class="support-hero">
+        <div>
+          <p class="support-eyebrow">Support Center</p>
+          <h1>Contact Support</h1>
+          <p>Send a direct message to the platform team with the issue details.</p>
+        </div>
+        <div class="support-quick-links">
+          <a class="support-chip" href="/support">Support Home</a>
+          <a class="support-chip" href="/support/faq">FAQ</a>
+          <a class="support-chip" href="/support/suggestions">Suggestion Box</a>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-<%= messageType === 'success' ? 'success' : (messageType === 'error' ? 'error' : 'info') %>"><%= message %></div>
+      <% } %>
+
+      <section class="support-section support-grid">
+        <div class="support-card support-contact-card">
+          <div class="support-section-heading">
+            <h2>Contact Support</h2>
+            <p>Tell us what happened and where it happened.</p>
+          </div>
+          <div class="support-contact-meta">
+            <div>
+              <strong>Support Email</strong>
+              <p><a href="mailto:<%= platformConfig.support_email %>"><%= platformConfig.support_email %></a></p>
+            </div>
+            <div>
+              <strong>Active Location</strong>
+              <p><%= city %></p>
+            </div>
+          </div>
+          <form method="POST" action="/support/contact" class="support-form">
+            <div class="form-group">
+              <label for="contact_name">Name</label>
+              <input type="text" id="contact_name" name="contact_name" value="<%= formData.contact_name || '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="contact_email">Email</label>
+              <input type="email" id="contact_email" name="contact_email" value="<%= formData.contact_email || '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="contact_subject">Subject</label>
+              <input type="text" id="contact_subject" name="contact_subject" value="<%= formData.contact_subject || '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="contact_message">Message</label>
+              <textarea id="contact_message" name="contact_message" rows="6" required><%= formData.contact_message || '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </form>
+        </div>
+
+        <div class="support-card support-aside-card">
+          <div class="support-section-heading">
+            <h2>Contact Notes</h2>
+            <p>Include enough detail so support can reproduce the issue quickly.</p>
+          </div>
+          <ul class="support-list">
+            <li>Reference the exact page, workflow, or content item.</li>
+            <li>Mention whether the issue happened in Dallas or Austin.</li>
+            <li>Include the account role involved: guest, employee, or admin.</li>
+            <li>Describe what you expected and what actually happened.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('./partials/footer') %>
+</body>
+</html>

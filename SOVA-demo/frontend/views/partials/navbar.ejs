@@ -1,0 +1,83 @@
+<script>
+  document.documentElement.setAttribute('data-theme', '<%= interfaceTheme || "light" %>');
+</script>
+<% if (isDemoUser) { %>
+<div style="background:#1a1a2e;color:#e0e0ff;text-align:center;padding:8px 16px;font-size:0.85rem;letter-spacing:0.03em;">
+  <strong>Demo Mode</strong> &mdash; This is a read-only preview account. All data is sample content for demonstration purposes.
+</div>
+<% } %>
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-brand">
+      <a href="/"><%= (platformConfig && platformConfig.platform_name) || 'SOVA Scoop' %></a>
+      <div class="location-btn location-btn-static" id="platformClock" data-time-zone="<%= timeZone || 'America/Chicago' %>" data-time-locale="<%= timeLocale || 'en-US' %>">
+        <span>🕒 <%= formatDateTime(now) %></span>
+      </div>
+      <div class="location-dropdown">
+        <% const cityOptions = Array.isArray(availableCities) && availableCities.length ? availableCities : ['DALLAS', 'AUSTIN']; %>
+        <% if (cityOptions.length > 1) { %>
+          <button class="location-btn" id="locationBtn">
+            <span id="selectedLocation">📍 <%= city %></span>
+            <span class="location-arrow">▾</span>
+          </button>
+          <ul class="location-menu" id="locationMenu">
+            <% cityOptions.forEach(option => { %>
+              <li class="location-item <%= city === option ? 'active' : '' %>"><a href="/location/set?city=<%= option %>">📍 <%= option %></a></li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <div class="location-btn location-btn-static">
+            <span id="selectedLocation">📍 <%= city %></span>
+          </div>
+        <% } %>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <% if (user) { %>
+        <li><a href="/places">Browse Recommendations</a></li>
+        <% const role = user.role ? user.role.toLowerCase() : ''; %>
+        <li><a href="/events">Events</a></li>
+        <% if (role === 'admin' || role === 'management') { %>
+          <li><a href="/admin"><%= role === 'management' ? 'Management Workspace' : 'Admin Workspace' %></a></li>
+        <% } else if (role === 'employee') { %>
+          <li><a href="/employee">Employee Workspace</a></li>
+        <% } %>
+        <li><a href="/account/settings">Account Settings</a></li>
+        <li><a href="/auth/logout">Logout (<%= user.username %>)</a></li>
+      <% } else { %>
+        <li><a href="/places">Browse Recommendations</a></li>
+        <li><a href="/events">Events</a></li>
+        <li><a href="/reservations">Reservations</a></li>
+        <li><a href="/auth/login">Login</a></li>
+        <li><a href="/auth/register">Sign Up</a></li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
+
+<script>
+  (function () {
+    const clock = document.getElementById('platformClock');
+    if (!clock) {
+      return;
+    }
+
+    const locale = clock.getAttribute('data-time-locale') || 'en-US';
+    const timeZone = clock.getAttribute('data-time-zone') || 'America/Chicago';
+    const formatter = new Intl.DateTimeFormat(locale, {
+      timeZone,
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+
+    const render = function () {
+      clock.innerHTML = '<span>🕒 ' + formatter.format(new Date()) + '</span>';
+    };
+
+    render();
+    setInterval(render, 30000);
+  })();
+</script>

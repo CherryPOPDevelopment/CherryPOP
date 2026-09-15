@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Governance - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <%
+    const staffUsers = users.filter((account) => ['employee', 'management', 'admin'].includes(account.role));
+    const adminCount = users.filter((account) => account.role === 'admin').length;
+    const managementCount = users.filter((account) => account.role === 'management').length;
+    const employeeCount = users.filter((account) => account.role === 'employee').length;
+    const customerCount = users.filter((account) => ['customer', 'user'].includes(account.role)).length;
+    const activeFilterCount = [filters.q, filters.role !== 'all' ? filters.role : '', filters.city !== 'all' ? filters.city : ''].filter(Boolean).length;
+  %>
+
+  <main class="container governance-page">
+    <div class="events-page-header" style="margin-bottom:2rem;">
+      <div>
+        <h1>User Governance</h1>
+        <p style="color:var(--muted);margin-top:0.25rem;">Manage account roles, operational scope, and location coverage from a single control surface.</p>
+      </div>
+      <a href="/admin" class="btn btn-secondary btn-sm">← Back to Workspace</a>
+    </div>
+
+    <% if (locals.message) { %>
+      <div class="alert alert-success" style="margin-bottom:1.5rem;"><%= message %></div>
+    <% } %>
+
+    <section class="governance-summary-grid">
+      <article class="governance-summary-card governance-summary-card-accent">
+        <span class="governance-summary-label">Total Accounts</span>
+        <strong><%= users.length %></strong>
+        <p>All active profiles currently available for policy and access review.</p>
+      </article>
+      <article class="governance-summary-card">
+        <span class="governance-summary-label">Admins</span>
+        <strong><%= adminCount %></strong>
+        <p>Users with workspace governance and platform control access.</p>
+      </article>
+      <article class="governance-summary-card">
+        <span class="governance-summary-label">Employees</span>
+        <strong><%= employeeCount %></strong>
+        <p>Concierge staff with operational access to property workflows.</p>
+      </article>
+      <article class="governance-summary-card">
+        <span class="governance-summary-label">Management</span>
+        <strong><%= managementCount %></strong>
+        <p>Operational managers with limited admin workspace permissions.</p>
+      </article>
+      <article class="governance-summary-card">
+        <span class="governance-summary-label">Public Accounts</span>
+        <strong><%= customerCount %></strong>
+        <p>Customer and basic user accounts without staff governance scope.</p>
+      </article>
+    </section>
+
+    <section class="governance-command-bar">
+      <div>
+        <h2>Access Control Directory</h2>
+        <p><%= staffUsers.length %> staff account<%= staffUsers.length === 1 ? '' : 's' %> currently hold operational access across <%= availableCities.length %> enabled location<%= availableCities.length === 1 ? '' : 's' %>.<%= activeFilterCount ? ' ' + users.length + ' result' + (users.length === 1 ? '' : 's') + ' match the current filters.' : '' %></p>
+      </div>
+      <div class="governance-command-bar-notes">
+        <span class="badge-status badge-admin">Role Changes</span>
+        <span class="badge-status badge-city">Location Scope</span>
+        <span class="badge-status badge-user">Live Policy Editor</span>
+      </div>
+    </section>
+
+    <section class="governance-filter-panel">
+      <form method="GET" action="/admin/users" class="governance-filter-form">
+        <label class="governance-filter-field governance-filter-field-search">
+          <span>Search Accounts</span>
+          <input type="search" name="q" value="<%= filters.q %>" class="form-control" placeholder="Search by username or email">
+        </label>
+
+        <label class="governance-filter-field">
+          <span>Role</span>
+          <select name="role" class="form-control governance-select">
+            <option value="all" <%= filters.role === 'all' ? 'selected' : '' %>>All roles</option>
+            <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            <option value="management" <%= filters.role === 'management' ? 'selected' : '' %>>Management</option>
+            <option value="employee" <%= filters.role === 'employee' ? 'selected' : '' %>>Employee</option>
+            <option value="user" <%= filters.role === 'user' ? 'selected' : '' %>>User</option>
+          </select>
+        </label>
+
+        <label class="governance-filter-field">
+          <span>Location</span>
+          <select name="city" class="form-control governance-select">
+            <option value="all" <%= filters.city === 'all' ? 'selected' : '' %>>All enabled cities</option>
+            <% availableCities.forEach((cityOption) => { %>
+              <option value="<%= cityOption %>" <%= filters.city === cityOption ? 'selected' : '' %>><%= cityOption %></option>
+            <% }) %>
+          </select>
+        </label>
+
+        <div class="governance-filter-actions">
+          <button type="submit" class="btn btn-secondary">Apply Filters</button>
+          <a href="/admin/users" class="btn btn-link">Clear</a>
+        </div>
+      </form>
+    </section>
+
+    <section class="governance-user-grid">
+      <% if (!users.length) { %>
+        <article class="governance-empty-state">
+          <h3>No accounts match the current filters</h3>
+          <p>Adjust the search, role, or location filters to expand the governance directory.</p>
+          <a href="/admin/users" class="btn btn-secondary">Reset Filters</a>
+        </article>
+      <% } %>
+
+      <% users.forEach((account) => { %>
+        <% const isStaff = account.role === 'employee' || account.role === 'management' || account.role === 'admin'; %>
+        <% const isSelf = account.id === user.id; %>
+        <% const allowedCities = (account.allowed_cities || '').split(',').map((city) => city.trim()).filter(Boolean); %>
+        <% const locationSelection = allowedCities.length ? allowedCities : [account.primary_city || 'DALLAS']; %>
+        <% const auditEntries = auditLogMap[account.id] || []; %>
+
+        <article class="governance-user-card <%= isSelf ? 'governance-user-card-self' : '' %>">
+          <div class="governance-user-card-head">
+            <div>
+              <div class="governance-user-title-row">
+                <h3><%= account.username %></h3>
+                <span class="badge-status badge-<%= account.role %>"><%= account.role %></span>
+                <% if (isSelf) { %>
+                  <span class="badge-status badge-city-soft">Your Account</span>
+                <% } %>
+              </div>
+              <p class="governance-user-email"><%= account.email %></p>
+            </div>
+            <div class="governance-user-meta">
+              <span>ID <%= account.id %></span>
+              <span>Joined <%= new Date(account.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+            </div>
+          </div>
+
+          <div class="governance-user-layout">
+            <section class="governance-user-panel">
+              <h4>Access Snapshot</h4>
+              <div class="governance-info-list">
+                <div class="governance-info-item">
+                  <span class="governance-info-label">Current Role</span>
+                  <strong><%= account.role %></strong>
+                </div>
+                <div class="governance-info-item">
+                  <span class="governance-info-label">Department / Title</span>
+                  <strong><%= account.department ? account.department + (account.job_title ? ' — ' + account.job_title : '') : 'Not assigned' %></strong>
+                </div>
+                <div class="governance-info-item">
+                  <span class="governance-info-label">Primary Location</span>
+                  <strong><%= isStaff ? (account.primary_city || 'DALLAS') : 'Not in staff scope' %></strong>
+                </div>
+              </div>
+
+              <div class="governance-badge-stack">
+                <% if (isStaff) { %>
+                  <span class="badge-status badge-city">Primary: <%= account.primary_city || 'DALLAS' %></span>
+                  <% locationSelection.forEach((cityOption) => { %>
+                    <span class="badge-status badge-city-soft"><%= cityOption %></span>
+                  <% }) %>
+                <% } else { %>
+                  <span class="badge-status badge-user">Public Account</span>
+                <% } %>
+              </div>
+
+              <p class="governance-panel-note">
+                <% if (isStaff) { %>
+                  This account is already provisioned for internal workspace access.
+                <% } else { %>
+                  Promote this account to employee or admin if it should be moved into staff operations.
+                <% } %>
+              </p>
+            </section>
+
+            <section class="governance-user-panel governance-user-panel-form">
+              <h4>Manage Access</h4>
+              <form method="POST" action="/admin/users/<%= account.id %>/access" class="governance-form" data-governance-form>
+                <input type="hidden" name="filter_q" value="<%= filters.q %>">
+                <input type="hidden" name="filter_role" value="<%= filters.role %>">
+                <input type="hidden" name="filter_city" value="<%= filters.city %>">
+
+                <label class="governance-field">
+                  <span>Username</span>
+                  <input type="text" name="username" class="form-control" value="<%= account.username %>" required>
+                </label>
+
+                <div class="governance-form-row">
+                  <label class="governance-field">
+                    <span>Role</span>
+                    <% if (isSelf) { %>
+                      <input type="hidden" name="role" value="<%= account.role %>">
+                      <select class="form-control governance-select" disabled>
+                        <option><%= account.role %></option>
+                      </select>
+                    <% } else { %>
+                      <select name="role" class="form-control governance-select" data-governance-role-select>
+                        <option value="user" <%= account.role === 'user' ? 'selected' : '' %>>user</option>
+                        <option value="employee" <%= account.role === 'employee' ? 'selected' : '' %>>employee</option>
+                        <option value="management" <%= account.role === 'management' ? 'selected' : '' %>>management</option>
+                        <option value="admin" <%= account.role === 'admin' ? 'selected' : '' %>>admin</option>
+                      </select>
+                    <% } %>
+                  </label>
+
+                  <label class="governance-field">
+                    <span>Primary City</span>
+                    <select name="primaryCity" class="form-control governance-select">
+                      <% availableCities.forEach((cityOption) => { %>
+                        <option value="<%= cityOption %>" <%= (account.primary_city || 'DALLAS') === cityOption ? 'selected' : '' %>><%= cityOption %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                </div>
+
+                <div class="governance-field">
+                  <span>Allowed City Access</span>
+                  <div class="governance-city-options">
+                    <% availableCities.forEach((cityOption) => { %>
+                      <label class="governance-city-check">
+                        <input type="checkbox" name="allowedCities" value="<%= cityOption %>" <%= locationSelection.includes(cityOption) ? 'checked' : '' %>>
+                        <span><%= cityOption %></span>
+                      </label>
+                    <% }) %>
+                  </div>
+                </div>
+
+                <div class="governance-form-row">
+                  <label class="governance-field">
+                    <span>Set New Password (optional)</span>
+                    <input type="password" name="newPassword" class="form-control" minlength="8" placeholder="Leave blank to keep current password">
+                  </label>
+
+                  <label class="governance-field">
+                    <span>Confirm New Password</span>
+                    <input type="password" name="confirmPassword" class="form-control" minlength="8" placeholder="Repeat new password">
+                  </label>
+                </div>
+
+                <div class="governance-risk-banner <%= account.role === 'admin' ? 'governance-risk-banner-visible' : '' %>" data-governance-risk-banner>
+                  <strong>High-risk permission change</strong>
+                  <p>Admin access grants governance controls, invite management, audit visibility, and platform-level configuration changes. Only assign this role when operationally necessary.</p>
+                </div>
+
+                <div class="governance-form-actions">
+                  <div class="governance-form-guidance">
+                    <% if (isSelf) { %>
+                      <span class="muted-text">Your role is locked here, but location settings can still be updated.</span>
+                    <% } else { %>
+                      <span class="muted-text">Changes apply immediately after saving.</span>
+                    <% } %>
+                  </div>
+                  <button type="submit" class="btn btn-secondary">Save Access</button>
+                </div>
+              </form>
+
+              <% if (!isSelf) { %>
+                <div class="governance-danger-zone">
+                  <div>
+                    <strong>Delete Account</strong>
+                    <p>This removes the account from active access, signs the user out of future logins, and archives the account through the existing soft-delete flow.</p>
+                  </div>
+
+                  <form method="POST" action="/admin/users/<%= account.id %>/delete" class="governance-danger-form">
+                    <input type="hidden" name="filter_q" value="<%= filters.q %>">
+                    <input type="hidden" name="filter_role" value="<%= filters.role %>">
+                    <input type="hidden" name="filter_city" value="<%= filters.city %>">
+                    <label class="governance-field">
+                      <span>Type DELETE to confirm</span>
+                      <input type="text" name="confirmationText" class="form-control" placeholder="DELETE" required>
+                    </label>
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                  </form>
+                </div>
+              <% } %>
+
+              <% if (auditEntries.length) { %>
+                <details class="governance-audit-history">
+                  <summary>
+                    <span>Access Change History</span>
+                    <span class="governance-audit-summary"><%= auditEntries.length + ' recent entr' + (auditEntries.length === 1 ? 'y' : 'ies') %></span>
+                  </summary>
+
+                  <div class="governance-audit-list">
+                    <% auditEntries.forEach((entry) => { %>
+                      <article class="governance-audit-item">
+                        <div class="governance-audit-item-head">
+                          <strong><%= entry.change_summary %></strong>
+                          <span><%= new Date(entry.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) %></span>
+                        </div>
+                        <p>Updated by <strong><%= entry.actor_username || 'Unknown admin' %></strong></p>
+                        <div class="governance-audit-badges">
+                          <span class="badge-status badge-<%= entry.new_role || 'user' %>"><%= entry.old_role || 'none' %> → <%= entry.new_role || 'none' %></span>
+                          <% if (entry.new_primary_city || entry.old_primary_city) { %>
+                            <span class="badge-status badge-city"><%= entry.old_primary_city || 'none' %> → <%= entry.new_primary_city || 'none' %></span>
+                          <% } %>
+                        </div>
+                      </article>
+                    <% }) %>
+                  </div>
+                </details>
+              <% } else { %>
+                <div class="governance-audit-empty">
+                  <strong>Access Change History</strong>
+                  <p class="muted-text">This account has not had any recorded governance changes yet.</p>
+                </div>
+              <% } %>
+            </section>
+          </div>
+        </article>
+      <% }) %>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    (() => {
+      const forms = Array.from(document.querySelectorAll('[data-governance-form]'));
+
+      forms.forEach((form) => {
+        const roleSelect = form.querySelector('[data-governance-role-select]');
+        const riskBanner = form.querySelector('[data-governance-risk-banner]');
+
+        if (!roleSelect || !riskBanner) {
+          return;
+        }
+
+        const syncRiskBanner = () => {
+          riskBanner.classList.toggle('governance-risk-banner-visible', roleSelect.value === 'admin');
+        };
+
+        roleSelect.addEventListener('change', syncRiskBanner);
+        syncRiskBanner();
+      });
+    })();
+  </script>
+</body>
+</html>

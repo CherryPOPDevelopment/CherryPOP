@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invite Code Manager - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-admin">
+    <section class="workspace-hero workspace-hero-admin">
+      <div class="container">
+        <h1>Employee Invite Code Manager</h1>
+        <p>Create and track invite codes for new employee onboarding.</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="workspace-card workspace-card-critical" style="max-width: 860px; margin: 0 auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+          <h2 style="margin:0;">Generate Invite Code</h2>
+          <a href="/admin" class="btn btn-secondary btn-sm">Back to <%= user && user.role === 'management' ? 'Management' : 'Admin' %> Workspace</a>
+        </div>
+
+        <% if (message) { %>
+          <p class="admin-inline-message"><%= message %></p>
+        <% } %>
+        <% if (newInviteCode) { %>
+          <div class="admin-invite-highlight">
+            <span>New Code</span>
+            <strong><%= newInviteCode %></strong>
+          </div>
+        <% } %>
+
+        <form method="POST" action="/admin/invite-codes" class="admin-invite-form">
+          <label for="inviteRole">Access Level</label>
+          <select id="inviteRole" name="inviteRole" required>
+            <option value="employee" selected>Employee</option>
+            <option value="admin">Management / Admin</option>
+          </select>
+
+          <label for="maxUses">Max Uses</label>
+          <input id="maxUses" name="maxUses" type="number" min="1" max="100" value="1" required>
+
+          <label for="expiresInDays">Expires In (Days)</label>
+          <input id="expiresInDays" name="expiresInDays" type="number" min="1" max="365" value="14">
+
+          <button type="submit" class="btn btn-danger">Generate Invite Code</button>
+        </form>
+
+        <div class="admin-invite-list">
+          <h3>Recent Codes</h3>
+          <% if (inviteCodes && inviteCodes.length > 0) { %>
+            <% inviteCodes.forEach(code => { %>
+              <div class="admin-invite-item">
+                <div>
+                  <strong><%= code.code %></strong>
+                  <p>By <%= code.created_by_username %> • Uses <%= code.used_count %>/<%= code.max_uses %></p>
+                  <% if (code.expires_at) { %>
+                    <p>Expires <%= new Date(code.expires_at).toLocaleDateString() %></p>
+                  <% } %>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                  <span class="badge-status <%= (code.invite_role || 'employee') === 'admin' ? 'badge-admin' : 'badge-employee' %>">
+                    <%= (code.invite_role || 'employee') === 'admin' ? 'Admin' : 'Employee' %>
+                  </span>
+                  <span class="badge-status <%= code.is_active ? 'badge-confirmed' : 'badge-cancelled' %>">
+                    <%= code.is_active ? 'Active' : 'Used' %>
+                  </span>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p class="muted-text">No invite codes generated yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

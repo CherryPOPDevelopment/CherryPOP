@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Workspace - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-employee">
+    <section class="workspace-hero">
+      <div class="container">
+        <h1>MY WORKSPACE</h1>
+        <p>Collaborate with team members, share recommendations, and discover new events and places to recommend to guests.</p>
+        <div class="workspace-location-banner">
+          <span class="badge-status badge-city">Active Location: <%= city %></span>
+          <span class="workspace-location-copy">Your workspace is showing only content for this property.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="container workspace-grid">
+      <div class="workspace-card">
+        <h2>Discussion Board</h2>
+        <p>Connect with team members, share updates, and collaborate on guest experiences.</p>
+        <a href="/discussion" class="btn btn-primary">Discussion Board</a>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Recommendations</h2>
+        <p>Create new recommendations or update existing ones without waiting for approval.</p>
+        <a href="/places/my-recommendations" class="btn btn-primary">My Recommendations</a>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Shift Notes</h2>
+        <p>Maintain internal notes for handoff between concierge shifts.</p>
+        <a href="/employee/shift-notes" class="btn btn-secondary">Open Shift Notes</a>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Team Directory</h2>
+        <p>View coworker account details for the current property without opening anyone else’s settings.</p>
+        <a href="/account/team" class="btn btn-secondary">Browse Team Accounts</a>
+      </div>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

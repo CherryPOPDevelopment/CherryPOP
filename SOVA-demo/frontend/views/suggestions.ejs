@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suggestion Box - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+
+  <main class="container">
+    <div class="content-page support-page">
+      <div class="support-hero">
+        <div>
+          <p class="support-eyebrow">Support Center</p>
+          <h1>Suggestion Box</h1>
+          <p>Share ideas for workflow improvements and guest experience enhancements.</p>
+        </div>
+        <div class="support-quick-links">
+          <a class="support-chip" href="/support">Support Home</a>
+          <a class="support-chip" href="/support/faq">FAQ</a>
+          <a class="support-chip" href="/support/contact">Contact</a>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-<%= messageType === 'success' ? 'success' : (messageType === 'error' ? 'error' : 'info') %>"><%= message %></div>
+      <% } %>
+
+      <section class="support-section support-grid">
+        <div class="support-card">
+          <div class="support-section-heading">
+            <h2>Suggestion Box</h2>
+            <p>Submit ideas that improve planning, operations, or concierge workflows.</p>
+          </div>
+          <form method="POST" action="/support/suggestions" class="support-form">
+            <div class="form-group">
+              <label for="suggestion_name">Name</label>
+              <input type="text" id="suggestion_name" name="suggestion_name" value="<%= formData.suggestion_name || '' %>" placeholder="Optional">
+            </div>
+            <div class="form-group">
+              <label for="suggestion_email">Email</label>
+              <input type="email" id="suggestion_email" name="suggestion_email" value="<%= formData.suggestion_email || '' %>" placeholder="Optional if you do not need a reply">
+            </div>
+            <div class="form-group">
+              <label for="suggestion_subject">Suggestion Title</label>
+              <input type="text" id="suggestion_subject" name="suggestion_subject" value="<%= formData.suggestion_subject || '' %>" required>
+            </div>
+            <div class="form-group">
+              <label for="suggestion_message">Suggestion Details</label>
+              <textarea id="suggestion_message" name="suggestion_message" rows="6" required><%= formData.suggestion_message || '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Suggestion</button>
+          </form>
+        </div>
+
+        <div class="support-card support-aside-card">
+          <div class="support-section-heading">
+            <h2>What makes a strong suggestion?</h2>
+            <p>Useful requests are specific, scoped, and tied to a real concierge workflow.</p>
+          </div>
+          <ul class="support-list">
+            <li>Explain who the feature helps: guest, employee, or admin.</li>
+            <li>Describe the friction in the current workflow.</li>
+            <li>Suggest the outcome you want, not just a UI tweak.</li>
+            <li>Call out whether the request is city-specific or platform-wide.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <%- include('./partials/footer') %>
+</body>
+</html>

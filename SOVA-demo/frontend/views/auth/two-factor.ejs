@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two-Factor Verification - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>Two-Factor Verification</h1>
+      <p class="auth-subtext">Enter the 6-digit code from your authenticator app to finish signing in to <strong><%= identifier %></strong>.</p>
+
+      <% if (message) { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/2fa">
+        <div class="form-group">
+          <label for="code">Authentication Code</label>
+          <input type="text" id="code" name="code" value="<%= code || '' %>" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Verify And Continue</button>
+      </form>
+
+      <p class="auth-link"><a href="/auth/login">Back to login</a></p>
+    </div>
+  </div>
+</body>
+</html>

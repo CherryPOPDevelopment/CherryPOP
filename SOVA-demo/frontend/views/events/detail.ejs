@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= event.title %> - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="container">
+    <div class="place-detail">
+      <div class="detail-header">
+        <h1><%= event.title %></h1>
+        <span class="category-badge"><%= event.category %></span>
+      </div>
+
+      <% if (event.tags) { %>
+        <div class="place-tags detail-tags">
+          <% event.tags.split(',').map((tag) => tag.trim()).filter(Boolean).forEach((tag) => { %>
+            <span class="tag-pill"><%= tag %></span>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <div class="detail-info">
+        <div class="info-section">
+          <h3>Location</h3>
+          <p><%= event.location %></p>
+        </div>
+
+        <div class="info-section">
+          <h3>Start</h3>
+          <p><% if (event.start_at) { %>
+            <%= formatDate(event.start_at, { month: 'long', day: 'numeric', year: 'numeric' }) %> at <%= formatTime(event.start_at) %>
+          <% } %></p>
+        </div>
+
+        <% if (event.end_at) { %>
+          <div class="info-section">
+            <h3>End</h3>
+            <p><%= formatTime(event.end_at) %></p>
+          </div>
+        <% } %>
+
+        <div class="info-section">
+          <h3>Capacity</h3>
+          <p><%= event.capacity %> guests</p>
+        </div>
+
+        <div class="info-section">
+          <h3>Event Type</h3>
+          <p><%= (event.recurrence_type || 'one_time') === 'recurring' ? 'Recurring' : 'One-time' %></p>
+        </div>
+
+        <% if (event.related_place_id && event.related_place_title) { %>
+          <div class="info-section">
+            <h3>Linked Recommendation</h3>
+            <p>
+              <% if ((event.related_place_relation || '').toLowerCase() === 'at') { %>
+                At
+              <% } else if ((event.related_place_relation || '').toLowerCase() === 'by') { %>
+                By
+              <% } else { %>
+                Connected to
+              <% } %>
+              <a href="/places/<%= event.related_place_id %>"><%= event.related_place_title %></a>
+            </p>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="detail-description">
+        <h2>About</h2>
+        <p><%= event.description %></p>
+      </div>
+
+      <div class="place-actions">
+        <a href="/events" class="btn btn-secondary">← Back to Events</a>
+        <% if (user && user.role === 'admin' && !isDemoUser) { %>
+          <a href="/events/<%= event.id %>/edit" class="btn btn-primary">Edit</a>
+          <% if (event.is_active) { %>
+            <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
+              <button
+                type="button"
+                class="btn btn-secondary js-archive-trigger"
+                data-event-title="<%= event.title %>"
+                data-archive-action="/events/<%= event.id %>/archive"
+              >Archive</button>
+            </form>
+          <% } else { %>
+            <form method="POST" action="/events/<%= event.id %>/reactivate" style="display:inline;">
+              <button type="submit" class="btn btn-primary">Reactivate</button>
+            </form>
+          <% } %>
+          <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE" style="display:inline;">
+            <button
+              type="button"
+              class="btn btn-danger js-delete-trigger"
+              data-event-title="<%= event.title %>"
+              data-delete-action="/events/<%= event.id %>/delete?_method=DELETE"
+            >Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <% if (user && user.role === 'admin' && event.is_active) { %>
+    <div class="modal-backdrop" id="archiveModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="archiveModalTitle">Archive Event</h2>
+          <button type="button" class="modal-close" id="archiveModalClose" aria-label="Close archive dialog">×</button>
+        </div>
+        <p class="modal-copy" id="archiveModalCopy">Move this event into inactive events?</p>
+        <p class="modal-copy modal-copy-soft">Archived events are removed from the live events list and can be reactivated later from the admin inactive-events page.</p>
+        <form method="POST" action="/events/<%= event.id %>/archive" id="archiveModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="archiveModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Archive Event</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="deleteModal" hidden>
+      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="modal-dialog-head">
+          <h2 id="deleteModalTitle">Delete Event</h2>
+          <button type="button" class="modal-close" id="deleteModalClose" aria-label="Close delete dialog">×</button>
+        </div>
+        <p class="modal-copy" id="deleteModalCopy">Delete this event permanently?</p>
+        <p class="modal-copy modal-copy-soft">This action permanently removes the event. Use archive instead if you may need to restore it later.</p>
+        <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE" id="deleteModalForm" class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="deleteModalCancel">Cancel</button>
+          <button type="submit" class="btn btn-danger">Delete Event</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+    (function () {
+      const activeModals = [];
+
+      const setupModal = function (options) {
+        const modal = document.getElementById(options.modalId);
+        const modalForm = document.getElementById(options.formId);
+        const modalCopy = document.getElementById(options.copyId);
+        const closeButton = document.getElementById(options.closeId);
+        const cancelButton = document.getElementById(options.cancelId);
+        const trigger = document.querySelector(options.triggerSelector);
+
+        if (!modal || !modalForm || !modalCopy || !closeButton || !cancelButton || !trigger) {
+          return;
+        }
+
+        const closeModal = function () {
+          modal.hidden = true;
+          const modalIndex = activeModals.indexOf(closeModal);
+          if (modalIndex >= 0) {
+            activeModals.splice(modalIndex, 1);
+          }
+          if (!activeModals.length) {
+            document.body.classList.remove('modal-open');
+          }
+          trigger.focus();
+        };
+
+        trigger.addEventListener('click', function () {
+          modalForm.action = trigger.getAttribute(options.actionAttribute);
+          modalCopy.textContent = options.getCopy(trigger);
+          modal.hidden = false;
+          if (!activeModals.includes(closeModal)) {
+            activeModals.push(closeModal);
+          }
+          document.body.classList.add('modal-open');
+          closeButton.focus();
+        });
+
+        closeButton.addEventListener('click', closeModal);
+        cancelButton.addEventListener('click', closeModal);
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+
+        return closeModal;
+      };
+
+      setupModal({
+        modalId: 'archiveModal',
+        formId: 'archiveModalForm',
+        copyId: 'archiveModalCopy',
+        closeId: 'archiveModalClose',
+        cancelId: 'archiveModalCancel',
+        triggerSelector: '.js-archive-trigger',
+        actionAttribute: 'data-archive-action',
+        getCopy: function (trigger) {
+          return 'Move "' + trigger.getAttribute('data-event-title') + '" into inactive events?';
+        }
+      });
+
+      setupModal({
+        modalId: 'deleteModal',
+        formId: 'deleteModalForm',
+        copyId: 'deleteModalCopy',
+        closeId: 'deleteModalClose',
+        cancelId: 'deleteModalCancel',
+        triggerSelector: '.js-delete-trigger',
+        actionAttribute: 'data-delete-action',
+        getCopy: function (trigger) {
+          return 'Delete "' + trigger.getAttribute('data-event-title') + '" permanently?';
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') {
+          return;
+        }
+
+        const closeModal = activeModals[activeModals.length - 1];
+        if (closeModal) {
+          closeModal();
+        }
+      });
+    })();
+    </script>
+  <% } %>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

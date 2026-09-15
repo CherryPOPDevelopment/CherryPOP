@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Recommendations - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container queue-page">
+    <div class="queue-page-header">
+      <div>
+        <h1>My Recommendations</h1>
+        <p class="queue-page-intro">Review everything you have uploaded in <strong><%= city %></strong>, including live recommendations and drafts.</p>
+      </div>
+      <div class="queue-card-actions" style="margin-top: 0;">
+        <a href="/places/new/form" class="btn btn-primary">Add Recommendation</a>
+        <a href="/places" class="btn btn-secondary">Browse All</a>
+      </div>
+    </div>
+
+    <% if (message) { %>
+      <div class="alert alert-success"><%= message %></div>
+    <% } %>
+
+    <% const tabConfig = [
+      { key: 'all', label: 'All', items: groupedPlaces?.all || [] },
+      { key: 'published', label: 'Published', items: groupedPlaces?.published || [] },
+      { key: 'drafts', label: 'Drafts', items: groupedPlaces?.drafts || [] }
+    ]; %>
+
+    <div class="queue-sidebar-layout">
+      <aside class="queue-sidebar" aria-label="My recommendations sections">
+        <div class="queue-sidebar-tablist" role="tablist" aria-label="Recommendation filters">
+          <% tabConfig.forEach((section) => { %>
+            <a
+              href="/places/my-recommendations?tab=<%= section.key %>"
+              class="queue-sidebar-tab <%= activeTab === section.key ? 'active' : '' %>"
+            >
+              <span><%= section.label %></span>
+              <strong><%= section.items.length %></strong>
+            </a>
+          <% }) %>
+        </div>
+      </aside>
+
+      <div class="queue-sidebar-panels">
+        <% const activeSection = tabConfig.find((section) => section.key === activeTab) || tabConfig[0]; %>
+        <section class="queue-sidebar-panel active" role="tabpanel">
+          <div class="queue-section-header">
+            <div>
+              <h2><%= activeSection.label %></h2>
+              <p class="muted-text">
+                <% if (activeSection.key === 'drafts') { %>
+                  Drafts stay private until you publish them.
+                <% } else if (activeSection.key === 'published') { %>
+                  These recommendations are currently live.
+                <% } else { %>
+                  This view includes both live recommendations and drafts.
+                <% } %>
+              </p>
+            </div>
+          </div>
+
+          <% if (activeSection.items.length) { %>
+            <div class="queue-list">
+              <% activeSection.items.forEach((place) => { %>
+                <% const isDraft = place.approval_status === 'draft'; %>
+                <article class="queue-card">
+                  <% if (Number(place.is_coming_soon || 0) === 1) { %>
+                    <p><span class="badge-status badge-pending">Coming Soon</span></p>
+                  <% } %>
+                  <div class="queue-card-head">
+                    <div>
+                      <h3><a href="/places/<%= place.id %>"><%= place.title %></a></h3>
+                      <div class="queue-card-meta">
+                        <span><strong>Category:</strong> <%= place.category %></span>
+                        <span><strong>Location:</strong> <%= place.location %></span>
+                        <span><strong>Updated:</strong> <%= formatDate(place.updated_at || place.created_at) %></span>
+                      </div>
+                    </div>
+                    <span class="badge-status <%= isDraft ? 'badge-draft' : 'badge-approved' %>"><%= isDraft ? 'draft' : 'live' %></span>
+                  </div>
+
+                  <% if (place.short_description) { %>
+                    <p class="muted-text"><%= place.short_description %></p>
+                  <% } %>
+
+                  <% if (place.hasBusinessHours) { %>
+                    <p class="muted-text"><strong>Hours:</strong> <%= place.businessHoursLabel %></p>
+                    <p><span class="badge-status <%= place.isOpenNow ? 'badge-approved' : 'badge-draft' %>"><%= place.openStatusLabel %></span></p>
+                    <% if (place.holidayNotice) { %>
+                      <p class="muted-text">Holiday might affect these hours</p>
+                    <% } %>
+                  <% } %>
+
+                  <div class="queue-card-actions">
+                    <a href="/places/<%= place.id %>" class="btn btn-secondary">View</a>
+                    <a href="/places/<%= place.id %>/edit" class="btn btn-primary">Edit</a>
+                    <% if (isDraft) { %>
+                      <form method="POST" action="/places/<%= place.id %>/publish" class="queue-inline-form">
+                        <button type="submit" class="btn btn-secondary">Publish</button>
+                      </form>
+                    <% } else { %>
+                      <form method="POST" action="/places/<%= place.id %>/draft" class="queue-inline-form">
+                        <button type="submit" class="btn btn-secondary">Move To Drafts</button>
+                      </form>
+                    <% } %>
+                    <form method="POST" action="/places/<%= place.id %>/delete?_method=DELETE" class="queue-inline-form">
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </div>
+                </article>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <div class="queue-section-empty">
+              <p>
+                <% if (activeSection.key === 'drafts') { %>
+                  You do not have any drafts right now.
+                <% } else if (activeSection.key === 'published') { %>
+                  You have not published any recommendations yet.
+                <% } else { %>
+                  You have not added any recommendations yet.
+                <% } %>
+              </p>
+              <a href="/places/new/form" class="btn btn-primary">Add Recommendation</a>
+            </div>
+          <% } %>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

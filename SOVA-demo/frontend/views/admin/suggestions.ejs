@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suggestion Inbox - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="container queue-page">
+    <div class="queue-page-header">
+      <div>
+        <h1>Suggestion Inbox - <%= sectionTitle %></h1>
+        <p class="queue-page-intro"><%= sectionIntro %></p>
+        <p>
+          <span class="badge-status badge-pending"><%= Number(totalSuggestions || 0) %> submitted</span>
+          <span class="badge-status badge-pending"><%= Number(statusCounts?.pending || 0) %> pending</span>
+          <span class="badge-status badge-approved"><%= Number(statusCounts?.approved || 0) %> approved</span>
+          <span class="badge-status badge-approved"><%= Number(statusCounts?.completed || 0) %> completed</span>
+          <span class="badge-status badge-rejected"><%= Number(statusCounts?.rejected || 0) %> rejected</span>
+          <span class="badge-status badge-draft"><%= Number(statusCounts?.archived || 0) %> archived</span>
+          <span class="badge-status badge-approved"><%= Number(loadedSuggestions || 0) %> loaded in this view</span>
+        </p>
+        <p>
+          <a href="/admin/suggestions/open" class="btn btn-link">Open (<%= Number(sectionCounts?.open || 0) %>)</a>
+          <a href="/admin/suggestions/approved" class="btn btn-link">Approved (<%= Number(sectionCounts?.approved || 0) %>)</a>
+          <a href="/admin/suggestions/completed" class="btn btn-link">Completed (<%= Number(sectionCounts?.completed || 0) %>)</a>
+          <a href="/admin/suggestions/archived" class="btn btn-link">Archived (<%= Number(sectionCounts?.archived || 0) %>)</a>
+        </p>
+      </div>
+      <a href="/admin" class="btn btn-secondary">← Back to Workspace</a>
+    </div>
+
+    <% if (message) { %>
+      <div class="alert alert-success"><%= message %></div>
+    <% } %>
+
+    <% if (!suggestions || !suggestions.length) { %>
+      <section class="empty-state">
+        <p>No suggestions found in this section.</p>
+      </section>
+    <% } else { %>
+      <section class="queue-list" style="margin-bottom: 2rem;">
+        <% suggestions.forEach((entry) => { %>
+          <% const suggestionStatus = (entry.request_status || 'pending').toLowerCase(); %>
+          <% const statusBadgeClass = suggestionStatus === 'approved'
+               ? (entry.completed_at ? 'badge-approved' : 'badge-pending')
+               : (suggestionStatus === 'rejected' ? 'badge-rejected' : (suggestionStatus === 'archived' ? 'badge-draft' : 'badge-pending')); %>
+          <article class="queue-card">
+            <div class="queue-card-head">
+              <div>
+                <h2><%= entry.subject || 'Untitled suggestion' %></h2>
+                <div class="queue-card-meta">
+                  <span><strong>From:</strong> <%= entry.name || 'Anonymous' %></span>
+                  <span><strong>Email:</strong> <%= entry.email || 'Not provided' %></span>
+                  <span><strong>City:</strong> <%= entry.city || 'Unknown' %></span>
+                  <span><strong>Submitted:</strong> <%= formatDateTime(entry.created_at) %></span>
+                  <% if (entry.account_username) { %>
+                    <span class="badge-status badge-city-soft">Account: <%= entry.account_username %> (<%= entry.account_role || 'user' %>)</span>
+                  <% } else { %>
+                    <span class="badge-status badge-draft">Guest / Anonymous</span>
+                  <% } %>
+                  <% if (entry.reviewed_by_username) { %>
+                    <span><strong>Reviewed by:</strong> <%= entry.reviewed_by_username %></span>
+                  <% } %>
+                  <% if (entry.reviewed_at) { %>
+                    <span><strong>Reviewed at:</strong> <%= formatDateTime(entry.reviewed_at) %></span>
+                  <% } %>
+                  <% if (entry.completed_by_username) { %>
+                    <span><strong>Completed by:</strong> <%= entry.completed_by_username %></span>
+                  <% } %>
+                  <% if (entry.completed_at) { %>
+                    <span><strong>Completed at:</strong> <%= formatDateTime(entry.completed_at) %></span>
+                  <% } %>
+                </div>
+              </div>
+              <span class="badge-status <%= statusBadgeClass %>"><%= (suggestionStatus === 'approved' && entry.completed_at) ? 'completed' : suggestionStatus %></span>
+            </div>
+
+            <p style="white-space: pre-wrap;"><%= entry.message %></p>
+
+            <% if (entry.status_note) { %>
+              <p><strong>Review note:</strong> <%= entry.status_note %></p>
+            <% } %>
+
+            <% if (activeSection === 'open') { %>
+              <div class="queue-card-actions">
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/approve" class="queue-inline-form">
+                  <input type="hidden" name="status_note" value="Approved in suggestion inbox">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                </form>
+
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/reject" class="queue-inline-form">
+                  <input type="hidden" name="status_note" value="Rejected in suggestion inbox">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                </form>
+
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/archive" class="queue-inline-form">
+                  <input type="hidden" name="status_note" value="Archived in suggestion inbox">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-secondary btn-sm">Archive</button>
+                </form>
+              </div>
+            <% } else if (activeSection === 'approved') { %>
+              <div class="queue-card-actions">
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/complete" class="queue-inline-form">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-primary btn-sm">Mark Completed</button>
+                </form>
+
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/archive" class="queue-inline-form">
+                  <input type="hidden" name="status_note" value="Archived in suggestion inbox">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-secondary btn-sm">Archive</button>
+                </form>
+              </div>
+            <% } else if (activeSection === 'completed') { %>
+              <div class="queue-card-actions">
+                <form method="POST" action="/admin/suggestions/<%= entry.id %>/archive" class="queue-inline-form">
+                  <input type="hidden" name="status_note" value="Archived in suggestion inbox">
+                  <input type="hidden" name="section" value="<%= activeSection %>">
+                  <button type="submit" class="btn btn-secondary btn-sm">Archive</button>
+                </form>
+              </div>
+            <% } %>
+          </article>
+        <% }) %>
+      </section>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

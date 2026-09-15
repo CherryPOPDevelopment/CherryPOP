@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Location - SOVA Scoop</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>Select Your Location</h1>
+      <p class="auth-subtext">Choose which property interface to open for <strong><%= identifier %></strong>.</p>
+
+      <% if (message) { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <form method="POST" action="/auth/location">
+        <div class="form-group">
+          <label for="city">Location</label>
+          <select id="city" name="city" required>
+            <% cities.forEach(city => { %>
+              <option value="<%= city %>" <%= selectedCity === city ? 'selected' : '' %>><%= city %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Continue</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

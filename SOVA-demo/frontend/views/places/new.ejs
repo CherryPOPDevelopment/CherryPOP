@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Recommendation - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  
+  <main class="container">
+    <div class="form-container">
+      <h1>Add New Recommendation</h1>
+      <p class="queue-page-intro">New recommendations are published immediately and can be updated any time.</p>
+      <% const missingFieldValues = (typeof missingFields !== 'undefined' && Array.isArray(missingFields)) ? missingFields : []; %>
+      <% const missingFieldSet = new Set(missingFieldValues); %>
+      
+      <% if (typeof message !== 'undefined') { %>
+        <div class="alert alert-error"><%= message %></div>
+      <% } %>
+
+      <% if (missingFieldSet.size > 0) { %>
+        <div class="alert alert-error validation-alert" role="alert">
+          Missing required fields: <%= Array.from(missingFieldSet).map((field) => {
+            const labelMap = {
+              title: 'Place Name',
+              category: 'Category',
+              detailed_description: 'Detailed Description',
+              location: 'Location/Area'
+            };
+            return labelMap[field] || field;
+          }).join(', ') %>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/places/new/create">
+        <div class="form-group <%= missingFieldSet.has('title') ? 'form-group--missing' : '' %>">
+          <label for="title">Place Name *</label>
+          <input type="text" id="title" name="title" value="<%= draftPlace?.title || '' %>" data-required-label="Place Name" class="<%= missingFieldSet.has('title') ? 'field--missing' : '' %>" required>
+        </div>
+
+        <div class="form-group <%= missingFieldSet.has('category') ? 'form-group--missing' : '' %>">
+          <label for="category">Category *</label>
+          <select id="category" name="category" data-required-label="Category" class="<%= missingFieldSet.has('category') ? 'field--missing' : '' %>" required>
+            <option value="">Select a category</option>
+            <option value="Restaurant" <% if (draftPlace?.category === 'Restaurant') { %>selected<% } %>>Restaurant</option>
+            <option value="Bar" <% if (draftPlace?.category === 'Bar') { %>selected<% } %>>Bar</option>
+            <option value="Speakeasy" <% if (draftPlace?.category === 'Speakeasy') { %>selected<% } %>>Speakeasy</option>
+            <option value="Entertainment" <% if (draftPlace?.category === 'Entertainment') { %>selected<% } %>>Entertainment</option>
+            <option value="Cafe" <% if (draftPlace?.category === 'Cafe') { %>selected<% } %>>Cafe</option>
+            <option value="Shop" <% if (draftPlace?.category === 'Shop') { %>selected<% } %>>Shop</option>
+            <option value="Business" <% if (draftPlace?.category === 'Business') { %>selected<% } %>>Business</option>
+            <option value="Tour" <% if (draftPlace?.category === 'Tour') { %>selected<% } %>>Tour</option>
+            <option value="Experience" <% if (draftPlace?.category === 'Experience') { %>selected<% } %>>Experience</option>
+            <option value="Grocery Store" <% if (draftPlace?.category === 'Grocery Store') { %>selected<% } %>>Grocery Store</option>
+            <option value="Market" <% if (draftPlace?.category === 'Market') { %>selected<% } %>>Market</option>
+            <option value="Mall" <% if (draftPlace?.category === 'Mall') { %>selected<% } %>>Mall</option>
+            <option value="Library" <% if (draftPlace?.category === 'Library') { %>selected<% } %>>Library</option>
+            <option value="Gym" <% if (draftPlace?.category === 'Gym') { %>selected<% } %>>Gym</option>
+            <option value="Other" <% if (draftPlace?.category === 'Other') { %>selected<% } %>>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="short_description">Short Description</label>
+          <input type="text" id="short_description" name="short_description" value="<%= draftPlace?.short_description || '' %>" placeholder="Brief one-liner">
+        </div>
+
+        <div class="form-group <%= missingFieldSet.has('detailed_description') ? 'form-group--missing' : '' %>">
+          <label for="detailed_description">Detailed Description *</label>
+          <textarea id="detailed_description" name="detailed_description" rows="6" data-required-label="Detailed Description" class="<%= missingFieldSet.has('detailed_description') ? 'field--missing' : '' %>" required><%= draftPlace?.detailed_description || '' %></textarea>
+        </div>
+
+        <div class="form-group <%= missingFieldSet.has('location') ? 'form-group--missing' : '' %>">
+          <label for="location">Location/Area *</label>
+          <input type="text" id="location" name="location" value="<%= draftPlace?.location || '' %>" data-required-label="Location/Area" class="<%= missingFieldSet.has('location') ? 'field--missing' : '' %>" required>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address</label>
+          <input type="text" id="address" name="address" value="<%= draftPlace?.address || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" value="<%= draftPlace?.phone || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" value="<%= draftPlace?.website || '' %>" placeholder="Optional website">
+        </div>
+
+        <div class="form-group">
+          <label>Opening Time</label>
+          <div class="time-picker-wrap">
+            <button type="button" class="time-picker-btn" data-time-target="opening_time" data-init-time="<%= draftPlace?.opening_time || '' %>">Select opening time</button>
+            <input type="hidden" id="opening_time" name="opening_time" value="<%= draftPlace?.opening_time || '' %>">
+          </div>
+          <small class="form-hint">Use local property time.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Closing Time</label>
+          <div class="time-picker-wrap">
+            <button type="button" class="time-picker-btn" data-time-target="closing_time" data-init-time="<%= draftPlace?.closing_time || '' %>">Select closing time</button>
+            <input type="hidden" id="closing_time" name="closing_time" value="<%= draftPlace?.closing_time || '' %>">
+          </div>
+          <small class="form-hint">If closing after midnight, set the next-day closing time.</small>
+        </div>
+
+        <% const allWeekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; %>
+        <% const selectedClosedDays = Array.isArray(draftPlace?.closed_days)
+          ? draftPlace.closed_days
+          : (draftPlace?.closed_days ? String(draftPlace.closed_days).split(',').map((day) => day.trim()).filter(Boolean) : []); %>
+        <div class="form-group">
+          <label>Closed Days</label>
+          <div class="days-picker-wrap">
+            <button type="button" class="days-picker-btn" id="closed-days-btn">Select closed days</button>
+            <div class="days-picker-popup" id="closed-days-popup" hidden>
+              <div class="days-picker-grid">
+                <% allWeekdays.forEach((day) => { %>
+                  <label class="day-chip <%= selectedClosedDays.includes(day) ? 'selected' : '' %>">
+                    <input type="checkbox" name="closed_days" value="<%= day %>" <%= selectedClosedDays.includes(day) ? 'checked' : '' %> hidden>
+                    <%= day.slice(0, 3) %>
+                  </label>
+                <% }) %>
+              </div>
+              <button type="button" class="days-picker-done">Done</button>
+            </div>
+          </div>
+          <small class="form-hint">Select days when this place may be closed.</small>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="is_coming_soon" value="1" <%= draftPlace?.is_coming_soon === '1' ? 'checked' : '' %>>
+            Mark as Coming Soon
+          </label>
+          <small class="form-hint">Use this for places not yet open to guests.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="walking_directions">Walking Directions</label>
+          <textarea id="walking_directions" name="walking_directions" rows="4" placeholder="Example: Exit the hotel lobby, turn right on Main St, and walk two blocks."><%= draftPlace?.walking_directions || '' %></textarea>
+          <small class="form-hint">Short walking directions guests can follow from the property or nearby landmark</small>
+        </div>
+
+        <div class="form-group">
+          <label for="google_maps_link">Google Maps Link</label>
+          <input type="url" id="google_maps_link" name="google_maps_link" value="<%= draftPlace?.google_maps_link || '' %>" placeholder="https://maps.google.com/...">
+          <small class="form-hint">Optional direct map or walking route link</small>
+        </div>
+
+        <div class="form-group">
+          <label for="transit_lines">Bus and Train Lines</label>
+          <input type="text" id="transit_lines" name="transit_lines" value="<%= draftPlace?.transit_lines || '' %>" placeholder="Example: Bus 3, Bus 801, Red Line">
+          <small class="form-hint">List the nearest bus routes, train lines, or transit stops guests can use</small>
+        </div>
+
+        <div class="form-group">
+          <label for="reservation_link">Reservation Link</label>
+          <input type="url" id="reservation_link" name="reservation_link" value="<%= draftPlace?.reservation_link || '' %>" placeholder="https://...">
+          <small class="form-hint">Direct URL where guests can make a reservation</small>
+        </div>
+
+        <div class="form-group">
+          <label for="menu_link">Menu Link</label>
+          <input type="url" id="menu_link" name="menu_link" value="<%= draftPlace?.menu_link || '' %>" placeholder="https://...">
+          <small class="form-hint">Optional URL to the venue's food or drink menu</small>
+        </div>
+
+        <div class="form-group">
+          <label for="events_link">Events Link</label>
+          <input type="url" id="events_link" name="events_link" value="<%= draftPlace?.events_link || '' %>" placeholder="https://...">
+          <small class="form-hint">Optional URL to the venue's events or bookings page</small>
+        </div>
+
+        <div class="form-group">
+          <label for="rating">Rating (1-5)</label>
+          <input type="number" id="rating" name="rating" min="1" max="5" step="0.1" value="<%= draftPlace?.rating || '' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="tag_input">Tags</label>
+          <div class="tags-input-wrap" id="tags_input_wrap">
+            <input
+              type="text"
+              id="tag_input"
+              class="tag-entry-input"
+              placeholder="Type a tag and press Enter"
+              autocomplete="off"
+            >
+          </div>
+          <input type="hidden" id="tags" name="tags" value="<%= draftPlace?.tags || '' %>">
+          <small class="form-hint">Press Enter to add each tag before submitting.</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" name="submit_action" value="publish" class="btn btn-primary">Publish Recommendation</button>
+          <button type="submit" name="submit_action" value="draft" class="btn btn-secondary">Save As Draft</button>
+          <a href="/places/my-recommendations" class="btn btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      // ── Clock popup ──────────────────────────────────────────────
+      const fmt24to12 = (val) => {
+        if (!val) return '';
+        const [hStr, mStr] = val.split(':');
+        const h = parseInt(hStr, 10);
+        const m = parseInt(mStr, 10);
+        const mer = h >= 12 ? 'PM' : 'AM';
+        const dh = (h % 12) || 12;
+        return `${dh}:${String(m).padStart(2, '0')} ${mer}`;
+      };
+
+      const buildClockPopup = () => {
+        const popup = document.createElement('div');
+        popup.className = 'clock-popup';
+        popup.hidden = true;
+
+        // preview bar
+        const preview = document.createElement('div');
+        preview.className = 'clock-preview';
+        preview.textContent = '--:-- --';
+
+        // hours section
+        const hoursLabel = document.createElement('div');
+        hoursLabel.className = 'clock-section-label';
+        hoursLabel.textContent = 'Hour';
+        const hoursGrid = document.createElement('div');
+        hoursGrid.className = 'clock-hours-grid';
+        for (let h = 1; h <= 12; h++) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'clock-cell'; b.dataset.group = 'hour'; b.dataset.val = String(h); b.textContent = h;
+          hoursGrid.appendChild(b);
+        }
+
+        // minutes section
+        const minsLabel = document.createElement('div');
+        minsLabel.className = 'clock-section-label';
+        minsLabel.textContent = 'Minute';
+        const minsRow = document.createElement('div');
+        minsRow.className = 'clock-mins-row';
+        [0, 15, 30, 45].forEach((m) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'clock-cell'; b.dataset.group = 'min';
+          b.dataset.val = String(m).padStart(2, '0');
+          b.textContent = `:${String(m).padStart(2, '0')}`;
+          minsRow.appendChild(b);
+        });
+
+        // meridiem section
+        const merLabel = document.createElement('div');
+        merLabel.className = 'clock-section-label';
+        merLabel.textContent = 'Period';
+        const merRow = document.createElement('div');
+        merRow.className = 'clock-mer-row';
+        ['AM', 'PM'].forEach((mer) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'clock-cell'; b.dataset.group = 'mer'; b.dataset.val = mer; b.textContent = mer;
+          merRow.appendChild(b);
+        });
+
+        // action buttons
+        const actions = document.createElement('div');
+        actions.className = 'clock-actions';
+        const doneBtn = document.createElement('button');
+        doneBtn.type = 'button'; doneBtn.className = 'clock-done'; doneBtn.textContent = 'Set Time';
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button'; clearBtn.className = 'clock-clear'; clearBtn.textContent = 'Clear';
+        actions.appendChild(doneBtn);
+        actions.appendChild(clearBtn);
+
+        popup.appendChild(preview);
+        popup.appendChild(hoursLabel);
+        popup.appendChild(hoursGrid);
+        popup.appendChild(minsLabel);
+        popup.appendChild(minsRow);
+        popup.appendChild(merLabel);
+        popup.appendChild(merRow);
+        popup.appendChild(actions);
+        return popup;
+      };
+
+      const attachClockPickers = () => {
+        document.querySelectorAll('.time-picker-btn').forEach((btn) => {
+          const hiddenId = btn.getAttribute('data-time-target');
+          const hidden = document.getElementById(hiddenId);
+          const initTime = (btn.getAttribute('data-init-time') || '').trim().slice(0, 5);
+          if (initTime) btn.textContent = fmt24to12(initTime);
+
+          const popup = buildClockPopup();
+          btn.parentElement.appendChild(popup);
+
+          let selHour = '12', selMin = '00', selMer = 'AM';
+
+          if (initTime) {
+            const [hh, mm] = initTime.split(':').map(Number);
+            selMer = hh >= 12 ? 'PM' : 'AM';
+            selHour = String((hh % 12) || 12);
+            selMin = String(mm).padStart(2, '0');
+          }
+
+          const preview = popup.querySelector('.clock-preview');
+          const highlight = () => {
+            popup.querySelectorAll('[data-group="hour"]').forEach((c) => c.classList.toggle('active', c.dataset.val === selHour));
+            popup.querySelectorAll('[data-group="min"]').forEach((c) => c.classList.toggle('active', c.dataset.val === selMin));
+            popup.querySelectorAll('[data-group="mer"]').forEach((c) => c.classList.toggle('active', c.dataset.val === selMer));
+            preview.textContent = `${selHour}:${selMin} ${selMer}`;
+            preview.classList.add('has-selection');
+          };
+
+          popup.querySelectorAll('[data-group]').forEach((c) => {
+            c.addEventListener('click', () => {
+              const g = c.dataset.group;
+              if (g === 'hour') selHour = c.dataset.val;
+              if (g === 'min') selMin = c.dataset.val;
+              if (g === 'mer') selMer = c.dataset.val;
+              highlight();
+            });
+          });
+
+          highlight();
+
+          popup.querySelector('.clock-done').addEventListener('click', () => {
+            let h24 = parseInt(selHour, 10);
+            if (selMer === 'AM' && h24 === 12) h24 = 0;
+            if (selMer === 'PM' && h24 !== 12) h24 += 12;
+            const val = `${String(h24).padStart(2, '0')}:${selMin}`;
+            hidden.value = val;
+            btn.textContent = `${selHour}:${selMin} ${selMer}`;
+            btn.classList.add('has-value');
+            popup.hidden = true;
+          });
+
+          popup.querySelector('.clock-clear').addEventListener('click', () => {
+            hidden.value = '';
+            btn.textContent = btn.dataset.placeholder || 'Select time';
+            btn.classList.remove('has-value');
+            selHour = '12';
+            selMin = '00';
+            selMer = 'AM';
+            highlight();
+            popup.hidden = true;
+          });
+
+          btn.addEventListener('click', (e) => { e.stopPropagation(); popup.hidden = !popup.hidden; });
+          document.addEventListener('click', (e) => { if (!btn.parentElement.contains(e.target)) popup.hidden = true; });
+        });
+      };
+
+      // ── Days picker popup ─────────────────────────────────────────
+      const attachDaysPicker = () => {
+        const btn = document.getElementById('closed-days-btn');
+        const popup = document.getElementById('closed-days-popup');
+        if (!btn || !popup) return;
+
+        const syncBtn = () => {
+          const checked = [...popup.querySelectorAll('input[type=checkbox]:checked')].map((c) => c.value);
+          btn.textContent = checked.length ? checked.map((d) => d.slice(0,3)).join(', ') : 'Select closed days';
+          btn.classList.toggle('has-value', checked.length > 0);
+        };
+
+        popup.querySelectorAll('.day-chip').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            const cb = chip.querySelector('input');
+            cb.checked = !cb.checked;
+            chip.classList.toggle('selected', cb.checked);
+            syncBtn();
+          });
+        });
+
+        popup.querySelector('.days-picker-done').addEventListener('click', () => { popup.hidden = true; });
+        btn.addEventListener('click', (e) => { e.stopPropagation(); popup.hidden = !popup.hidden; });
+        document.addEventListener('click', (e) => { if (!btn.closest('.days-picker-wrap').contains(e.target)) popup.hidden = true; });
+        syncBtn();
+      };
+
+      attachClockPickers();
+      attachDaysPicker();
+
+      const form = document.querySelector('form[action="/places/new/create"]');
+      const tagsHiddenInput = document.getElementById('tags');
+      const tagInput = document.getElementById('tag_input');
+      const tagsInputWrap = document.getElementById('tags_input_wrap');
+
+      if (!form || !tagsHiddenInput || !tagInput || !tagsInputWrap) {
+        return;
+      }
+
+      const tagsList = tagsHiddenInput.value
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+
+      const syncTags = () => {
+        tagsHiddenInput.value = tagsList.join(',');
+      };
+
+      const removeTag = (tagValue) => {
+        const index = tagsList.findIndex((tag) => tag.toLowerCase() === tagValue.toLowerCase());
+        if (index >= 0) {
+          tagsList.splice(index, 1);
+          renderTags();
+        }
+      };
+
+      const renderTags = () => {
+        tagsInputWrap.querySelectorAll('.tag-chip').forEach((chip) => chip.remove());
+
+        tagsList.forEach((tag) => {
+          const chip = document.createElement('span');
+          chip.className = 'tag-chip';
+          chip.textContent = `#${tag}`;
+
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.className = 'tag-remove-btn';
+          removeButton.setAttribute('aria-label', `Remove tag ${tag}`);
+          removeButton.textContent = 'x';
+          removeButton.addEventListener('click', () => removeTag(tag));
+
+          chip.appendChild(removeButton);
+          tagsInputWrap.insertBefore(chip, tagInput);
+        });
+
+        syncTags();
+      };
+
+      const addTag = (rawValue) => {
+        rawValue
+          .split(',')
+          .map((tag) => tag.trim().replace(/^#+/, ''))
+          .filter(Boolean)
+          .forEach((tagValue) => {
+            if (tagsList.some((tag) => tag.toLowerCase() === tagValue.toLowerCase())) {
+              return;
+            }
+
+            tagsList.push(tagValue);
+          });
+
+        renderTags();
+      };
+
+      tagInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ',') {
+          event.preventDefault();
+          addTag(tagInput.value);
+          tagInput.value = '';
+        } else if (event.key === 'Backspace' && !tagInput.value && tagsList.length > 0) {
+          tagsList.pop();
+          renderTags();
+        }
+      });
+
+      tagsInputWrap.addEventListener('click', () => tagInput.focus());
+
+      const clearClientMissingState = () => {
+        form.querySelectorAll('.form-group--missing').forEach((group) => group.classList.remove('form-group--missing'));
+        form.querySelectorAll('.field--missing').forEach((field) => field.classList.remove('field--missing'));
+      };
+
+      const setValidationAlert = (missingLabels) => {
+        let alertNode = document.querySelector('.validation-alert');
+        if (!alertNode) {
+          alertNode = document.createElement('div');
+          alertNode.className = 'alert alert-error validation-alert';
+          alertNode.setAttribute('role', 'alert');
+          form.parentElement.insertBefore(alertNode, form);
+        }
+        alertNode.textContent = `Missing required fields: ${missingLabels.join(', ')}`;
+      };
+
+      const findMissingRequiredFields = () => {
+        const missing = [];
+        form.querySelectorAll('[data-required-label]').forEach((field) => {
+          const raw = (field.value || '').trim();
+          if (!raw) {
+            const group = field.closest('.form-group');
+            if (group) group.classList.add('form-group--missing');
+            field.classList.add('field--missing');
+            missing.push(field.getAttribute('data-required-label'));
+          }
+        });
+        return missing;
+      };
+
+      form.querySelectorAll('[data-required-label]').forEach((field) => {
+        field.addEventListener('input', () => {
+          if ((field.value || '').trim()) {
+            field.classList.remove('field--missing');
+            const group = field.closest('.form-group');
+            if (group) group.classList.remove('form-group--missing');
+          }
+        });
+      });
+
+      form.addEventListener('submit', (event) => {
+        if (tagInput.value.trim()) {
+          addTag(tagInput.value);
+          tagInput.value = '';
+        }
+
+        clearClientMissingState();
+        const missingLabels = findMissingRequiredFields();
+        if (missingLabels.length) {
+          event.preventDefault();
+          setValidationAlert(missingLabels);
+          const firstMissing = form.querySelector('.field--missing');
+          if (firstMissing) {
+            firstMissing.focus();
+            firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      });
+
+      renderTags();
+    })();
+  </script>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

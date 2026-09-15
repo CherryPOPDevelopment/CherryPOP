@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support - Hotel Concierge</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('./partials/navbar') %>
+
+  <main class="container">
+    <div class="content-page support-page">
+      <div class="support-hero">
+        <div>
+          <p class="support-eyebrow">Support Center</p>
+          <h1>Support Pages</h1>
+          <p>Support content now lives on separate pages so FAQ, Contact, and Suggestions are easier to use.</p>
+        </div>
+        <div class="support-quick-links">
+          <a class="support-chip" href="/support/faq">FAQ</a>
+          <a class="support-chip" href="/support/contact">Contact</a>
+          <a class="support-chip" href="/support/suggestions">Suggestion Box</a>
+        </div>
+      </div>
+
+      <% if (message) { %>
+        <div class="alert alert-<%= messageType === 'success' ? 'success' : (messageType === 'error' ? 'error' : 'info') %>"><%= message %></div>
+      <% } %>
+
+      <section class="support-section support-grid">
+        <article class="support-card">
+          <div class="support-section-heading">
+            <h2>FAQ</h2>
+            <p>Read role-specific answers for guests, employees, and admins.</p>
+          </div>
+          <a href="/support/faq" class="btn btn-primary">Open FAQ</a>
+        </article>
+
+        <article class="support-card">
+          <div class="support-section-heading">
+            <h2>Contact</h2>
+            <p>Send a direct support request to the platform team.</p>
+          </div>
+          <a href="/support/contact" class="btn btn-primary">Open Contact Page</a>
+        </article>
+
+        <article class="support-card">
+          <div class="support-section-heading">
+            <h2>Suggestion Box</h2>
+            <p>Submit platform and workflow improvement ideas.</p>
+          </div>
+          <a href="/support/suggestions" class="btn btn-primary">Open Suggestion Box</a>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <%- include('./partials/footer') %>
+</body>
+</html>

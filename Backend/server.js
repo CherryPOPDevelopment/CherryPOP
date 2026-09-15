@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const cors    = require('cors');
 const path    = require('path');
+const { createProxyMiddleware, responseInterceptor } = require('http-proxy-middleware');
 
 const authRouter      = require('./routes/auth');
 const inquiriesRouter = require('./routes/inquiries');
@@ -33,6 +34,28 @@ app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
 app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
 
+const sovaProxy = createProxyMiddleware({
+  target: 'http://127.0.0.1:4000',
+  changeOrigin: true,
+  selfHandleResponse: true,
+  on: {
+    proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
+      if (proxyRes.headers.location?.startsWith('/')) {
+        proxyRes.headers.location = `/sova-demo${proxyRes.headers.location}`;
+      }
+
+      const contentType = proxyRes.headers['content-type'] || '';
+      if (!contentType.includes('text/html')) return responseBuffer;
+
+      return responseBuffer
+        .toString('utf8')
+        .replace(/(href|action|src)=(['"])\/(?!sova-demo)/g, '$1=$2/sova-demo/');
+    }),
+  },
+});
+
+app.use('/sova-demo', sovaProxy);
+
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
 app.use('/api/inquiries', inquiriesRouter);
@@ -54,8 +77,8 @@ app.get('/services/:name', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'Frontend', 'services', `${req.params.name}.html`));
 });
 app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoop.html')));
-app.get('/projects/scoopDEMO', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoopDEMO', 'index.html')));
-app.get('/projects/sova-demo', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoopDEMO', 'index.html')));
+app.get('/projects/scoopDEMO', (_, res) => res.redirect('/sova-demo'));
+app.get('/projects/sova-demo', (_, res) => res.redirect('/sova-demo'));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
