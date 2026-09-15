@@ -1,0 +1,2929 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Profile — Aurelia Contacts</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/popup-styles.css">
+  <link rel="stylesheet" href="../css/cropper.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-gradient-start: #f5f7fa;
+      --bg-gradient-end: #c3cfe2;
+      --card-bg: white;
+      --text-color: #1a202c;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --input-bg: #f8fafc;
+      --header-gradient-start: #667eea;
+      --header-gradient-end: #764ba2;
+    }
+
+    body.dark-theme {
+      --bg-gradient-start: #0a0e1a;
+      --bg-gradient-end: #12182b;
+      --card-bg: #12182b;
+      --text-color: #ffffff;
+      --text-secondary: #e5e7eb;
+      --border-color: #2d3548;
+      --input-bg: #0a0e1a;
+      --header-gradient-start: #667eea;
+      --header-gradient-end: #764ba2;
+    }
+
+    /* Dark Theme - Interest Cards */
+    body.dark-theme .interest-card {
+      background: #1a2236;
+      border-color: #2d3548;
+    }
+
+    body.dark-theme .interest-title {
+      color: #ffffff;
+    }
+
+    body.dark-theme .interest-card h3,
+    body.dark-theme .interest-card h5,
+    body.dark-theme .interest-card label,
+    body.dark-theme .interest-card div {
+      color: #ffffff;
+    }
+
+    body.dark-theme .genre-badge {
+      background: #2d3548;
+      color: #a5b4fc;
+    }
+
+    body.dark-theme .genre-badge button {
+      color: #a5b4fc;
+    }
+
+    body.dark-theme .favorites {
+      background: #0a0e1a;
+      border-color: #2d3548;
+    }
+
+    body.dark-theme .favorite-item {
+      background: #2d3548;
+      color: #ffffff;
+      border: 1px solid #3d4758;
+    }
+
+    body.dark-theme .muted {
+      color: #cbd5e1;
+    }
+
+    body.dark-theme .section-title {
+      color: #ffffff;
+      border-bottom-color: #2d3548;
+    }
+
+    body.dark-theme .btn-secondary {
+      background: #1a2236;
+      color: #ffffff;
+      border: 1px solid #2d3548;
+    }
+
+    body.dark-theme .btn-secondary:hover {
+      background: #2d3548;
+    }
+
+    /* Dark theme for delete account section */
+    body.dark-theme .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    body.dark-theme .btn-danger:hover {
+      background: #b91c1c;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+
+    /* Dark theme for delete account section */
+    body.dark-theme .section-title[style*="color: #ef4444"] {
+      color: #f87171 !important;
+      border-bottom-color: #f87171 !important;
+    }
+
+    body.dark-theme div[style*="background: #fef2f2"] {
+      background: #7f1d1d !important;
+      border-color: #991b1b !important;
+    }
+
+    body.dark-theme div[style*="background: #fee2e2"] {
+      background: #991b1b !important;
+      border-color: #7f1d1d !important;
+    }
+
+    body.dark-theme h4[style*="color: #dc2626"],
+    body.dark-theme p[style*="color: #991b1b"],
+    body.dark-theme strong[style*="color: #991b1b"],
+    body.dark-theme ul[style*="color: #991b1b"],
+    body.dark-theme li {
+      color: #fca5a5 !important;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2rem 1rem;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      color: var(--text-color);
+      font-size: 1.75rem;
+      margin: 0;
+    }
+
+    .header a {
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+      color: white;
+      padding: 2rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 2rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-info h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.5rem;
+    }
+
+    .profile-info p {
+      margin: 0.2rem 0;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border-color);
+      padding: 0 2rem;
+      background: var(--card-bg);
+      overflow-x: auto;
+      align-items: center;
+    }
+
+    .support-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .support-button:active {
+      transform: translateY(0);
+    }
+
+    body.dark-theme .support-button {
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    body.dark-theme .support-button:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+    }
+
+    @media (max-width: 640px) {
+      .tabs {
+        flex-wrap: wrap;
+        padding: 0 1rem;
+      }
+
+      .support-button {
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 1rem;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    /* Enhanced Privacy and Settings tab designs */
+    .tab-privacy {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      border-radius: 8px 8px 0 0;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-privacy.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      border-bottom-color: #667eea;
+      border-bottom-width: 3px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    .tab-privacy:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      transform: translateY(-1px);
+    }
+
+    .tab-settings {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      border-radius: 8px 8px 0 0;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-settings.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+      border-bottom-color: #667eea;
+      border-bottom-width: 3px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      color: #667eea;
+    }
+
+    .tab-settings:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      transform: translateY(-1px);
+    }
+
+    /* Dark theme adjustments for enhanced tabs */
+    body.dark-theme .tab-privacy,
+    body.dark-theme .tab-settings {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    body.dark-theme .tab-privacy.active,
+    body.dark-theme .tab-settings.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    }
+
+    /* Enhanced tab content styling for Privacy and Settings */
+    .tab-content {
+      padding: 2rem;
+      background: var(--card-bg);
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=date],
+    input[type=tel],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Comprehensive Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        padding: 1rem 0.5rem;
+        font-size: 16px;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        padding: 1.5rem;
+      }
+
+      .avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 1.75rem;
+      }
+
+      .profile-info h2 {
+        font-size: 1.25rem;
+      }
+
+      .tabs {
+        padding: 0 1rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tab {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+      }
+
+      .tab-content {
+        padding: 1.5rem;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        min-height: 48px;
+      }
+
+      input[type=text],
+      input[type=email],
+      input[type=date],
+      input[type=tel],
+      textarea,
+      select {
+        font-size: 16px;
+        min-height: 48px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.5rem 0.25rem;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+      }
+
+      .profile-header {
+        padding: 1rem;
+      }
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 1.5rem;
+      }
+
+      .tabs {
+        padding: 0 0.5rem;
+      }
+
+      .tab {
+        padding: 0.75rem 0.875rem;
+        font-size: 0.85rem;
+      }
+
+      .tab-content {
+        padding: 1rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+    }
+
+    @media (max-width: 375px) {
+      .header h1 {
+        font-size: 1.125rem;
+      }
+
+      .avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 1.25rem;
+      }
+
+      .btn {
+        font-size: 0.875rem;
+        padding: 0.75rem 0.875rem;
+      }
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #1a202c;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.875rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger:active {
+      transform: translateY(0);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox-item input {
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    /* Enhanced Privacy and Settings section styling */
+    .tab-content[data-tab="privacy"],
+    .tab-content[data-tab="settings"] {
+      background: linear-gradient(to bottom, var(--card-bg) 0%, rgba(248, 250, 252, 0.5) 100%);
+    }
+
+    body.dark-theme .tab-content[data-tab="privacy"],
+    body.dark-theme .tab-content[data-tab="settings"] {
+      background: linear-gradient(to bottom, var(--card-bg) 0%, rgba(15, 23, 42, 0.3) 100%);
+    }
+
+    /* Enhanced section cards for Privacy and Settings */
+    .privacy-section-card,
+    .settings-section-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.dark-theme .privacy-section-card,
+    body.dark-theme .settings-section-card {
+      background: rgba(30, 41, 59, 0.6);
+      border-color: rgba(102, 126, 234, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .privacy-section-card:hover,
+    .settings-section-card:hover {
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.12);
+      transform: translateY(-2px);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    /* Enhanced checkbox styling for Privacy/Settings */
+    .tab-content[data-tab="privacy"] .checkbox-item,
+    .tab-content[data-tab="settings"] .checkbox-item {
+      padding: 0.875rem 1rem;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.04) 0%, rgba(118, 75, 162, 0.04) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    body.dark-theme .tab-content[data-tab="privacy"] .checkbox-item,
+    body.dark-theme .tab-content[data-tab="settings"] .checkbox-item {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+      border-color: rgba(102, 126, 234, 0.2);
+    }
+
+    .tab-content[data-tab="privacy"] .checkbox-item:hover,
+    .tab-content[data-tab="settings"] .checkbox-item:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+      border-color: rgba(102, 126, 234, 0.25);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    body.dark-theme .tab-content[data-tab="privacy"] .checkbox-item:hover,
+    body.dark-theme .tab-content[data-tab="settings"] .checkbox-item:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      border-color: rgba(102, 126, 234, 0.35);
+    }
+
+    .tab-content[data-tab="privacy"] .checkbox-item input[type="checkbox"],
+    .tab-content[data-tab="settings"] .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 0.75rem;
+      cursor: pointer;
+      accent-color: #667eea;
+    }
+
+    .tab-content[data-tab="privacy"] .checkbox-item label,
+    .tab-content[data-tab="settings"] .checkbox-item label {
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-color);
+      flex: 1;
+      user-select: none;
+    }
+
+    /* Enhanced section titles for Privacy/Settings */
+    .tab-content[data-tab="privacy"] .section-title,
+    .tab-content[data-tab="settings"] .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1a202c;
+      margin: 0 0 1.25rem 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    body.dark-theme .tab-content[data-tab="privacy"] .section-title,
+    body.dark-theme .tab-content[data-tab="settings"] .section-title {
+      color: #ffffff;
+      border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+    }
+
+    /* Enhanced select styling for Privacy/Settings */
+    .tab-content[data-tab="privacy"] select,
+    .tab-content[data-tab="settings"] select {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      background: white;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    body.dark-theme .tab-content[data-tab="privacy"] select,
+    body.dark-theme .tab-content[data-tab="settings"] select {
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(102, 126, 234, 0.3);
+      color: #ffffff;
+    }
+
+    .tab-content[data-tab="privacy"] select:focus,
+    .tab-content[data-tab="settings"] select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 1.5rem 0 1rem 0;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+
+    .interest-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .interest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .interest-title {
+      font-weight: 700;
+      color: var(--text-color);
+      font-size: 1.05rem;
+    }
+
+    .remove-btn {
+      background: #ef4444;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .remove-btn:hover {
+      background: #dc2626;
+    }
+
+    .add-interest {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .add-interest select {
+      flex: 1;
+    }
+
+    .add-interest button {
+      padding: 0.75rem 1.5rem;
+    }
+
+    .genre-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .genre-badge {
+      background: #e0e7ff;
+      color: #667eea;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .genre-badge button {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0;
+    }
+
+    .favorites {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      border: 1px dashed var(--border-color);
+    }
+
+    .favorites h5 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text-color);
+    }
+
+    .favorite-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .favorite-input input {
+      flex: 1;
+    }
+
+    .favorite-item {
+      background: #f1f5f9;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: #1a202c;
+    }
+
+    .favorite-item button {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .save-section {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .muted {
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    .validation-msg {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: #64748b;
+      display: none;
+    }
+
+    .validation-msg.error {
+      display: block;
+      color: #ef4444;
+      font-weight: 500;
+    }
+
+    .validation-msg.success {
+      display: block;
+      color: #10b981;
+      font-weight: 500;
+    }
+
+    .birthday-display {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #667eea;
+      margin-top: 0.5rem;
+    }
+
+    .birthday-display span {
+      background: #e0e7ff;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .date-picker-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px) scale(0.95);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .date-picker-modal.active {
+      display: flex;
+    }
+
+    .date-picker-container {
+      background: white;
+      border-radius: 28px;
+      padding: 0;
+      box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      max-width: 520px;
+      width: 100%;
+      max-height: 92vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .date-picker-header {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      color: white;
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .date-picker-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .date-picker-header h3 {
+      margin: 0;
+      font-size: 1.625rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .date-picker-close {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0;
+      position: relative;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    .date-picker-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: scale(1.08) rotate(90deg);
+    }
+
+    .date-picker-content {
+      padding: 2.5rem;
+      overflow-y: auto;
+      flex: 1;
+      background: linear-gradient(to bottom, #ffffff 0%, #fafbfc 100%);
+    }
+
+    .date-picker-display {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 2rem 1.5rem;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .date-picker-display::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    }
+
+    .date-picker-display .month-year {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .date-picker-display .day {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #6366f1;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.04em;
+      text-shadow: 0 2px 8px rgba(99, 102, 241, 0.15);
+    }
+
+    .date-picker-display .weekday {
+      font-size: 1rem;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 1rem;
+    }
+
+    .date-picker-display .age-preview {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .date-picker-display .age-preview strong {
+      color: #6366f1;
+      font-weight: 800;
+      font-size: 1.1em;
+    }
+
+    .date-picker-section {
+      margin-bottom: 2.25rem;
+    }
+
+    .date-picker-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .date-picker-section-label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: #1e293b;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .date-picker-year-wrapper {
+      position: relative;
+    }
+
+    .date-picker-year-input {
+      width: 100%;
+      padding: 0.75rem 0.8rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: center;
+      background: white;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #1e293b;
+      cursor: text;
+    }
+
+    .date-picker-year-input:focus {
+      outline: none;
+      border-color: #6366f1;
+      background: #fafbfc;
+      box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(99, 102, 241, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .calendar-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .nav-arrows {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav-arrows button {
+      background: #f0f4ff;
+      border: 2px solid #e0e7ff;
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #667eea;
+    }
+
+    .nav-arrows button:hover {
+      background: #e0e7ff;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.4rem;
+    }
+
+    .calendar-grid .weekday {
+      text-align: center;
+      font-weight: 700;
+      color: #475569;
+      padding: 0.35rem 0;
+    }
+
+    .calendar-grid .day {
+      text-align: center;
+      padding: 0.6rem 0.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      background: white;
+      border: 1px solid transparent;
+      color: #1a202c;
+    }
+
+    .calendar-grid .day:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 6px 18px rgba(102, 126, 234, 0.06);
+    }
+
+    .calendar-grid .day.disabled {
+      color: #94a3b8;
+      cursor: default;
+      background: transparent;
+    }
+
+    .calendar-grid .day.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      font-weight: 700;
+    }
+
+    .calendar-grid .day.today {
+      box-shadow: inset 0 0 0 2px rgba(102, 126, 234, 0.12);
+    }
+
+    .date-picker-actions {
+      display: flex;
+      gap: 0.875rem;
+      padding: 1.75rem 2.5rem;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .date-picker-actions button {
+      flex: 1;
+      padding: 1rem 1.75rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .date-picker-actions .confirm {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .date-picker-actions .confirm:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+    }
+
+    .date-picker-actions .confirm:active {
+      transform: translateY(0);
+    }
+
+    .date-picker-actions .cancel {
+      background: white;
+      color: #64748b;
+      border: 2px solid #e2e8f0;
+    }
+
+    .date-picker-actions .cancel:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #475569;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .date-picker-container {
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        max-height: 95vh;
+      }
+
+      .date-picker-content {
+        padding: 2rem 1.5rem;
+      }
+
+      .date-picker-header {
+        padding: 1.75rem 1.5rem;
+      }
+
+      .date-picker-header h3 {
+        font-size: 1.375rem;
+      }
+
+      .date-picker-display {
+        padding: 1.5rem 1rem;
+      }
+
+      .date-picker-display .day {
+        font-size: 2rem;
+      }
+
+      .calendar-grid {
+        gap: 0.35rem;
+      }
+
+      .calendar-grid .weekday {
+        font-size: 0.8rem;
+      }
+
+      .calendar-grid .day {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.9rem;
+      }
+
+      .date-picker-actions {
+        padding: 1.5rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>My Profile</h1>
+      <a href="../index.html">← Back to App</a>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar" id="avatar-preview">?</div>
+        <div class="profile-info">
+          <h2 id="display-name">Your Name</h2>
+          <p id="display-username">@username</p>
+          <p id="display-email">you@example.com</p>
+        </div>
+      </div>
+
+      <div class="tabs" style="display: flex; align-items: center; gap: 0.5rem;">
+        <div style="display: flex; flex: 1;">
+          <button class="tab active" onclick="switchTab(0)">Profile</button>
+          <button class="tab" onclick="switchTab(1)">Interests</button>
+          <button class="tab tab-privacy" onclick="switchTab(2)">🔒 Privacy</button>
+          <button class="tab tab-settings" onclick="switchTab(3)">⚙️ Settings</button>
+        </div>
+        <a href="../html/support.html" class="support-button"
+          style="display: inline-flex; align-items: center; padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9rem; white-space: nowrap; transition: all 0.3s; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);">
+          ❓ Support
+        </a>
+      </div>
+
+      <!-- Tab 0: Profile -->
+      <div class="tab-content active">
+        <form id="profile-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First name *</label>
+              <input type="text" id="profile-firstName" required>
+            </div>
+            <div class="form-group">
+              <label>Last name *</label>
+              <input type="text" id="profile-lastName" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="profile-email" required>
+            </div>
+            <div class="form-group">
+              <label>Profile picture</label>
+              <input type="file" id="profile-picture-file" accept="image/*" style="display: none;">
+              <input type="text" id="profile-picture" style="display: none;">
+              <button type="button" class="btn" onclick="document.getElementById('profile-picture-file').click()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                color: white; border: none; padding: 0.875rem 1.5rem; border-radius: 8px; 
+                font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; 
+                display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.4)';"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)';">
+                <span style="font-size: 1.25rem;">📸</span>
+                <span>Choose Profile Picture</span>
+              </button>
+              <small
+                style="color: #64748b; font-size: 0.85rem; display: block; margin-top: 0.5rem; text-align: center;">
+                Max file size: 5MB • Supports: JPG, PNG, GIF
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="profile-phone" placeholder="(123) 456-7890 or +1234567890" maxlength="20">
+              <div class="validation-msg" id="phone-msg"
+                style="font-size: 0.85rem; margin-top: 0.5rem; color: #64748b;"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Birthday</label>
+              <input type="text" id="profile-birthday-display" placeholder="Select your birthday..." readonly
+                style="cursor: default;">
+              <input type="date" id="profile-birthday" style="display: none;">
+              <div class="birthday-display" id="birthday-info"
+                style="margin-top: 0.5rem; font-size: 0.9rem; color: #667eea;"></div>
+              <div class="validation-msg" id="birthday-msg"
+                style="font-size: 0.85rem; margin-top: 0.5rem; color: #64748b;"></div>
+              <div id="birthday-locked-msg"
+                style="display: none; margin-top: 0.5rem; padding: 0.75rem; background: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 6px; font-size: 0.85rem; color: #92400e;">
+                <strong>🔒 Birthday is locked:</strong> Once set, your birthday cannot be changed. If your birthday is
+                incorrect, please <a href="../html/support.html"
+                  style="color: #6366f1; text-decoration: underline;">contact support</a> for assistance.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="profile-bio" rows="4" placeholder="Tell others about yourself..."></textarea>
+          </div>
+
+          <div class="save-section">
+            <button class="btn btn-primary" type="submit">Save Profile</button>
+            <button class="btn btn-secondary" type="button" onclick="window.location.href='../index.html'">Home</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tab 1: Interests -->
+      <div class="tab-content">
+        <h3 class="section-title">Your Interests</h3>
+        <p class="muted">Add interests to share with your contacts. You can select genres and add favorite items for
+          each interest.</p>
+
+        <div class="add-interest">
+          <select id="interest-category-select">
+            <option value="">Select an interest to add...</option>
+            <option value="Board Games">🎲 Board Games</option>
+            <option value="Video Games">🎮 Video Games</option>
+            <option value="Movies">🎬 Movies</option>
+            <option value="Books">📚 Books</option>
+            <option value="Music">🎵 Music</option>
+            <option value="Sports">⚽ Sports</option>
+            <option value="Travel">✈️ Travel</option>
+            <option value="Cooking">🍳 Cooking</option>
+          </select>
+          <button class="btn btn-primary" onclick="addInterest()" type="button">Add Interest</button>
+        </div>
+
+        <div id="interests-container"></div>
+
+        <div class="save-section">
+          <button class="btn btn-primary" onclick="saveInterests()" type="button">Save Interests</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Privacy -->
+      <div class="tab-content" data-tab="privacy">
+        <div class="privacy-section-card">
+          <h3 class="section-title">🔐 Contact Information Sharing</h3>
+          <p class="muted">Choose what information you want friends to see by default.</p>
+
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-email">
+              <label for="share-email">Email</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-phone">
+              <label for="share-phone">Phone</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-address">
+              <label for="share-address">Address</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-notes">
+              <label for="share-notes">Notes</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-all">
+              <label for="share-all"><strong>Share all by default</strong></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-section-card">
+          <h3 class="section-title">👁️ Profile Visibility</h3>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="profile-public" checked>
+              <label for="profile-public">My profile is discoverable to other users</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="show-online-status" checked>
+              <label for="show-online-status">Show my online status to friends</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="allow-contact-requests" checked>
+              <label for="allow-contact-requests">Allow friends to create shared contacts with me</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-section-card">
+          <h3 class="section-title">📊 Interest & Activity</h3>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="share-interests" checked>
+              <label for="share-interests">Share my interests with friends (always displayed)</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="show-last-active" checked>
+              <label for="show-last-active">Show last active time to friends</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-section-card">
+          <h3 class="section-title">👥 Friend Requests</h3>
+          <div class="form-group">
+            <label>Who can send you friend requests?</label>
+            <select id="friend-request-setting">
+              <option value="everyone">Everyone</option>
+              <option value="mutual">Only people with shared contacts</option>
+              <option value="none">Nobody</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="save-section" style="margin-top: 2rem;">
+          <button class="btn btn-primary" onclick="savePrivacy()" type="button">Save Privacy Settings</button>
+        </div>
+      </div>
+
+      <!-- Tab 3: Settings -->
+      <div class="tab-content" data-tab="settings">
+        <div class="settings-section-card">
+          <h3 class="section-title">🎨 Display & Appearance</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Theme</label>
+              <select id="profile-theme">
+                <option value="system">System (default)</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section-card">
+          <h3 class="section-title">🔔 Notifications</h3>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="notify-email" checked>
+              <label for="notify-email">Email notifications for new friend requests</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="notify-friend-requests" checked>
+              <label for="notify-friend-requests">In-app notifications for friend requests</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="notify-contact-updates">
+              <label for="notify-contact-updates">Notify when contacts are added or changed</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="notify-message">
+              <label for="notify-message">Message notifications</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section-card">
+          <h3 class="section-title">🔒 Security</h3>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="twofactor">
+              <label for="twofactor">Two-factor authentication (2FA)</label>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem;">
+            <button class="btn btn-secondary" onclick="changePassword()" type="button">Change Password</button>
+          </div>
+        </div>
+
+        <div class="settings-section-card">
+          <h3 class="section-title">⚙️ Account Management</h3>
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="remember-login">
+              <label for="remember-login">Remember login on this device</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section-card">
+          <button class="btn btn-secondary" onclick="logoutAll()" type="button" style="width: 100%;">Logout from all
+            devices</button>
+        </div>
+
+        <div class="settings-section-card" style="border-color: #fecaca; background: #fef2f2;">
+          <h3 class="section-title" style="color: #ef4444; border-bottom-color: #ef4444;">⚠️ Danger Zone</h3>
+          <div
+            style="background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+            <h4 style="color: #dc2626; margin: 0 0 0.75rem 0; font-size: 1.1rem; font-weight: 700;">Delete Account</h4>
+            <p style="color: #991b1b; margin: 0 0 1rem 0; line-height: 1.6;">
+              Permanently delete your account and all associated data. This action cannot be undone. All your contacts,
+              friends, and profile information will be permanently removed.
+            </p>
+            <div
+              style="background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+              <strong style="color: #991b1b; display: block; margin-bottom: 0.5rem;">⚠️ What will be deleted:</strong>
+              <ul style="color: #991b1b; margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                <li>Your profile and personal information</li>
+                <li>All your contacts</li>
+                <li>All friend connections</li>
+                <li>Your interests and preferences</li>
+                <li>All account settings</li>
+              </ul>
+            </div>
+            <form id="delete-account-form" onsubmit="deleteAccount(event)" style="margin-top: 1rem;">
+              <div class="form-group">
+                <label for="delete-password"
+                  style="color: #991b1b; font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                  Enter your password to confirm:
+                </label>
+                <input type="password" id="delete-password" name="password" required
+                  style="width: 100%; padding: 0.75rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 1rem; background: #fff;"
+                  placeholder="Your password" />
+              </div>
+              <div class="form-group" style="margin-top: 1rem;">
+                <label for="delete-confirmation"
+                  style="color: #991b1b; font-weight: 600; margin-bottom: 0.5rem; display: block;">
+                  Type "DELETE MY ACCOUNT" to confirm:
+                </label>
+                <input type="text" id="delete-confirmation" name="confirmation" required
+                  style="width: 100%; padding: 0.75rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 1rem; background: #fff;"
+                  placeholder="DELETE MY ACCOUNT" />
+              </div>
+              <button class="btn btn-danger" type="submit" style="margin-top: 1rem; width: 100%;">
+                Delete My Account
+              </button>
+            </form>
+          </div>
+
+          <div class="save-section" style="margin-top: 2rem;">
+            <button class="btn btn-primary" onclick="saveSettings()" type="button">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Picker Modal -->
+    <div class="date-picker-modal" id="date-picker-modal" onclick="if(event.target === this) closeBirthdayPicker()">
+      <div class="date-picker-container">
+        <div class="date-picker-header">
+          <h3>Select Your Birthday</h3>
+          <button class="date-picker-close" onclick="closeBirthdayPicker()" aria-label="Close">×</button>
+        </div>
+        <div class="date-picker-content">
+          <div
+            style="margin-bottom: 1.5rem; padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
+            <strong style="color: #92400e; display: block; margin-bottom: 0.5rem;">⚠️ Important Notice</strong>
+            <p style="color: #78350f; font-size: 0.9rem; margin: 0; line-height: 1.5;">
+              Once you confirm your birthday, it <strong>cannot be changed</strong>. If you make a mistake, you will
+              need
+              to contact support to correct it. Please double-check your selection before confirming.
+            </p>
+          </div>
+
+          <div class="date-picker-display">
+            <div class="month-year" id="picker-display-month-year">January 2026</div>
+            <div class="day" id="picker-display-day">Select</div>
+            <div class="weekday" id="picker-display-weekday"></div>
+            <div class="age-preview" id="picker-age-preview"></div>
+          </div>
+
+          <div class="calendar-nav">
+            <div class="nav-arrows">
+              <button type="button" onclick="prevMonth()">◀</button>
+            </div>
+            <div style="font-weight:700;color:#1a202c;">Month & Day</div>
+            <div class="nav-arrows">
+              <button type="button" onclick="nextMonth()">▶</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1rem; display:flex; gap:0.5rem; align-items:center;">
+            <div style="flex:1;">
+              <label
+                style="display:block; font-weight:600; margin-bottom:0.35rem; color:#1a202c; font-size:0.85rem;">Year</label>
+              <input type="number" id="picker-year" class="date-picker-year-input" min="1906" max="2100"
+                placeholder="2000">
+            </div>
+            <div style="flex:1;">
+              <label
+                style="display:block; font-weight:600; margin-bottom:0.35rem; color:#1a202c; font-size:0.85rem;">Month</label>
+              <select id="picker-month-select"
+                style="width:100%;padding:0.75rem 0.6rem;border-radius:8px;border:2px solid #e2e8f0;background:white;font-weight:600;cursor:pointer;">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+
+        <div class="date-picker-actions">
+          <button class="cancel" onclick="closeBirthdayPicker()">Cancel</button>
+          <button class="confirm" onclick="confirmBirthday()">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Smart API URL detection
+      let API_URL;
+
+      // Detect environment and set appropriate API URL
+      const hostname = window.location.hostname;
+      const protocol = window.location.protocol;
+
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        // Local development - check if backend is on different port
+        API_URL = `${protocol}//${hostname}:5000/api`;
+      } else {
+        // Production domain - use relative URL (backend serves frontend)
+        API_URL = '/api';
+      }
+
+      console.log('Using API URL:', API_URL);
+
+      let currentUser = null;
+
+      // Helper function to get token
+      function getToken() {
+        return localStorage.getItem('token');
+      }
+      let currentInterests = {};
+      let pickerState = { year: 2000, month: 1, day: 1 };
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      // Date Picker Functions
+      async function openBirthdayPicker() {
+        const existingDate = document.getElementById('profile-birthday').value;
+
+        // Show warning if birthday is already set
+        if (existingDate) {
+          await showAlert('⚠️ WARNING: Your birthday is already set and cannot be changed once confirmed. If your birthday is incorrect, please contact support for assistance.', 'warning', 'Birthday Already Set');
+          return;
+        }
+
+        // Show warning before opening picker
+        const confirmed = await showConfirm('⚠️ IMPORTANT: Once you set your birthday, it cannot be changed.\n\nIf you make a mistake, you will need to contact support to correct it.\n\nDo you want to continue?', 'Birthday Confirmation', { confirmText: 'Continue', cancelText: 'Cancel', type: 'confirm' });
+        if (!confirmed) {
+          return;
+        }
+
+        pickerState = { year: 2000, month: 1, day: 1 };
+        renderDatePicker();
+        document.getElementById('date-picker-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeBirthdayPicker() {
+        document.getElementById('date-picker-modal').classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      function renderDatePicker() {
+        // Year input
+        document.getElementById('picker-year').value = pickerState.year;
+
+        // Update display
+        const date = new Date(pickerState.year, pickerState.month - 1, pickerState.day);
+        document.getElementById('picker-display-month-year').textContent = `${monthNames[pickerState.month - 1]} ${pickerState.year}`;
+        document.getElementById('picker-display-day').textContent = pickerState.day;
+        const weekdayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+        document.getElementById('picker-display-weekday').textContent = weekdayName;
+
+        // Age preview - calculate correctly
+        const today = new Date();
+        const birthDate = new Date(pickerState.year, pickerState.month - 1, pickerState.day);
+        let actualAge = today.getFullYear() - pickerState.year;
+        const monthDiff = today.getMonth() - (pickerState.month - 1);
+        const dayDiff = today.getDate() - pickerState.day;
+        // Subtract 1 if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          actualAge--;
+        }
+        const agePreview = document.getElementById('picker-age-preview');
+        if (actualAge >= 0 && actualAge <= 120) {
+          agePreview.innerHTML = `You are <strong>${actualAge}</strong> years old`;
+        } else {
+          agePreview.innerHTML = '';
+        }
+
+        // Update month select and year input
+        const monthSelect = document.getElementById('picker-month-select');
+        monthSelect.value = pickerState.month;
+        document.getElementById('picker-year').value = pickerState.year;
+
+        // Calendar grid
+        const grid = document.getElementById('calendar-grid');
+        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        let html = weekdays.map(d => `<div class="weekday">${d}</div>`).join('');
+
+        const firstDay = new Date(pickerState.year, pickerState.month - 1, 1).getDay();
+        const daysInMonth = new Date(pickerState.year, pickerState.month, 0).getDate();
+        const todayDate = new Date();
+
+        // empty cells before first day
+        for (let i = 0; i < firstDay; i++) html += `<div></div>`;
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dt = new Date(pickerState.year, pickerState.month - 1, d);
+          const disabled = dt > new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate());
+          const isToday = dt.getFullYear() === todayDate.getFullYear() && dt.getMonth() === todayDate.getMonth() && dt.getDate() === todayDate.getDate();
+          const classes = ['day'];
+          if (disabled) classes.push('disabled');
+          if (pickerState.day === d) classes.push('selected');
+          if (isToday) classes.push('today');
+          html += `<div class="${classes.join(' ')}" onclick="selectDay(${d})">${d}</div>`;
+        }
+
+        grid.innerHTML = html;
+      }
+
+      function prevMonth() {
+        pickerState.month -= 1;
+        if (pickerState.month < 1) { pickerState.month = 12; pickerState.year -= 1; }
+        // clamp year
+        if (pickerState.year < 1906) pickerState.year = 1906;
+        // adjust day
+        const dim = new Date(pickerState.year, pickerState.month, 0).getDate();
+        if (pickerState.day > dim) pickerState.day = dim;
+        renderDatePicker();
+      }
+      function nextMonth() {
+        pickerState.month += 1;
+        if (pickerState.month > 12) { pickerState.month = 1; pickerState.year += 1; }
+        if (pickerState.year > new Date().getFullYear()) pickerState.year = new Date().getFullYear();
+        const dim = new Date(pickerState.year, pickerState.month, 0).getDate();
+        if (pickerState.day > dim) pickerState.day = dim;
+        renderDatePicker();
+      }
+
+      function selectDay(d) {
+        const gridDay = document.querySelector('.calendar-grid');
+        const dt = new Date(pickerState.year, pickerState.month - 1, d);
+        const todayDate = new Date();
+        if (dt > new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate())) return; // disallow future
+        pickerState.day = d;
+        renderDatePicker();
+      }
+
+      function setYear(y) {
+        pickerState.year = parseInt(y);
+        if (isNaN(pickerState.year)) pickerState.year = 2000;
+        if (pickerState.year < 1906) pickerState.year = 1906;
+        if (pickerState.year > new Date().getFullYear()) pickerState.year = new Date().getFullYear();
+        const dim = new Date(pickerState.year, pickerState.month, 0).getDate();
+        if (pickerState.day > dim) pickerState.day = dim;
+        renderDatePicker();
+      }
+
+      function confirmBirthday() {
+        const { year, month, day } = pickerState;
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        document.getElementById('profile-birthday').value = dateStr;
+        updateBirthdayDisplay();
+        closeBirthdayPicker();
+      }
+
+      function updateBirthdayDisplay() {
+        const dateVal = document.getElementById('profile-birthday').value;
+        if (dateVal) {
+          const [year, month, day] = dateVal.split('-');
+          const date = new Date(year, parseInt(month) - 1, day);
+          const formatted = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+          // Calculate age correctly
+          const today = new Date();
+          const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          let age = today.getFullYear() - parseInt(year);
+          const monthDiff = today.getMonth() - (parseInt(month) - 1);
+          const dayDiff = today.getDate() - parseInt(day);
+          // Subtract 1 if birthday hasn't occurred yet this year
+          if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            age--;
+          }
+
+          document.getElementById('profile-birthday-display').value = formatted;
+          document.getElementById('birthday-info').innerHTML = `<span>🎂 Age: ${age}</span>`;
+
+          const validation = validateBirthday(dateVal);
+          const msg = document.getElementById('birthday-msg');
+          msg.className = validation.valid ? 'validation-msg success' : 'validation-msg error';
+          msg.textContent = validation.msg;
+        } else {
+          document.getElementById('profile-birthday-display').value = '';
+          document.getElementById('birthday-info').innerHTML = '';
+          document.getElementById('birthday-msg').className = 'validation-msg';
+          document.getElementById('birthday-msg').textContent = '';
+        }
+      }
+
+      // Set max date to today for birthday
+      const today = new Date().toISOString().split('T')[0];
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('profile-birthday').max = today;
+      });
+
+      // Phone validation
+      function validatePhone(phone) {
+        if (!phone) return { valid: true, msg: '' };
+        const digitsOnly = phone.replace(/\D/g, '');
+        if (digitsOnly.length < 10) return { valid: false, msg: '❌ Too short. Minimum 10 digits' };
+        if (digitsOnly.length > 15) return { valid: false, msg: '❌ Too long. Maximum 15 digits' };
+        const phoneRegex = /^[\d\s()+-]+$/;
+        if (!phoneRegex.test(phone)) return { valid: false, msg: '❌ Invalid characters. Use digits, spaces, (, ), +, or -' };
+        return { valid: true, msg: '✓ Valid phone number' };
+      }
+
+      // Birthday validation
+      function validateBirthday(date) {
+        if (!date) return { valid: true, msg: '' };
+        const [year, month, day] = date.split('-');
+        const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const today = new Date();
+        let age = today.getFullYear() - parseInt(year);
+        const monthDiff = today.getMonth() - (parseInt(month) - 1);
+        const dayDiff = today.getDate() - parseInt(day);
+        // Subtract 1 if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          age--;
+        }
+        if (age < 13) return { valid: false, msg: '❌ Must be at least 13 years old' };
+        if (age > 120) return { valid: false, msg: '❌ Invalid date' };
+        return { valid: true, msg: '✓ Valid birthday' };
+      }
+
+      // Event listeners for validation
+      document.addEventListener('DOMContentLoaded', () => {
+        const phoneInput = document.getElementById('profile-phone');
+        const birthdayInput = document.getElementById('profile-birthday');
+        const birthdayDisplay = document.getElementById('profile-birthday-display');
+
+        phoneInput?.addEventListener('input', () => {
+          const validation = validatePhone(phoneInput.value);
+          const msg = document.getElementById('phone-msg');
+          if (phoneInput.value) {
+            msg.className = validation.valid ? 'validation-msg success' : 'validation-msg error';
+            msg.textContent = validation.msg;
+          } else {
+            msg.className = 'validation-msg';
+            msg.textContent = '';
+          }
+        });
+
+        // Birthday field is read-only, no interaction needed
+        // birthdayDisplay?.addEventListener('click', () => {
+        //   // Check if birthday is already set
+        //   const birthdayValue = document.getElementById('profile-birthday').value;
+        //   if (birthdayValue) {
+        //     alert('Your birthday is already set and cannot be changed. If your birthday is incorrect, please contact support for assistance.');
+        //     return;
+        //   }
+        //   openBirthdayPicker();
+        // });
+
+        // Year input handler
+        const yearInput = document.getElementById('picker-year');
+        if (yearInput) {
+          yearInput.addEventListener('change', (e) => {
+            const year = parseInt(e.target.value);
+            const maxYear = new Date().getFullYear();
+            if (year >= 1906 && year <= maxYear) {
+              pickerState.year = year;
+              // Adjust day if it's invalid for the new month/year
+              const daysInMonth = new Date(pickerState.year, pickerState.month, 0).getDate();
+              if (pickerState.day > daysInMonth) {
+                pickerState.day = daysInMonth;
+              }
+              renderDatePicker();
+            }
+          });
+          yearInput.addEventListener('input', (e) => {
+            const year = parseInt(e.target.value);
+            const maxYear = new Date().getFullYear();
+            if (!isNaN(year) && year >= 1906 && year <= maxYear) {
+              pickerState.year = year;
+              const daysInMonth = new Date(pickerState.year, pickerState.month, 0).getDate();
+              if (pickerState.day > daysInMonth) {
+                pickerState.day = daysInMonth;
+              }
+              renderDatePicker();
+            }
+          });
+        }
+
+        // Month select handler
+        const monthSelect = document.getElementById('picker-month-select');
+        if (monthSelect) {
+          monthSelect.addEventListener('change', (e) => {
+            const m = parseInt(e.target.value);
+            if (!isNaN(m) && m >= 1 && m <= 12) {
+              pickerState.month = m;
+              const daysInMonth = new Date(pickerState.year, pickerState.month, 0).getDate();
+              if (pickerState.day > daysInMonth) pickerState.day = daysInMonth;
+              renderDatePicker();
+            }
+          });
+        }
+
+        // ESC key to close modal
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && document.getElementById('date-picker-modal').classList.contains('active')) {
+            closeBirthdayPicker();
+          }
+        });
+      });
+
+      const genreMap = {
+        'Board Games': ['Strategy', 'Party', 'Cooperative', 'Deck Building', 'Puzzle'],
+        'Video Games': ['Action', 'RPG', 'Strategy', 'Sports', 'Puzzle', 'Indie'],
+        'Movies': ['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Animation', 'Documentary'],
+        'Books': ['Fantasy', 'Mystery', 'Romance', 'Science Fiction', 'Biography', 'Self-Help'],
+        'Music': ['Rock', 'Pop', 'Jazz', 'Hip-Hop', 'Classical', 'Electronic', 'Metal'],
+        'Sports': ['Football', 'Basketball', 'Soccer', 'Tennis', 'Baseball', 'Volleyball'],
+        'Travel': ['Beach', 'Mountain', 'City', 'Adventure', 'Cultural', 'Budget'],
+        'Cooking': ['Italian', 'Asian', 'Mexican', 'Indian', 'French', 'Baking']
+      };
+
+      function updatePreview() {
+        const av = document.getElementById('avatar-preview');
+        const pic = document.getElementById('profile-picture').value.trim();
+        if (pic) {
+          av.innerHTML = `<img src="${pic}" style="width:120px;height:120px;border-radius:16px;object-fit:cover;">`;
+        } else {
+          av.innerHTML = (currentUser?.firstName?.charAt(0) || '?') + (currentUser?.lastName?.charAt(0) || '');
+        }
+        document.getElementById('display-name').textContent = `${currentUser?.firstName || ''} ${currentUser?.lastName || ''}`.trim() || 'Your name';
+        document.getElementById('display-username').textContent = currentUser?.username ? `@${currentUser.username}` : '';
+        document.getElementById('display-email').textContent = currentUser?.email || '';
+      }
+
+      // Cropper instance
+      let cropper = null;
+      let currentImageFile = null;
+
+      // Handle file upload and open cropper
+      async function handleProfilePictureUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          await showAlert('Please select an image file', 'error', 'Invalid File Type');
+          event.target.value = '';
+          return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          await showAlert('Image file size must be less than 5MB', 'error', 'File Too Large');
+          event.target.value = '';
+          return;
+        }
+
+        currentImageFile = file;
+
+        // Read image and open cropper modal
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imageDataUrl = e.target.result;
+          openCropperModal(imageDataUrl);
+        };
+        reader.onerror = async function () {
+          await showAlert('Failed to read image file', 'error', 'File Read Error');
+        };
+        reader.readAsDataURL(file);
+
+        // Reset file input
+        event.target.value = '';
+      }
+
+      // Open cropper modal
+      function openCropperModal(imageDataUrl) {
+        // Check if Cropper.js is loaded
+        if (typeof Cropper === 'undefined') {
+          console.error('❌ Cropper.js library not loaded!');
+          showAlert('⚠️ Image cropper failed to load. Please refresh the page.', 'error', 'Cropper Error');
+          return;
+        }
+
+        const modal = document.getElementById('cropper-modal');
+        const image = document.getElementById('cropper-image');
+        const beforeImg = document.getElementById('cropper-before-img');
+
+        // Set image sources
+        image.src = imageDataUrl;
+        beforeImg.src = imageDataUrl;
+
+        // Show modal
+        modal.style.display = 'flex';
+
+        // Initialize cropper after image loads
+        const initializeCropper = () => {
+          try {
+            // Destroy existing cropper if any
+            if (cropper) {
+              cropper.destroy();
+            }
+
+            cropper = new Cropper(image, {
+              aspectRatio: 1,
+              viewMode: 1,
+              dragMode: 'move',
+              autoCropArea: 0.8,
+              restore: false,
+              guides: true,
+              center: true,
+              highlight: false,
+              cropBoxMovable: true,
+              cropBoxResizable: true,
+              toggleDragModeOnDblclick: false,
+              crop: function (event) {
+                // Update live preview
+                updateCropperPreview();
+              }
+            });
+
+            console.log('✅ Cropper initialized successfully');
+          } catch (error) {
+            console.error('❌ Failed to initialize Cropper:', error);
+            showAlert('⚠️ Failed to initialize image cropper. Please try again.', 'error', 'Cropper Error');
+            closeCropperModal();
+          }
+        };
+
+        // Wait for image to load
+        if (image.complete && image.naturalHeight !== 0) {
+          setTimeout(initializeCropper, 100);
+        } else {
+          image.onload = () => setTimeout(initializeCropper, 100);
+          image.onerror = () => {
+            showAlert('⚠️ Failed to load image.', 'error', 'Image Load Error');
+            closeCropperModal();
+          };
+        }
+      }
+
+      // Close cropper modal
+      function closeCropperModal() {
+        const modal = document.getElementById('cropper-modal');
+        modal.style.display = 'none';
+
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+
+        currentImageFile = null;
+      }
+
+      // Update cropper preview
+      function updateCropperPreview() {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+          width: 120,
+          height: 120,
+          imageSmoothingEnabled: true,
+          imageSmoothingQuality: 'high'
+        });
+
+        if (canvas) {
+          const previewDiv = document.getElementById('cropper-after-preview');
+          previewDiv.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = canvas.toDataURL('image/jpeg', 0.9);
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          previewDiv.appendChild(img);
+        }
+      }
+
+      // Cropper controls
+      function cropperRotateLeft() {
+        if (cropper) cropper.rotate(-90);
+      }
+
+      function cropperRotateRight() {
+        if (cropper) cropper.rotate(90);
+      }
+
+      function cropperFlip() {
+        if (cropper) {
+          const data = cropper.getData();
+          cropper.scaleX(data.scaleX === -1 ? 1 : -1);
+        }
+      }
+
+      function cropperZoomIn() {
+        if (cropper) cropper.zoom(0.1);
+      }
+
+      function cropperZoomOut() {
+        if (cropper) cropper.zoom(-0.1);
+      }
+
+      function cropperReset() {
+        if (cropper) cropper.reset();
+      }
+
+      // Crop and save
+      async function cropAndSave() {
+        if (!cropper) return;
+
+        try {
+          // Get cropped canvas at high resolution
+          const canvas = cropper.getCroppedCanvas({
+            width: 400,
+            height: 400,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+          });
+
+          if (!canvas) {
+            await showAlert('Failed to crop image', 'error', 'Crop Error');
+            return;
+          }
+
+          // Convert to base64
+          const base64Image = canvas.toDataURL('image/jpeg', 0.7);
+
+          // Update profile picture field
+          document.getElementById('profile-picture').value = base64Image;
+
+          // Update preview
+          updatePreview();
+
+          // Close modal
+          closeCropperModal();
+
+          await showAlert('Photo cropped successfully! Remember to click "Save Profile" to save your changes.', 'success', 'Photo Ready');
+        } catch (error) {
+          console.error('Crop error:', error);
+          await showAlert('Failed to crop image: ' + error.message, 'error', 'Crop Error');
+        }
+      }
+
+      // ESC key to close modal
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.getElementById('cropper-modal').style.display === 'flex') {
+          closeCropperModal();
+        }
+      });
+
+      // Click outside modal to close
+      document.getElementById('cropper-modal')?.addEventListener('click', function (e) {
+        if (e.target === this) {
+          closeCropperModal();
+        }
+      });
+
+      function switchTab(idx) {
+        document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+        document.querySelectorAll('.tab-content').forEach((tc, i) => tc.classList.toggle('active', i === idx));
+      }
+
+      async function loadProfile() {
+        // Get token from localStorage
+        const currentToken = localStorage.getItem('token');
+        if (!currentToken) {
+          await showAlert('Please log in to view your profile', 'warning', 'Login Required');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/users/profile`, {
+            headers: { 'Authorization': `Bearer ${currentToken}` }
+          });
+
+          // Check if token is invalid
+          if (res.status === 401) {
+            const errorData = await res.json();
+            if (errorData.error === 'Invalid token' || errorData.error === 'No token provided') {
+              await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              window.location.href = '../index.html';
+              return;
+            }
+          }
+
+          if (!res.ok) {
+            throw new Error(`Failed to load profile: ${res.status}`);
+          }
+
+          const data = await res.json();
+          if (!data.user) {
+            console.error('No user data received');
+            return;
+          }
+          currentUser = data.user;
+
+          document.getElementById('profile-firstName').value = currentUser.firstName || '';
+          document.getElementById('profile-lastName').value = currentUser.lastName || '';
+          document.getElementById('profile-email').value = currentUser.email || '';
+          document.getElementById('profile-phone').value = currentUser.phone || '';
+          document.getElementById('profile-birthday').value = currentUser.birthday || '';
+          document.getElementById('profile-picture').value = currentUser.profilePicture || '';
+          updateBirthdayDisplay();
+
+          // Lock birthday if it's already set
+          if (currentUser.birthday) {
+            const birthdayDisplay = document.getElementById('profile-birthday-display');
+            birthdayDisplay.style.cursor = 'not-allowed';
+            birthdayDisplay.style.opacity = '0.7';
+            birthdayDisplay.style.backgroundColor = '#f3f4f6';
+            birthdayDisplay.onclick = null;
+            document.getElementById('birthday-locked-msg').style.display = 'block';
+          }
+          document.getElementById('profile-bio').value = currentUser.bio || '';
+
+          const prefs = (currentUser.sharePreferences || '').split(',').map(s => s.trim()).filter(Boolean);
+          document.getElementById('share-email').checked = prefs.includes('email') || prefs.includes('all');
+          document.getElementById('share-phone').checked = prefs.includes('phone') || prefs.includes('all');
+          document.getElementById('share-address').checked = prefs.includes('address') || prefs.includes('all');
+          document.getElementById('share-notes').checked = prefs.includes('notes') || prefs.includes('all');
+          document.getElementById('share-all').checked = prefs.includes('all');
+
+          const privacySettings = currentUser.privacySettings ? JSON.parse(currentUser.privacySettings) : {};
+          document.getElementById('profile-public').checked = privacySettings.profilePublic !== false;
+          document.getElementById('show-online-status').checked = privacySettings.showOnlineStatus !== false;
+          document.getElementById('allow-contact-requests').checked = privacySettings.allowContactRequests !== false;
+          document.getElementById('share-interests').checked = privacySettings.shareInterests !== false;
+          document.getElementById('show-last-active').checked = privacySettings.showLastActive !== false;
+          document.getElementById('friend-request-setting').value = privacySettings.friendRequestSetting || 'everyone';
+
+          const settings = currentUser.settings ? JSON.parse(currentUser.settings) : {};
+          document.getElementById('profile-theme').value = settings.theme || 'system';
+          document.getElementById('notify-email').checked = settings.notifyEmail !== false;
+          document.getElementById('notify-friend-requests').checked = settings.notifyFriendRequests !== false;
+          document.getElementById('notify-contact-updates').checked = !!settings.notifyContactUpdates;
+          document.getElementById('notify-message').checked = !!settings.notifyMessage;
+          document.getElementById('twofactor').checked = !!settings.twoFactor;
+          document.getElementById('remember-login').checked = !!settings.rememberLogin;
+
+          currentInterests = currentUser.interests ? JSON.parse(currentUser.interests) : {};
+          renderInterests();
+          updatePreview();
+        } catch (err) {
+          console.error('Failed to load profile', err);
+          if (err.message.includes('401') || err.message.includes('token')) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+          }
+        }
+      }
+
+      function renderInterests() {
+        const container = document.getElementById('interests-container');
+        container.innerHTML = '';
+        Object.entries(currentInterests).forEach(([category, data]) => {
+          const card = document.createElement('div');
+          card.className = 'interest-card';
+          const genreStr = (data.genres || []).map(g => `<div class="genre-badge">${g} <button type="button" onclick="removeGenre('${category}', '${g}')">×</button></div>`).join('');
+          const favStr = (data.favorites || []).map(f => `<div class="favorite-item">${f} <button type="button" onclick="removeFavorite('${category}', '${f}')">×</button></div>`).join('');
+          card.innerHTML = `
+          <div class="interest-header">
+            <div class="interest-title">${category}</div>
+            <button class="remove-btn" type="button" onclick="removeInterest('${category}')">Remove</button>
+          </div>
+          <div>
+            <label style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Genres:</label>
+            <select onchange="addGenre('${category}', this)" style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem;">
+              <option value="">Add a genre...</option>
+              ${(genreMap[category] || []).map(g => `<option value="${g}">${g}</option>`).join('')}
+            </select>
+            <div class="genre-list">${genreStr}</div>
+          </div>
+          <div class="favorites">
+            <h5>Favorites (e.g., Uno, Chess, etc.)</h5>
+            <div class="favorite-input">
+              <input type="text" id="fav-input-${category}" placeholder="Add favorite...">
+              <button type="button" class="btn btn-secondary" onclick="addFavorite('${category}')">Add</button>
+            </div>
+            <div>${favStr}</div>
+          </div>
+        `;
+          container.appendChild(card);
+        });
+      }
+
+      async function addInterest() {
+        const select = document.getElementById('interest-category-select');
+        const category = select.value.trim();
+        if (!category || currentInterests[category]) {
+          await showAlert('Interest already added or none selected', 'warning', 'Invalid Selection');
+          return;
+        }
+        currentInterests[category] = { genres: [], favorites: [] };
+        select.value = '';
+        renderInterests();
+      }
+
+      function removeInterest(category) {
+        delete currentInterests[category];
+        renderInterests();
+      }
+
+      function addGenre(category, select) {
+        const genre = select.value.trim();
+        if (genre && !currentInterests[category].genres.includes(genre)) {
+          currentInterests[category].genres.push(genre);
+          renderInterests();
+        }
+      }
+
+      function removeGenre(category, genre) {
+        currentInterests[category].genres = currentInterests[category].genres.filter(g => g !== genre);
+        renderInterests();
+      }
+
+      function addFavorite(category) {
+        const input = document.getElementById(`fav-input-${category}`);
+        const fav = input.value.trim();
+        if (fav && !currentInterests[category].favorites.includes(fav)) {
+          currentInterests[category].favorites.push(fav);
+          input.value = '';
+          renderInterests();
+        }
+      }
+
+      function removeFavorite(category, fav) {
+        currentInterests[category].favorites = currentInterests[category].favorites.filter(f => f !== fav);
+        renderInterests();
+      }
+
+      async function saveInterests() {
+        const currentToken = getToken();
+        if (!currentToken) {
+          await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/users/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+            body: JSON.stringify({ interests: JSON.stringify(currentInterests) })
+          });
+
+          if (res.status === 401) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          if (res.ok) {
+            await showAlert('Interests saved successfully!', 'success', 'Success');
+            await loadProfile(); // Reload to sync
+          } else {
+            const errorData = await res.json();
+            await showAlert('Failed to save: ' + (errorData.error || 'Unknown error'), 'error', 'Save Failed');
+          }
+        } catch (e) {
+          console.error('Save error', e);
+          await showAlert('Failed to save interests: ' + e.message, 'error', 'Error');
+        }
+      }
+
+      async function savePrivacy() {
+        const currentToken = getToken();
+        if (!currentToken) {
+          await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        const prefs = document.getElementById('share-all').checked ? 'all' : [
+          document.getElementById('share-email').checked ? 'email' : null,
+          document.getElementById('share-phone').checked ? 'phone' : null,
+          document.getElementById('share-address').checked ? 'address' : null,
+          document.getElementById('share-notes').checked ? 'notes' : null
+        ].filter(Boolean).join(',');
+
+        const privacySettings = {
+          profilePublic: document.getElementById('profile-public').checked,
+          showOnlineStatus: document.getElementById('show-online-status').checked,
+          allowContactRequests: document.getElementById('allow-contact-requests').checked,
+          shareInterests: document.getElementById('share-interests').checked,
+          showLastActive: document.getElementById('show-last-active').checked,
+          friendRequestSetting: document.getElementById('friend-request-setting').value
+        };
+
+        try {
+          const res = await fetch(`${API_URL}/users/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+            body: JSON.stringify({
+              sharePreferences: prefs,
+              privacySettings: JSON.stringify(privacySettings)
+            })
+          });
+
+          if (res.status === 401) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          if (res.ok) {
+            await showAlert('Privacy settings saved successfully!', 'success', 'Success');
+            await loadProfile(); // Reload to sync
+          } else {
+            const errorData = await res.json();
+            await showAlert('Failed to save: ' + (errorData.error || 'Unknown error'), 'error', 'Save Failed');
+          }
+        } catch (e) {
+          console.error('Save error', e);
+          await showAlert('Failed to save privacy settings: ' + e.message, 'error', 'Error');
+        }
+      }
+
+      async function saveSettings() {
+        const currentToken = getToken();
+        if (!currentToken) {
+          await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        const settings = {
+          theme: document.getElementById('profile-theme').value,
+          notifyEmail: document.getElementById('notify-email').checked,
+          notifyFriendRequests: document.getElementById('notify-friend-requests').checked,
+          notifyContactUpdates: document.getElementById('notify-contact-updates').checked,
+          notifyMessage: document.getElementById('notify-message').checked,
+          twoFactor: document.getElementById('twofactor').checked,
+          rememberLogin: document.getElementById('remember-login').checked
+        };
+
+        try {
+          const res = await fetch(`${API_URL}/users/profile`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+            body: JSON.stringify({ settings: JSON.stringify(settings) })
+          });
+
+          if (res.status === 401) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          if (res.ok) {
+            await showAlert('Settings saved successfully!', 'success', 'Success');
+            await loadProfile(); // Reload to sync
+          } else {
+            const errorData = await res.json();
+            await showAlert('Failed to save: ' + (errorData.error || 'Unknown error'), 'error', 'Save Failed');
+          }
+        } catch (e) {
+          console.error('Save error', e);
+          await showAlert('Failed to save settings: ' + e.message, 'error', 'Error');
+        }
+      }
+
+      async function changePassword() {
+        const currentToken = getToken();
+        if (!currentToken) {
+          await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        const current = await showPrompt('Enter your current password:', '', 'Change Password', { type: 'password', placeholder: 'Current password' });
+        if (!current) return;
+        const next = await showPrompt('Enter your new password:', '', 'Change Password', { type: 'password', placeholder: 'New password' });
+        if (!next) return;
+
+        try {
+          const res = await fetch(`${API_URL}/users/change-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentToken}` },
+            body: JSON.stringify({ currentPassword: current, newPassword: next })
+          });
+
+          if (res.status === 401) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          const data = await res.json();
+          if (res.ok) {
+            await showAlert('Password changed successfully', 'success', 'Success');
+          } else {
+            await showAlert(data.error || 'Failed to change password', 'error', 'Error');
+          }
+        } catch (e) {
+          console.error('Change password error', e);
+          await showAlert('Failed to change password: ' + e.message, 'error', 'Error');
+        }
+      }
+
+      async function logoutAll() {
+        const confirmed = await showConfirm('Logout from all devices? You will need to login again.', 'Logout All Sessions', { confirmText: 'Logout All', cancelText: 'Cancel', type: 'confirm' });
+        if (confirmed) {
+          await showAlert('All session logout feature coming soon', 'info', 'Coming Soon');
+          // TODO: Implement backend endpoint to invalidate all tokens
+        }
+      }
+
+      async function deleteAccount(event) {
+        event.preventDefault();
+
+        const passwordInput = document.getElementById('delete-password');
+        const confirmationInput = document.getElementById('delete-confirmation');
+
+        const password = passwordInput.value.trim();
+        const confirmation = confirmationInput.value.trim();
+
+        if (!password) {
+          alert('Password is required');
+          return;
+        }
+
+        if (confirmation !== 'DELETE MY ACCOUNT') {
+          alert('You must type "DELETE MY ACCOUNT" exactly to confirm deletion.');
+          return;
+        }
+
+        try {
+          const currentToken = getToken();
+          if (!currentToken) {
+            alert('Your session has expired. Please log in again.');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          const res = await fetch(`${API_URL}/users/account`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${currentToken}`
+            },
+            body: JSON.stringify({ password, confirmation })
+          });
+
+          if (res.status === 401) {
+            alert('Invalid password. Account deletion cancelled.');
+            passwordInput.value = '';
+            return;
+          }
+
+          if (res.status === 400) {
+            const errorData = await res.json();
+            alert(errorData.error || 'Invalid confirmation text.');
+            return;
+          }
+
+          if (res.ok) {
+            // Clear local storage
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+
+            alert('Your account has been permanently deleted. You will be redirected to the login page.');
+
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = '../index.html';
+            }, 2000);
+          } else {
+            const errorData = await res.json();
+            alert('Failed to delete account: ' + (errorData.error || 'Unknown error'));
+          }
+        } catch (e) {
+          console.error('Delete account error', e);
+          alert('Failed to delete account: ' + e.message);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Check token on page load
+        const currentToken = localStorage.getItem('token');
+        if (!currentToken) {
+          await showAlert('Please log in to view your profile', 'warning', 'Login Required');
+          window.location.href = '../index.html';
+          return;
+        }
+
+        loadProfile();
+        // Add event listener for profile picture file upload
+        const profilePictureFileInput = document.getElementById('profile-picture-file');
+        if (profilePictureFileInput) {
+          profilePictureFileInput.addEventListener('change', handleProfilePictureUpload);
+        }
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          // Get fresh token
+          const currentToken = localStorage.getItem('token');
+          if (!currentToken) {
+            await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+            window.location.href = '../index.html';
+            return;
+          }
+
+          // Validate phone
+          const phoneVal = document.getElementById('profile-phone').value;
+          const phoneValidation = validatePhone(phoneVal);
+          if (phoneVal && !phoneValidation.valid) {
+            await showAlert(phoneValidation.msg, 'error', 'Invalid Phone Number');
+            return;
+          }
+
+          // Check if birthday is being changed (not allowed if already set)
+          const currentBirthday = currentUser?.birthday || '';
+          const newBirthday = document.getElementById('profile-birthday').value;
+          if (currentBirthday && newBirthday !== currentBirthday) {
+            await showAlert('Your birthday cannot be changed once it\'s set. If your birthday is incorrect, please contact support for assistance.', 'warning', 'Birthday Cannot Be Changed');
+            return;
+          }
+
+          // Validate birthday (only if it's a new birthday)
+          const birthdayVal = document.getElementById('profile-birthday').value;
+          if (birthdayVal && !currentBirthday) {
+            const birthdayValidation = validateBirthday(birthdayVal);
+            if (!birthdayValidation.valid) {
+              await showAlert(birthdayValidation.msg, 'error', 'Invalid Birthday');
+              return;
+            }
+          }
+
+          try {
+            // Only send birthday if it's new (not changing existing)
+            const profileData = {
+              firstName: document.getElementById('profile-firstName').value,
+              lastName: document.getElementById('profile-lastName').value,
+              email: document.getElementById('profile-email').value,
+              bio: document.getElementById('profile-bio').value,
+              profilePicture: document.getElementById('profile-picture').value,
+              phone: document.getElementById('profile-phone').value
+            };
+
+            // Only include birthday if it's a new value (not already set)
+            if (!currentBirthday && birthdayVal) {
+              profileData.birthday = birthdayVal;
+            }
+
+            console.log('Saving profile data:', profileData);
+
+            const res = await fetch(`${API_URL}/users/profile`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${currentToken}`
+              },
+              body: JSON.stringify(profileData)
+            });
+
+            // Handle token errors
+            if (res.status === 401) {
+              const errorData = await res.json();
+              if (errorData.error === 'Invalid token' || errorData.error === 'No token provided') {
+                await showAlert('Your session has expired. Please log in again.', 'warning', 'Session Expired');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '../index.html';
+                return;
+              }
+            }
+
+            if (res.ok) {
+              const data = await res.json();
+              console.log('Profile saved successfully:', data);
+              currentUser = data.user;
+              updatePreview();
+              // Reload profile to ensure all fields are synced
+              await loadProfile();
+              await showAlert('Profile saved successfully!', 'success', 'Success');
+            } else {
+              const errorData = await res.json();
+              console.error('Save failed:', errorData);
+              await showAlert('Failed to save: ' + (errorData.error || 'Unknown error'), 'error', 'Save Failed');
+            }
+          } catch (err) {
+            console.error('Save error', err);
+            await showAlert('Save failed: ' + err.message, 'error', 'Error');
+          }
+        });
+        document.getElementById('profile-picture').addEventListener('input', updatePreview);
+      });
+    </script>
+
+    <!-- Cropper Modal -->
+    <div id="cropper-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); z-index: 10000; 
+    align-items: center; justify-content: center; padding: 1rem;">
+      <div style="background: white; border-radius: 24px; max-width: 900px; width: 100%; max-height: 95vh; 
+      overflow: hidden; box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.4); display: flex; flex-direction: column;">
+
+        <!-- Modal Header -->
+        <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); 
+        color: white; padding: 1.75rem 2rem; display: flex; align-items: center; justify-content: space-between;">
+          <h3 style="margin: 0; font-size: 1.5rem; font-weight: 700;">✂️ Crop Your Photo</h3>
+          <button onclick="closeCropperModal()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); 
+          color: white; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; font-size: 1.25rem; 
+          display: flex; align-items: center; justify-content: center; transition: all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='scale(1.1) rotate(90deg)';"
+            onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='scale(1) rotate(0deg)';">
+            &times;
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div style="padding: 2rem; overflow-y: auto; flex: 1; background: #f8fafc;">
+
+          <!-- Preview Circles -->
+          <div style="display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="text-align: center;">
+              <div style="color: #64748b; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">BEFORE</div>
+              <div id="cropper-before-preview" style="width: 120px; height: 120px; border-radius: 50%; 
+              overflow: hidden; border: 4px solid #e2e8f0; background: #f1f5f9; 
+              display: flex; align-items: center; justify-content: center;">
+                <img id="cropper-before-img" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+            </div>
+            <div style="text-align: center;">
+              <div style="color: #64748b; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">AFTER</div>
+              <div id="cropper-after-preview" style="width: 120px; height: 120px; border-radius: 50%; 
+              overflow: hidden; border: 4px solid #6366f1; background: #e0e7ff; 
+              display: flex; align-items: center; justify-content: center;">
+                <span style="color: #6366f1; font-size: 2rem;">👤</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Crop Area -->
+          <div style="background: #1e293b; border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem; 
+          max-height: 400px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            <img id="cropper-image" style="max-width: 100%; display: block;">
+          </div>
+
+          <!-- Controls -->
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <button onclick="cropperRotateLeft()" style="background: #667eea; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#5568d3'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)';">
+              <span>↺</span> Rotate Left
+            </button>
+            <button onclick="cropperRotateRight()" style="background: #667eea; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#5568d3'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)';">
+              <span>↻</span> Rotate Right
+            </button>
+            <button onclick="cropperFlip()" style="background: #667eea; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#5568d3'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)';">
+              <span>⇄</span> Flip
+            </button>
+            <button onclick="cropperZoomIn()" style="background: #667eea; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#5568d3'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)';">
+              <span>🔍+</span> Zoom In
+            </button>
+            <button onclick="cropperZoomOut()" style="background: #667eea; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#5568d3'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#667eea'; this.style.transform='translateY(0)';">
+              <span>🔍-</span> Zoom Out
+            </button>
+            <button onclick="cropperReset()" style="background: #64748b; color: white; border: none; 
+            padding: 0.75rem 1.25rem; border-radius: 10px; cursor: pointer; font-weight: 600; 
+            display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+              onmouseover="this.style.background='#475569'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#64748b'; this.style.transform='translateY(0)';">
+              <span>↻</span> Reset
+            </button>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; gap: 1rem; justify-content: center;">
+            <button onclick="closeCropperModal()" style="background: #e2e8f0; color: #1a202c; border: none; 
+            padding: 1rem 2rem; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 1rem; 
+            transition: all 0.2s;"
+              onmouseover="this.style.background='#cbd5e1'; this.style.transform='translateY(-2px)';"
+              onmouseout="this.style.background='#e2e8f0'; this.style.transform='translateY(0)';">
+              ✕ Cancel
+            </button>
+            <button onclick="cropAndSave()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            color: white; border: none; padding: 1rem 2rem; border-radius: 12px; cursor: pointer; 
+            font-weight: 700; font-size: 1rem; transition: all 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(16, 185, 129, 0.4)';"
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)';">
+              ✓ Use This Photo
+            </button>
+          </div>
+
+          <p style="text-align: center; color: #64748b; font-size: 0.875rem; margin-top: 1.5rem;">
+            💡 Drag to reposition • Use mouse wheel to zoom • Click and drag corners to resize crop area
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/cropper.min.js"></script>
+    <script>
+      // Theme management for profile page
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          document.body.classList.add('dark-theme');
+        } else if (theme === 'light') {
+          document.body.classList.remove('dark-theme');
+        } else {
+          // System preference defaults to LIGHT
+          document.body.classList.remove('dark-theme');
+        }
+      }
+
+      // Apply theme on page load
+      (function () {
+        const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light
+        applyTheme(savedTheme);
+
+        // Listen for theme changes in settings
+        document.addEventListener('DOMContentLoaded', function () {
+          document.getElementById('profile-theme')?.addEventListener('change', function (e) {
+            const theme = e.target.value;
+            localStorage.setItem('theme', theme);
+            applyTheme(theme);
+          });
+        });
+      })();
+    </script>
+    <script src="../js/popup-system.js"></script>
+</body>
+
+</html>

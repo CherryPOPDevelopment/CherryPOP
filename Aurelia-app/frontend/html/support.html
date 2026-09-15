@@ -1,0 +1,1254 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>Support & Help — Aurelia Contacts</title>
+  <link rel="stylesheet" href="../css/popup-styles.css">
+  <style>
+    * { box-sizing: border-box; }
+    
+    :root {
+      --bg-gradient-start: #f5f7fa;
+      --bg-gradient-end: #c3cfe2;
+      --card-bg: white;
+      --text-color: #1a202c;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --input-bg: #f8fafc;
+    }
+
+    body.dark-theme {
+      --bg-gradient-start: #0a0e1a;
+      --bg-gradient-end: #12182b;
+      --card-bg: #12182b;
+      --text-color: #ffffff;
+      --text-secondary: #e5e7eb;
+      --border-color: #2d3548;
+      --input-bg: #0a0e1a;
+    }
+    
+    body { 
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%); 
+      min-height: 100vh; 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      padding: 2rem 1rem; 
+      margin: 0;
+      color: var(--text-color);
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      margin-bottom: 2rem; 
+      background: var(--card-bg);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    body.dark-theme .header {
+      border: 1px solid var(--border-color);
+    }
+    
+    .header h1 { margin: 0; color: var(--text-color); font-size: 2rem; }
+    .btn { 
+      padding: 0.75rem 1.5rem; 
+      border-radius: 10px; 
+      border: none; 
+      cursor: pointer; 
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-primary:hover { background: linear-gradient(135deg, #7c8ef0 0%, #8b5cb8 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+    .btn-secondary { background: #e2e8f0; color: #1a202c; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    
+    body.dark-theme .btn-secondary {
+      background: #1a2236;
+      color: #ffffff;
+      border: 1px solid #2d3548;
+    }
+    
+    body.dark-theme .btn-secondary:hover {
+      background: #2d3548;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 0.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+    
+    body.dark-theme .tabs {
+      border: 1px solid var(--border-color);
+    }
+    
+    .tab {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab:hover {
+      background: var(--input-bg);
+      color: var(--text-color);
+    }
+    
+    body.dark-theme .tab:hover {
+      background: #1a2236;
+    }
+    
+    .tab.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .tab-content {
+      display: none;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    body.dark-theme .tab-content {
+      border: 1px solid var(--border-color);
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-color);
+      margin: 0 0 1.5rem 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid var(--border-color);
+    }
+    
+    .faq-item {
+      margin-bottom: 1.5rem;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.2s;
+      background: var(--card-bg);
+    }
+    .faq-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .faq-question {
+      padding: 1.25rem 1.5rem;
+      background: var(--input-bg);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      color: var(--text-color);
+      transition: all 0.2s;
+    }
+    
+    body.dark-theme .faq-question {
+      background: #1a2236;
+    }
+    
+    .faq-question:hover {
+      background: var(--border-color);
+    }
+    
+    body.dark-theme .faq-question:hover {
+      background: #2d3548;
+    }
+    
+    .faq-question::after {
+      content: '+';
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #8b9df8;
+      transition: transform 0.3s;
+    }
+    .faq-item.active .faq-question::after {
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .faq-item.active .faq-answer {
+      padding: 1.5rem;
+      max-height: 500px;
+    }
+    
+    .policy-section {
+      margin-bottom: 2.5rem;
+    }
+    .policy-section h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-color);
+      margin: 0 0 1rem 0;
+    }
+    .policy-section p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+    .policy-section ul {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .policy-section li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .contact-form {
+      background: var(--input-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+    }
+    
+    body.dark-theme .contact-form {
+      background: #1a2236;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      background: var(--card-bg);
+      color: var(--text-color);
+    }
+    
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
+    }
+    
+    body.dark-theme .form-group input,
+    body.dark-theme .form-group textarea,
+    body.dark-theme .form-group select {
+      background: var(--input-bg);
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+    
+    body.dark-theme .form-group input:focus,
+    body.dark-theme .form-group textarea:focus,
+    body.dark-theme .form-group select:focus {
+      background: var(--card-bg);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .contact-info {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      border-left: 4px solid #667eea;
+    }
+    
+    body.dark-theme .contact-info {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+    
+    .contact-info h3 {
+      margin: 0 0 1rem 0;
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
+    .contact-info p {
+      margin: 0.5rem 0;
+      color: var(--text-secondary);
+    }
+    .contact-info a {
+      color: #6366f1;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+    
+    .search-box {
+      margin-bottom: 2rem;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 234, 0.1);
+    }
+    
+    /* Responsive Design - Comprehensive Mobile Support */
+    
+    /* Tablets (max-width: 1024px) */
+    @media (max-width: 1024px) {
+      .container {
+        max-width: 95%;
+      }
+    }
+
+    /* Mobile and Tablets (max-width: 768px) */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+        padding: 1.25rem 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.625rem 1.25rem;
+      }
+
+      .tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 0.4rem;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9rem;
+      }
+
+      .tab-content {
+        padding: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+      }
+
+      .faq-item,
+      .policy-section {
+        padding: 1.25rem;
+      }
+
+      .form-group label {
+        font-size: 0.9rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        padding: 0.625rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    /* Small Mobile (max-width: 480px) */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.75rem 0.25rem;
+      }
+
+      .header {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .tabs {
+        padding: 0.35rem;
+        border-radius: 10px;
+      }
+
+      .tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .tab-content {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .section-title {
+        font-size: 1.125rem;
+      }
+
+      .faq-item,
+      .policy-section {
+        padding: 1rem;
+        border-radius: 10px;
+      }
+
+      .faq-question {
+        font-size: 0.95rem;
+        padding-right: 2rem;
+      }
+
+      .faq-answer {
+        font-size: 0.875rem;
+      }
+
+      .search-box input {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        font-size: 0.85rem;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Extra Small Mobile (max-width: 375px) */
+    @media (max-width: 375px) {
+      .header h1 {
+        font-size: 1.125rem;
+      }
+
+      .tab {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8rem;
+      }
+
+      .tab-content {
+        padding: 0.875rem;
+      }
+
+      .section-title {
+        font-size: 1rem;
+      }
+    }
+
+    /* Touch Device Optimization */
+    @media (hover: none) and (pointer: coarse) {
+      .btn,
+      .tab,
+      .faq-item {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .search-box input {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      .faq-item:active {
+        background: #f8fafc;
+      }
+    }
+
+    /* High DPI Screens */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>💬 Support & Help Center</h1>
+      <a href="../index.html" class="btn btn-secondary">← Back to App</a>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(0)">FAQ</button>
+      <button class="tab" onclick="switchTab(1)">Privacy Policy</button>
+      <button class="tab" onclick="switchTab(2)">Rules & Guidelines</button>
+      <button class="tab" onclick="switchTab(3)">Contact Support</button>
+    </div>
+
+    <!-- FAQ Tab -->
+    <div class="tab-content active" id="tab-0">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      
+      <div class="search-box">
+        <input type="text" id="faq-search" placeholder="🔍 Search FAQs..." oninput="filterFAQ()">
+      </div>
+
+      <div id="faq-list">
+        <div class="faq-item" data-category="account">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I create an account?
+          </div>
+          <div class="faq-answer">
+            To create an account, click on the "Register" button on the login page. You'll need to provide:
+            <ul>
+              <li>First Name and Last Name</li>
+              <li>Username (unique identifier)</li>
+              <li>Email address</li>
+              <li>Password (minimum 8 characters with uppercase, lowercase, and number)</li>
+              <li>Birthday (must be at least 13 years old)</li>
+            </ul>
+            <p><strong>Important:</strong> After registration, you'll receive a verification email with a 6-digit code. You must verify your email before you can log in. Check your inbox (and spam folder) for the verification code.</p>
+            <p>You'll also need to complete the reCAPTCHA verification to prevent automated account creation.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="contacts">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I add a contact?
+          </div>
+          <div class="faq-answer">
+            To add a contact:
+            <ol>
+              <li>Click the "+ Add Contact" button in the sidebar</li>
+              <li>Fill in the contact's information (name and email are required)</li>
+              <li>Optionally add phone, address, category, and notes</li>
+              <li>Choose what information you want to share with friends (if any)</li>
+              <li>Click "Save Contact"</li>
+            </ol>
+            Your contact will be saved and appear in your contacts list.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="contacts">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Can I import contacts from a file?
+          </div>
+          <div class="faq-answer">
+            Yes! Aurelia Contacts supports importing contacts from:
+            <ul>
+              <li><strong>CSV files:</strong> Comma-separated values format (e.g., exported from Excel or Google Contacts)</li>
+              <li><strong>vCard files (.vcf):</strong> Standard contact format used by many email clients and address books</li>
+            </ul>
+            <p>To import contacts:</p>
+            <ol>
+              <li>Go to the Contacts section</li>
+              <li>Look for the "Import" button or option</li>
+              <li>Select your CSV or .vcf file</li>
+              <li>Review the imported contacts and make any necessary adjustments</li>
+              <li>Save the imported contacts</li>
+            </ol>
+            <p>You can also export your contacts for backup or to use in other applications.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="sharing">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            What are contact cards and how do I share them?
+          </div>
+          <div class="faq-answer">
+            Contact cards are contacts that you've chosen to share with your friends. When adding or editing a contact, you can select what information to share:
+            <ul>
+              <li><strong>Nothing (Private):</strong> Contact is only visible to you</li>
+              <li><strong>Email:</strong> Share only the email address</li>
+              <li><strong>Phone:</strong> Share only the phone number</li>
+              <li><strong>Email & Phone:</strong> Share both email and phone</li>
+              <li><strong>All info:</strong> Share all contact information</li>
+            </ul>
+            Only your friends can see shared contact cards on your profile.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="friends">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I add friends?
+          </div>
+          <div class="faq-answer">
+            To add friends:
+            <ol>
+              <li>Click "+ Find Friends" in the sidebar or navigate to the Friends section</li>
+              <li>Browse all users in the system</li>
+              <li>Click "Add Friend" on a user's profile</li>
+              <li>They will receive a friend request</li>
+              <li>Once accepted, you'll be friends and can see each other's shared contact cards</li>
+            </ol>
+            You can also search for specific users by name or username.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="profile">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I update my profile information?
+          </div>
+          <div class="faq-answer">
+            To update your profile:
+            <ol>
+              <li>Click "Profile" in the navigation bar</li>
+              <li>Edit your information in the Profile tab (name, bio, phone, profile picture)</li>
+              <li>Click "Save Profile" to save your changes</li>
+            </ol>
+            <p><strong>Note:</strong> Your birthday cannot be changed once it's set. If you need to correct your birthday, please contact support.</p>
+            <p>Your profile information is saved permanently and will persist across sessions.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="profile">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I upload or change my profile picture?
+          </div>
+          <div class="faq-answer">
+            To upload or change your profile picture:
+            <ol>
+              <li>Go to your Profile page</li>
+              <li>Click the "Upload Photo" button on your profile picture area</li>
+              <li>Select an image from your computer, or drag and drop an image onto the upload area</li>
+              <li>Use the cropping tool to adjust your image:
+                <ul>
+                  <li>Drag to reposition the image</li>
+                  <li>Use rotate buttons to rotate left or right</li>
+                  <li>Use flip buttons to flip horizontally or vertically</li>
+                  <li>Use zoom controls to zoom in or out</li>
+                  <li>Resize the crop box if needed</li>
+                </ul>
+              </li>
+              <li>Click "Crop & Save" when you're happy with the result</li>
+              <li>Click "Save Profile" to permanently save your profile picture</li>
+            </ol>
+            <p><strong>Requirements:</strong> Images can be JPG, PNG, or GIF format, with a maximum size of 15MB. Your image will be automatically cropped to a square (1:1 ratio) at high quality (1024x1024px).</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="profile">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Can I change my birthday?
+          </div>
+          <div class="faq-answer">
+            <p><strong>No, you cannot change your birthday once it's been set.</strong> This is a security measure to prevent account manipulation.</p>
+            <p>If your birthday is incorrect or you need to update it for any reason, please contact our support team:</p>
+            <ul>
+              <li><strong>Email:</strong> <a href="mailto:support@aureliacontacts.com">support@aureliacontacts.com</a></li>
+              <li>Include your username and the correct birthday in your message</li>
+              <li>We'll verify your identity and update it for you</li>
+            </ul>
+            <p>Please note that birthday changes are only made in exceptional circumstances and require verification.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="privacy">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I control my privacy settings?
+          </div>
+          <div class="faq-answer">
+            You can control your privacy in the Profile page under the "Privacy" tab:
+            <ul>
+              <li><strong>Contact Information Sharing:</strong> Choose what information friends can see by default</li>
+              <li><strong>Profile Visibility:</strong> Control if your profile is discoverable</li>
+              <li><strong>Friend Requests:</strong> Set who can send you friend requests</li>
+            </ul>
+            You can also set sharing preferences for individual contacts when adding or editing them.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="account">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I change my password?
+          </div>
+          <div class="faq-answer">
+            To change your password:
+            <ol>
+              <li>Go to Profile → Settings tab</li>
+              <li>Click "Change Password"</li>
+              <li>Enter your current password</li>
+              <li>Enter your new password</li>
+              <li>Confirm the change</li>
+            </ol>
+            <p>Make sure to use a strong, unique password for security (minimum 8 characters with uppercase, lowercase, and number).</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="account">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            I forgot my password. How do I reset it?
+          </div>
+          <div class="faq-answer">
+            If you've forgotten your password:
+            <ol>
+              <li>Go to the login page</li>
+              <li>Click "Forgot password?" below the login form</li>
+              <li>Enter your email address</li>
+              <li>Check your email inbox (and spam folder) for a password reset email</li>
+              <li>Click the "Reset Password" button in the email (or copy the reset link)</li>
+              <li>Enter your new password twice (must match)</li>
+              <li>Click "Reset Password" to save</li>
+              <li>You'll be redirected to login with your new password</li>
+            </ol>
+            <p><strong>Note:</strong> Reset links expire after 1 hour for security. If your link has expired, request a new one.</p>
+            <p>If you don't receive the email, check your spam folder or contact support at <a href="mailto:support@aureliacontacts.com">support@aureliacontacts.com</a></p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="account">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            What is email verification and why do I need it?
+          </div>
+          <div class="faq-answer">
+            Email verification is a security feature that ensures you own the email address you registered with:
+            <ul>
+              <li><strong>New Users:</strong> After registering, you'll receive an email with a 6-digit verification code</li>
+              <li><strong>Verification Required:</strong> You must verify your email before you can log in</li>
+              <li><strong>Where to Verify:</strong> You'll be automatically redirected to the verification page after registration</li>
+              <li><strong>Code Expiration:</strong> Verification codes expire after 24 hours</li>
+              <li><strong>One-Time Use:</strong> Once verified, you won't need to verify again for future logins</li>
+            </ul>
+            <p><strong>If you didn't receive the code:</strong> Check your spam folder, or contact support if you still don't see it after a few minutes.</p>
+            <p>This helps protect your account and prevents fake accounts from being created.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="data">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Where is my data stored?
+          </div>
+          <div class="faq-answer">
+            All your data is stored securely in a MySQL database:
+            <ul>
+              <li><strong>User accounts:</strong> Stored in the users table</li>
+              <li><strong>Contacts:</strong> Stored in the contacts table</li>
+              <li><strong>Friendships:</strong> Stored in the friendships table</li>
+            </ul>
+            Your data is private and only accessible to you and users you've explicitly shared information with. All data persists across sessions and is backed up in the database.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="account">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Can I delete my account?
+          </div>
+          <div class="faq-answer">
+            Yes, you can delete your account:
+            <ol>
+              <li>Go to Profile → Settings tab</li>
+              <li>Scroll to "Account Management"</li>
+              <li>Click "Delete Account"</li>
+              <li>Enter your password to confirm</li>
+            </ol>
+            <strong>Warning:</strong> This will permanently delete all your contacts, friendships, and account data. This action cannot be undone.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="technical">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            I'm having trouble logging in. What should I do?
+          </div>
+          <div class="faq-answer">
+            If you're having login issues:
+            <ul>
+              <li><strong>New Users:</strong> Make sure you've verified your email address. Check your inbox for a verification code if you haven't verified yet.</li>
+              <li>Make sure you're using the correct email and password</li>
+              <li>Check if Caps Lock is enabled</li>
+              <li>Try the "Forgot Password" feature to reset your password</li>
+              <li>Complete the reCAPTCHA verification if prompted (this prevents automated login attempts)</li>
+              <li>Clear your browser cache and cookies</li>
+              <li>Make sure JavaScript is enabled in your browser</li>
+              <li>Try using a different browser or device</li>
+            </ul>
+            If problems persist, contact support at <a href="mailto:support@aureliacontacts.com">support@aureliacontacts.com</a>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="technical">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            What is reCAPTCHA and why do I see it?
+          </div>
+          <div class="faq-answer">
+            reCAPTCHA is a security feature that helps protect Aurelia Contacts from automated bots and spam:
+            <ul>
+              <li><strong>When you see it:</strong> During registration and login attempts</li>
+              <li><strong>What it does:</strong> Verifies that you're a real person, not an automated program</li>
+              <li><strong>How to complete:</strong> Simply check the box or follow the simple verification instructions</li>
+              <li><strong>Why it's important:</strong> Prevents fake accounts, spam, and automated attacks on the system</li>
+            </ul>
+            <p>Most users complete reCAPTCHA in just a few seconds. If you have trouble with reCAPTCHA, make sure your browser is up to date and JavaScript is enabled.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="technical">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I switch between light and dark theme?
+          </div>
+          <div class="faq-answer">
+            To change your theme:
+            <ol>
+              <li>Go to your Profile page</li>
+              <li>Click on the "Settings" tab</li>
+              <li>Find the "Theme" section</li>
+              <li>Select your preferred theme:
+                <ul>
+                  <li><strong>Light:</strong> Bright, clean interface (default)</li>
+                  <li><strong>Dark:</strong> Dark mode with reduced eye strain for nighttime use</li>
+                  <li><strong>System:</strong> Follows your device preference (defaults to light)</li>
+                </ul>
+              </li>
+            </ol>
+            <p>Your theme preference is saved automatically and will persist across all your sessions. The change applies instantly to the entire application.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Policy Tab -->
+    <div class="tab-content" id="tab-1">
+      <h2 class="section-title">Privacy Policy</h2>
+      
+      <div class="policy-section">
+        <h3>1. Information We Collect</h3>
+        <p>We collect information that you provide directly to us when you:</p>
+        <ul>
+          <li>Create an account (username, email, password, name, birthday)</li>
+          <li>Verify your email address (6-digit verification code)</li>
+          <li>Update your profile (bio, phone, birthday, profile picture)</li>
+          <li>Upload profile pictures (stored securely and cropped to standard format)</li>
+          <li>Add contacts (name, email, phone, address, notes)</li>
+          <li>Import contacts from CSV or vCard files</li>
+          <li>Connect with friends (friend requests and relationships)</li>
+          <li>Use password reset functionality (temporary reset tokens)</li>
+          <li>Select theme preferences (stored locally and in your account settings)</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>2. How We Use Your Information</h3>
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Provide, maintain, and improve our services</li>
+          <li>Verify your email address to ensure account security</li>
+          <li>Send password reset links when requested</li>
+          <li>Send welcome emails and verification codes</li>
+          <li>Process your transactions and send related information</li>
+          <li>Send you technical notices and support messages</li>
+          <li>Respond to your comments and questions</li>
+          <li>Facilitate friend connections and contact sharing (only with your explicit permission)</li>
+          <li>Remember your preferences (such as theme settings)</li>
+          <li>Protect against fraud, spam, and abuse through reCAPTCHA verification</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>3. Information Sharing and Disclosure</h3>
+        <p><strong>We do not sell your personal information.</strong> We only share information:</p>
+        <ul>
+          <li><strong>With your consent:</strong> When you explicitly choose to share contact cards with friends</li>
+          <li><strong>With friends:</strong> Only the information you've marked as "shared" in your contact preferences</li>
+          <li><strong>For legal reasons:</strong> If required by law or to protect our rights</li>
+        </ul>
+        <p>You have full control over what information you share with friends through your privacy settings.</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>4. Data Security</h3>
+        <p>We implement appropriate security measures to protect your personal information:</p>
+        <ul>
+          <li>Passwords are hashed using bcrypt with salt rounds</li>
+          <li>Email verification required for all new accounts</li>
+          <li>Password reset tokens expire after 1 hour</li>
+          <li>Verification codes expire after 24 hours</li>
+          <li>reCAPTCHA protection against automated attacks</li>
+          <li>Rate limiting to prevent abuse and DDoS attacks</li>
+          <li>Database connections are secured</li>
+          <li>JWT tokens for secure session management (7-day expiration)</li>
+          <li>Data is stored in a secure MySQL database</li>
+          <li>Input validation and sanitization to prevent injection attacks</li>
+        </ul>
+        <p>However, no method of transmission over the Internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>5. Your Rights and Choices</h3>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access your personal information through your profile</li>
+          <li>Update or correct your information at any time</li>
+          <li>Delete your account and all associated data</li>
+          <li>Control what information you share with friends</li>
+          <li>Unfriend users at any time</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>6. Data Retention</h3>
+        <p>We retain your information for as long as your account is active or as needed to provide services. When you delete your account, all your data is permanently removed from our database.</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>7. Children's Privacy</h3>
+        <p>Our service is not intended for users under the age of 13. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>8. Changes to This Policy</h3>
+        <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date.</p>
+        <p><strong>Last Updated:</strong> January 2026</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>9. Contact Us</h3>
+        <p>If you have questions about this Privacy Policy, please contact us at:</p>
+        <p><strong>Email:</strong> <a href="mailto:privacy@aureliacontacts.com">privacy@aureliacontacts.com</a></p>
+        <p><strong>Support:</strong> <a href="mailto:support@aureliacontacts.com">support@aureliacontacts.com</a></p>
+      </div>
+    </div>
+
+    <!-- Rules & Guidelines Tab -->
+    <div class="tab-content" id="tab-2">
+      <h2 class="section-title">Rules & Guidelines</h2>
+      
+      <div class="policy-section">
+        <h3>1. Account Rules</h3>
+        <ul>
+          <li>You must be at least 13 years old to use this service</li>
+          <li>One account per person - multiple accounts are not allowed</li>
+          <li>You must verify your email address before logging in (verification code required)</li>
+          <li>You are responsible for maintaining the security of your account</li>
+          <li>Do not share your password with anyone</li>
+          <li>You must provide accurate information when creating your account</li>
+          <li>Birthday cannot be changed after registration (security feature)</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>2. User Conduct</h3>
+        <p>When using Aurelia Contacts, you agree to:</p>
+        <ul>
+          <li>Be respectful and courteous to other users</li>
+          <li>Not harass, threaten, or abuse other users</li>
+          <li>Not use the service for any illegal activities</li>
+          <li>Not spam or send unsolicited friend requests</li>
+          <li>Not impersonate other users or entities</li>
+          <li>Not share false or misleading information</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>3. Contact Information</h3>
+        <ul>
+          <li>Only add contacts that you have permission to store</li>
+          <li>Do not add fake or fraudulent contact information</li>
+          <li>Respect others' privacy when sharing contact cards</li>
+          <li>Only share contact information that you have permission to share</li>
+          <li>Report any misuse of contact information</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>4. Friend Requests and Relationships</h3>
+        <ul>
+          <li>Only send friend requests to people you know or want to connect with</li>
+          <li>Respect others' decisions to accept or decline friend requests</li>
+          <li>Do not repeatedly send friend requests to users who have declined</li>
+          <li>You can unfriend users at any time</li>
+          <li>Blocking functionality may be available for problematic users</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>5. Content Guidelines</h3>
+        <ul>
+          <li><strong>Profile Pictures:</strong> Must be appropriate, not contain offensive or explicit content, and must not violate copyright. Images should be clear and recognizable. Maximum file size is 15MB, and formats accepted are JPG, PNG, or GIF.</li>
+          <li><strong>Bios and Notes:</strong> Should not contain hate speech, threats, illegal content, or spam</li>
+          <li>Do not use the service to distribute spam or malware</li>
+          <li>Respect intellectual property rights - do not use copyrighted images without permission</li>
+          <li>Contact information should be accurate and belong to real people with their consent</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>6. Prohibited Activities</h3>
+        <p>The following activities are strictly prohibited:</p>
+        <ul>
+          <li>Attempting to hack or breach security measures</li>
+          <li>Bypassing or attempting to bypass reCAPTCHA or other security measures</li>
+          <li>Using automated tools, bots, or scripts to scrape or collect data</li>
+          <li>Creating fake accounts or impersonating others</li>
+          <li>Distributing viruses, malware, or harmful code</li>
+          <li>Violating any applicable laws or regulations</li>
+          <li>Interfering with the service's operation or attempting to overload servers</li>
+          <li>Abusing rate limits or attempting to perform actions too frequently</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>7. Violations and Enforcement</h3>
+        <p>Violations of these rules may result in:</p>
+        <ul>
+          <li>Warning notifications</li>
+          <li>Temporary suspension of your account</li>
+          <li>Permanent ban from the service</li>
+          <li>Legal action if applicable</li>
+        </ul>
+        <p>We reserve the right to remove any content or suspend any account that violates these guidelines.</p>
+      </div>
+
+      <div class="policy-section">
+        <h3>8. Reporting Issues</h3>
+        <p>If you encounter:</p>
+        <ul>
+          <li>Inappropriate behavior from other users</li>
+          <li>Spam or fraudulent accounts</li>
+          <li>Security concerns</li>
+          <li>Violations of these rules</li>
+        </ul>
+        <p>Please contact us immediately at <a href="mailto:report@aureliacontacts.com">report@aureliacontacts.com</a></p>
+      </div>
+
+      <div class="policy-section">
+        <h3>9. Service Availability</h3>
+        <ul>
+          <li>We strive to maintain 99.9% uptime but cannot guarantee uninterrupted service</li>
+          <li>Scheduled maintenance will be announced when possible</li>
+          <li>We are not responsible for data loss due to user error</li>
+          <li>Backup your important contacts regularly</li>
+        </ul>
+      </div>
+
+      <div class="policy-section">
+        <h3>10. Changes to Rules</h3>
+        <p>We may update these rules from time to time. Continued use of the service after changes constitutes acceptance of the new rules.</p>
+        <p><strong>Last Updated:</strong> January 2026</p>
+      </div>
+    </div>
+
+    <!-- Contact Support Tab -->
+    <div class="tab-content" id="tab-3">
+      <h2 class="section-title">Contact Support</h2>
+      
+      <div class="contact-info">
+        <h3>📧 Get in Touch</h3>
+        <p><strong>Support Email:</strong> <a href="mailto:support@aureliacontacts.com">support@aureliacontacts.com</a></p>
+        <p><strong>Privacy Inquiries:</strong> <a href="mailto:privacy@aureliacontacts.com">privacy@aureliacontacts.com</a></p>
+        <p><strong>Report Issues:</strong> <a href="mailto:report@aureliacontacts.com">report@aureliacontacts.com</a></p>
+        <p><strong>Response Time:</strong> We typically respond within 24-48 hours during business days.</p>
+      </div>
+
+      <div class="contact-form">
+        <h3 style="margin-top: 0;">Send us a Message</h3>
+        <form id="support-form" onsubmit="sendSupportMessage(event)">
+          <div class="form-group">
+            <label for="support-name">Your Name *</label>
+            <input type="text" id="support-name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="support-email">Your Email *</label>
+            <input type="email" id="support-email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="support-category">Category *</label>
+            <select id="support-category" required>
+              <option value="">Select a category...</option>
+              <option value="technical">Technical Issue</option>
+              <option value="account">Account Problem</option>
+              <option value="billing">Billing Question</option>
+              <option value="privacy">Privacy Concern</option>
+              <option value="feature">Feature Request</option>
+              <option value="bug">Bug Report</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="support-subject">Subject *</label>
+            <input type="text" id="support-subject" required placeholder="Brief description of your issue">
+          </div>
+          
+          <div class="form-group">
+            <label for="support-message">Message *</label>
+            <textarea id="support-message" required placeholder="Please provide as much detail as possible about your issue or question..."></textarea>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+      </div>
+
+      <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 12px; border-left: 4px solid #10b981;">
+        <h3 style="margin-top: 0;">💡 Before Contacting Support</h3>
+        <p>Please check our FAQ section first - many common questions are already answered there. This helps us respond to everyone faster!</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(index) {
+      // Hide all tabs
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+      });
+      document.querySelectorAll('.tab-content').forEach((tc, i) => {
+        tc.classList.toggle('active', i === index);
+      });
+    }
+
+    function toggleFAQ(element) {
+      const faqItem = element.parentElement;
+      const isActive = faqItem.classList.contains('active');
+      
+      // Close all FAQs
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Open clicked FAQ if it wasn't active
+      if (!isActive) {
+        faqItem.classList.add('active');
+      }
+    }
+
+    function filterFAQ() {
+      const searchTerm = document.getElementById('faq-search').value.toLowerCase();
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question').textContent.toLowerCase();
+        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+        const matches = question.includes(searchTerm) || answer.includes(searchTerm);
+        item.style.display = matches ? 'block' : 'none';
+      });
+    }
+
+    async function sendSupportMessage(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('support-name').value;
+      const email = document.getElementById('support-email').value;
+      const category = document.getElementById('support-category').value;
+      const subject = document.getElementById('support-subject').value;
+      const message = document.getElementById('support-message').value;
+      
+      // Create mailto link
+      const mailtoLink = `mailto:support@aureliacontacts.com?subject=${encodeURIComponent(`[${category.toUpperCase()}] ${subject}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\nCategory: ${category}\n\n${message}`)}`;
+      
+      // Open email client
+      window.location.href = mailtoLink;
+      
+      // Show confirmation
+      await showAlert('Your email client should open with your message. If it doesn\'t, please email us directly at support@aureliacontacts.com', 'info', 'Email Client Opening');
+      
+      // Optionally reset form
+      document.getElementById('support-form').reset();
+    }
+
+    // Initialize - close all FAQs on load
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+    });
+
+    // Theme management for support page
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    }
+    
+    // Apply theme on page load
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(savedTheme);
+    })();
+  </script>
+  <script src="../js/popup-system.js"></script>
+</body>
+</html>

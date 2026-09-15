@@ -56,6 +56,29 @@ const sovaProxy = createProxyMiddleware({
 
 app.use('/sova-demo', sovaProxy);
 
+const aureliaProxy = createProxyMiddleware({
+  target: 'http://127.0.0.1:5000',
+  changeOrigin: true,
+  selfHandleResponse: true,
+  on: {
+    proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
+      if (proxyRes.headers.location?.startsWith('/')) {
+        proxyRes.headers.location = `/aurelia${proxyRes.headers.location}`;
+      }
+
+      const contentType = proxyRes.headers['content-type'] || '';
+      if (!contentType.includes('text/html')) return responseBuffer;
+
+      return responseBuffer
+        .toString('utf8')
+        .replace(/(href|action|src)=(['"])\/(?!aurelia)/g, '$1=$2/aurelia/')
+        .replace(/(['"])\/api\//g, '$1/aurelia/api/');
+    }),
+  },
+});
+
+app.use('/aurelia', aureliaProxy);
+
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
 app.use('/api/inquiries', inquiriesRouter);
@@ -79,6 +102,7 @@ app.get('/services/:name', (req, res) => {
 app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoop.html')));
 app.get('/projects/scoopDEMO', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/sova-demo', (_, res) => res.redirect('/sova-demo'));
+app.get('/projects/aurelia', (_, res) => res.redirect('/aurelia/'));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));

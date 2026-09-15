@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Aurelia Contacts - Desktop & Mobile Apps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #1e293b;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .back-link:hover {
+            opacity: 0.8;
+        }
+        
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .platform-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        
+        .platform-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .platform-card h2 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .platform-card p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .download-btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .download-btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .download-btn-secondary {
+            background: #f8fafc;
+            color: #6366f1;
+            border-color: #e2e8f0;
+        }
+        
+        .download-btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #6366f1;
+        }
+        
+        .size-badge {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+        
+        .coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon .download-btn {
+            background: #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon-badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .info-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+            margin-top: 2rem;
+        }
+        
+        .info-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-section li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .info-section li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .security-notice {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid rgba(255, 193, 7, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        
+        .security-notice h3 {
+            color: #ffc107;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .security-notice p {
+            margin-bottom: 0.75rem;
+            line-height: 1.6;
+        }
+        
+        .security-notice ol {
+            margin-left: 1.5rem;
+            margin-top: 0.75rem;
+        }
+        
+        .security-notice li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .security-notice strong {
+            color: #ffc107;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .platforms {
+                grid-template-columns: 1fr;
+            }
+            
+            .back-link {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">
+        ← Back to Aurelia Contacts
+    </a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🪼 Download Aurelia Contacts</h1>
+            <p>Available for Windows, macOS, Linux, and Mobile</p>
+        </div>
+        
+        <div class="security-notice">
+            <h3>⚠️ Important: Browser Download Warning</h3>
+            <p><strong>If your browser shows a warning that the file "isn't commonly downloaded" - this is normal and safe!</strong></p>
+            <p>Our Windows installer is a legitimate application, but because it's newly released, browsers may show a security warning. Here's what to do:</p>
+            <ol>
+                <li><strong>In Chrome/Edge:</strong> Click the dropdown arrow next to "Discard" → Select "Keep"</li>
+                <li><strong>In Firefox:</strong> Click the download icon → Click "Allow" or "Keep"</li>
+                <li><strong>After download:</strong> You may see Windows SmartScreen warning - Click "More info" → "Run anyway"</li>
+            </ol>
+            <p><strong>Why this happens:</strong> The app isn't code-signed yet (code signing certificates cost $200-400/year). This is common for new applications. The file is safe to download and install.</p>
+        </div>
+        
+        <div class="platforms">
+            <!-- Windows -->
+            <div class="platform-card">
+                <div class="platform-icon">🪟</div>
+                <h2>Windows</h2>
+                <p>Get Aurelia Contacts for Windows. Choose between the full installer or portable version.</p>
+                <div class="download-options">
+                    <a href="Aurelia%20Contacts%20Setup%201.0.0.exe" class="download-btn download-btn-primary" download>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Installer
+                        <span class="size-badge">175 MB</span>
+                    </a>
+                    <a href="Aurelia%20Contacts%201.0.0.exe" class="download-btn download-btn-secondary" download>
+                        Download Portable
+                        <span class="size-badge">94 MB</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- macOS -->
+            <div class="platform-card">
+                <div class="platform-icon">🍎</div>
+                <h2>macOS</h2>
+                <p>Download for Mac with support for Intel and Apple Silicon (M1/M2/M3).</p>
+                <div class="download-options">
+                    <a href="#" class="download-btn download-btn-primary coming-soon" onclick="alert('macOS version coming soon! Check back later or contact us for updates.'); return false;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download for Mac
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Linux -->
+            <div class="platform-card">
+                <div class="platform-icon">🐧</div>
+                <h2>Linux</h2>
+                <p>Available as AppImage, Debian package, or RPM. Works on all major Linux distributions.</p>
+                <div class="download-options">
+                    <a href="#" class="download-btn download-btn-primary coming-soon" onclick="alert('Linux version coming soon! Check back later or contact us for updates.'); return false;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download AppImage
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </a>
+                    <a href="#" class="download-btn download-btn-secondary coming-soon" onclick="alert('Linux packages coming soon!'); return false;">
+                        Download .deb / .rpm
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mobile -->
+            <div class="platform-card">
+                <div class="platform-icon">📱</div>
+                <h2>Mobile</h2>
+                <p>Use Aurelia Contacts on the go! Access from any mobile browser or download our mobile app.</p>
+                <div class="download-options">
+                    <a href="/" class="download-btn download-btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path>
+                        </svg>
+                        Use Web App
+                    </a>
+                    <a href="#" class="download-btn download-btn-secondary coming-soon" onclick="alert('Mobile apps (iOS & Android) coming soon! The web app works great on mobile in the meantime.'); return false;">
+                        Download iOS App
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </a>
+                    <a href="#" class="download-btn download-btn-secondary coming-soon" onclick="alert('Mobile apps (iOS & Android) coming soon! The web app works great on mobile in the meantime.'); return false;">
+                        Download Android App
+                        <span class="coming-soon-badge">Coming Soon</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h3>What's Included</h3>
+            <ul>
+                <li>Full contact management system</li>
+                <li>Friend connections and sharing</li>
+                <li>Automatic backend server startup</li>
+                <li>Offline-capable desktop app</li>
+                <li>Sync with cloud when online</li>
+                <li>Secure authentication and data protection</li>
+            </ul>
+        </div>
+        
+        <div class="info-section" style="margin-top: 1rem;">
+            <h3>System Requirements</h3>
+            <ul>
+                <li><strong>Windows:</strong> Windows 10 or later (64-bit recommended)</li>
+                <li><strong>macOS:</strong> macOS 10.13 or later (Intel & Apple Silicon)</li>
+                <li><strong>Linux:</strong> Ubuntu 18.04+, Fedora 30+, or similar distribution</li>
+                <li><strong>Mobile:</strong> Any modern mobile browser (Chrome, Safari, Firefox)</li>
+                <li><strong>All Platforms:</strong> MySQL database required (included setup instructions)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

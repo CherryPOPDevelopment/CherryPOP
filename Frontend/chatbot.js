@@ -226,7 +226,7 @@
     // ── Portfolio & credibility ──────────────────────────────────────────
     {
       patterns: ['portfolio', 'examples', 'past work', 'previous', 'case study', 'showcase', 'work'],
-      reply: "You can see featured projects on the homepage — <b>Bloom Studio</b> (website), <b>FitTrack Pro</b> (app), and <b>Luxe Botanics</b> (shop).\n\nI'm happy to share more detailed case studies relevant to your project — just ask when you reach out! 💼",
+      reply: "You can see featured projects on the homepage — <b>Aurelia</b> (social website/app), <b>SCOOP</b> (concierge app), and <b>Luxe Botanics</b> (shop).\n\nI'm happy to share more detailed case studies relevant to your project — just ask when you reach out! 💼",
       quick: ['Start a Quote', 'Services & Pricing'],
     },
     {

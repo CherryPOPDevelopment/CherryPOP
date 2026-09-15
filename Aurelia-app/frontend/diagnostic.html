@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelia - Login Diagnostic Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #6366f1;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .test-section {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            border-left: 4px solid #6366f1;
+        }
+
+        .test-section h2 {
+            color: #1e293b;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .result.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .result.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .result.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .info-box {
+            background: #fff7ed;
+            border: 1px solid #fb923c;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        code {
+            background: #1e293b;
+            color: #10b981;
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Responsive Design for Mobile Devices */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.75rem;
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 1.25rem;
+                border-radius: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                line-height: 1.3;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+                margin-bottom: 1.25rem;
+                line-height: 1.4;
+            }
+
+            .test-section {
+                padding: 1rem;
+                margin: 0.875rem 0;
+            }
+
+            .test-section h2 {
+                font-size: 0.95rem;
+                margin-bottom: 0.625rem;
+                line-height: 1.3;
+            }
+
+            .test-section p {
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            button {
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
+                margin-right: 0.5rem;
+                margin-bottom: 0.625rem;
+                min-height: 42px;
+            }
+
+            .result {
+                font-size: 0.75rem;
+                padding: 0.75rem;
+                line-height: 1.5;
+            }
+
+            .info-box {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            code {
+                font-size: 0.75rem;
+                word-break: break-all;
+                display: inline-block;
+                max-width: 100%;
+            }
+
+            .status-icon {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+                font-size: 13px;
+            }
+
+            .container {
+                padding: 0.875rem;
+                border-radius: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+                line-height: 1.3;
+            }
+
+            .subtitle {
+                font-size: 0.75rem;
+                line-height: 1.4;
+            }
+
+            .test-section {
+                padding: 0.75rem;
+                margin: 0.625rem 0;
+            }
+
+            .test-section h2 {
+                font-size: 0.875rem;
+                line-height: 1.3;
+            }
+
+            .test-section p {
+                font-size: 0.75rem;
+                line-height: 1.5;
+            }
+
+            button {
+                padding: 0.5rem 0.875rem;
+                font-size: 0.8rem;
+                margin-right: 0.375rem;
+                width: 100%;
+                margin-bottom: 0.5rem;
+                min-height: 40px;
+            }
+
+            button[style*="background: #10b981"] {
+                font-size: 0.875rem;
+                padding: 0.75rem 1.25rem;
+            }
+
+            .result {
+                font-size: 0.7rem;
+                padding: 0.625rem;
+                line-height: 1.5;
+            }
+
+            .info-box {
+                padding: 0.625rem;
+                font-size: 0.75rem;
+                line-height: 1.5;
+            }
+
+            code {
+                font-size: 0.7rem;
+                padding: 0.125rem 0.375rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            body {
+                padding: 0.375rem;
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 0.625rem;
+            }
+
+            h1 {
+                font-size: 1.05rem;
+                line-height: 1.3;
+            }
+
+            .subtitle {
+                font-size: 0.7rem;
+            }
+
+            .test-section {
+                padding: 0.625rem;
+                margin: 0.5rem 0;
+            }
+
+            .test-section h2 {
+                font-size: 0.8rem;
+                line-height: 1.3;
+            }
+
+            .test-section p {
+                font-size: 0.7rem;
+            }
+
+            button {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.75rem;
+                min-height: 38px;
+            }
+
+            .result {
+                font-size: 0.65rem;
+                padding: 0.5rem;
+            }
+
+            .info-box {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            code {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            body {
+                padding: 0.25rem;
+                font-size: 11px;
+            }
+
+            .container {
+                padding: 0.5rem;
+            }
+
+            h1 {
+                font-size: 0.95rem;
+            }
+
+            .subtitle {
+                font-size: 0.65rem;
+            }
+
+            .test-section {
+                padding: 0.5rem;
+                margin: 0.4rem 0;
+            }
+
+            .test-section h2 {
+                font-size: 0.75rem;
+            }
+
+            .test-section p {
+                font-size: 0.65rem;
+            }
+
+            button {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.65rem;
+                min-height: 36px;
+            }
+
+            .result {
+                font-size: 0.6rem;
+                padding: 0.4rem;
+            }
+
+            .info-box {
+                padding: 0.4rem;
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 Login Diagnostic Tool</h1>
+        <p class="subtitle">Run these tests to diagnose why login is not working</p>
+
+        <div class="info-box">
+            <strong>📍 Current Environment:</strong><br>
+            Domain: <code id="current-domain"></code><br>
+            API URL: <code id="api-url"></code><br>
+            Protocol: <code id="protocol"></code>
+        </div>
+
+        <!-- Test 1: Backend Health -->
+        <div class="test-section">
+            <h2>Test 1: Backend Server Health</h2>
+            <p>Check if the backend server is running and accessible</p>
+            <button onclick="testBackendHealth()">Run Test</button>
+            <div id="test1-result"></div>
+        </div>
+
+        <!-- Test 2: Database Connection -->
+        <div class="test-section">
+            <h2>Test 2: Database Connection</h2>
+            <p>Verify that the database is connected</p>
+            <button onclick="testDatabase()">Run Test</button>
+            <div id="test2-result"></div>
+        </div>
+
+        <!-- Test 3: CORS Check -->
+        <div class="test-section">
+            <h2>Test 3: CORS Configuration</h2>
+            <p>Test if Cross-Origin requests are allowed</p>
+            <button onclick="testCORS()">Run Test</button>
+            <div id="test3-result"></div>
+        </div>
+
+        <!-- Test 4: reCAPTCHA -->
+        <div class="test-section">
+            <h2>Test 4: reCAPTCHA Configuration</h2>
+            <p>Check if reCAPTCHA is loaded and configured correctly</p>
+            <button onclick="testRecaptcha()">Run Test</button>
+            <div id="test4-result"></div>
+        </div>
+
+        <!-- Test 5: Login Endpoint -->
+        <div class="test-section">
+            <h2>Test 5: Login Endpoint Response</h2>
+            <p>Test login endpoint with dummy credentials (should fail with 400/401, not 500)</p>
+            <button onclick="testLoginEndpoint()">Run Test</button>
+            <div id="test5-result"></div>
+        </div>
+
+        <!-- Run All Tests -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <button onclick="runAllTests()" style="background: #10b981; font-size: 1.1rem; padding: 1rem 2rem;">
+                ▶️ Run All Tests
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Detect API URL same way as main app
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        const API_URL = (hostname === 'localhost' || hostname === '127.0.0.1')
+            ? `${protocol}//${hostname}:5000/api`
+            : '/api';
+
+        // Display environment info
+        document.getElementById('current-domain').textContent = hostname;
+        document.getElementById('api-url').textContent = API_URL;
+        document.getElementById('protocol').textContent = protocol;
+
+        function showResult(elementId, icon, message, type) {
+            const el = document.getElementById(elementId);
+            el.className = `result ${type}`;
+            el.innerHTML = `<span class="status-icon">${icon}</span>${message}`;
+        }
+
+        async function testBackendHealth() {
+            showResult('test1-result', '⏳', 'Testing...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    showResult('test1-result', '❌',
+                        `Server responded with status ${response.status}\n` +
+                        `This means the server is running but returned an error.`,
+                        'error'
+                    );
+                    return;
+                }
+
+                const data = await response.json();
+                showResult('test1-result', '✅',
+                    `Backend is running!\n\n` +
+                    `Status: ${data.status}\n` +
+                    `Environment: ${data.environment}\n` +
+                    `Uptime: ${Math.floor(data.uptime)}s`,
+                    'success'
+                );
+            } catch (error) {
+                showResult('test1-result', '❌',
+                    `Failed to connect to backend!\n\n` +
+                    `Error: ${error.message}\n\n` +
+                    `This usually means:\n` +
+                    `- Server is not running\n` +
+                    `- Server is running on wrong port\n` +
+                    `- Firewall is blocking connections\n` +
+                    `- Domain DNS not pointing to server`,
+                    'error'
+                );
+            }
+        }
+
+        async function testDatabase() {
+            showResult('test2-result', '⏳', 'Testing...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    showResult('test2-result', '⚠️', `Cannot check database (server error: ${response.status})`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.database && data.database.connected) {
+                    showResult('test2-result', '✅',
+                        `Database is connected!\n\n` +
+                        `Host: ${data.database.host || 'Unknown'}\n` +
+                        `Status: Connected`,
+                        'success'
+                    );
+                } else {
+                    showResult('test2-result', '❌',
+                        `Database is NOT connected!\n\n` +
+                        `This will prevent login from working.\n` +
+                        `Error: ${data.database?.error || 'Unknown error'}\n\n` +
+                        `Check:\n` +
+                        `- MySQL is running\n` +
+                        `- .env file has correct DB credentials\n` +
+                        `- Database "aurelia_contacts" exists`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('test2-result', '❌',
+                    `Failed to check database!\n\nError: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testCORS() {
+            showResult('test3-result', '⏳', 'Testing...', 'info');
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET'
+                });
+
+                const corsHeader = response.headers.get('access-control-allow-origin');
+
+                if (corsHeader) {
+                    showResult('test3-result', '✅',
+                        `CORS is configured!\n\n` +
+                        `Access-Control-Allow-Origin: ${corsHeader}\n\n` +
+                        `Your domain is allowed to make requests.`,
+                        'success'
+                    );
+                } else {
+                    showResult('test3-result', '⚠️',
+                        `CORS header not found\n\n` +
+                        `This might be okay if server is on same domain.\n` +
+                        `But if login fails, check CORS configuration.`,
+                        'info'
+                    );
+                }
+            } catch (error) {
+                showResult('test3-result', '❌',
+                    `CORS test failed!\n\nError: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testRecaptcha() {
+            showResult('test4-result', '⏳', 'Checking...', 'info');
+
+            // Check if reCAPTCHA script is loaded
+            if (typeof grecaptcha === 'undefined') {
+                showResult('test4-result', '⚠️',
+                    `reCAPTCHA is NOT loaded on this page.\n\n` +
+                    `This is expected for the diagnostic page.\n` +
+                    `On the main login page, reCAPTCHA must be loaded.`,
+                    'info'
+                );
+            } else {
+                showResult('test4-result', '✅',
+                    `reCAPTCHA is loaded!\n\n` +
+                    `Make sure your domain is authorized in:\n` +
+                    `Google reCAPTCHA Admin Console\n\n` +
+                    `Site Key: 6LcB4kosAAAAAKJiN_60Otp3Qpv6-LuNTQaGso_L`,
+                    'success'
+                );
+            }
+        }
+
+        async function testLoginEndpoint() {
+            showResult('test5-result', '⏳', 'Testing...', 'info');
+            try {
+                // Send request with dummy credentials (should fail gracefully)
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'test@test.com',
+                        password: 'dummy',
+                        recaptchaToken: 'test-token'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.status === 400 || response.status === 401 || response.status === 403) {
+                    showResult('test5-result', '✅',
+                        `Login endpoint is working!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${data.error || JSON.stringify(data)}\n\n` +
+                        `This is expected - endpoint rejected test credentials.\n` +
+                        `Endpoint is accessible and responding correctly.`,
+                        'success'
+                    );
+                } else if (response.status === 500) {
+                    showResult('test5-result', '❌',
+                        `Server error!\n\n` +
+                        `Status: 500\n` +
+                        `Error: ${data.error || 'Unknown server error'}\n\n` +
+                        `This indicates a problem with the backend code or database.`,
+                        'error'
+                    );
+                } else {
+                    showResult('test5-result', '⚠️',
+                        `Unexpected response!\n\n` +
+                        `Status: ${response.status}\n` +
+                        `Response: ${JSON.stringify(data)}`,
+                        'info'
+                    );
+                }
+            } catch (error) {
+                showResult('test5-result', '❌',
+                    `Login endpoint test failed!\n\n` +
+                    `Error: ${error.message}\n\n` +
+                    `Cannot connect to login endpoint.`,
+                    'error'
+                );
+            }
+        }
+
+        async function runAllTests() {
+            await testBackendHealth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testDatabase();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testCORS();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testRecaptcha();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await testLoginEndpoint();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+node_modules/
+.env
+*.log
+.DS_Store
+dist/
+build/
+.vscode/
+.idea/
+backend/data/
+*.db
+*.sqlite
+coverage/
+temp_*
+test-*.html
+Aurelia/
+# Large executable files
+*.exe
+*.dmg
+*.AppImage
+frontend/downloads/*.exe

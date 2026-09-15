@@ -1,0 +1,809 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <title>All Users — Aurelia Contacts</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="../css/popup-styles.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-gradient-start: #f5f7fa;
+      --bg-gradient-end: #c3cfe2;
+      --card-bg: white;
+      --text-color: #1a202c;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --input-bg: #f8fafc;
+    }
+
+    body.dark-theme {
+      --bg-gradient-start: #0a0e1a;
+      --bg-gradient-end: #12182b;
+      --card-bg: #12182b;
+      --text-color: #ffffff;
+      --text-secondary: #e5e7eb;
+      --border-color: #2d3548;
+      --input-bg: #0a0e1a;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2rem 1rem;
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      background: var(--card-bg);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+      margin: 0;
+      color: var(--text-color);
+      font-size: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #7c8ef0 0%, #8b5cb8 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #1a202c;
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    body.dark-theme .btn-secondary {
+      background: #1a2236;
+      color: #ffffff;
+      border: 1px solid #2d3548;
+    }
+
+    body.dark-theme .btn-secondary:hover {
+      background: #2d3548;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .user-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+
+    body.dark-theme .user-card {
+      border: 1px solid var(--border-color);
+    }
+
+    .user-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    body.dark-theme .user-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text-color);
+      margin: 0 0 0.25rem 0;
+    }
+
+    .user-username {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .user-bio {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+
+    .friend-status {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .status-friend {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-none {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-card-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .contact-card-title {
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .shared-contact {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    body.dark-theme .shared-contact {
+      background: #1a2236;
+    }
+
+    .shared-contact-name {
+      font-weight: 700;
+      color: var(--text-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .shared-contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .shared-contact-info div {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .no-shared {
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 1rem;
+      text-align: center;
+      background: var(--input-bg);
+      border-radius: 8px;
+    }
+
+    body.dark-theme .no-shared {
+      background: #1a2236;
+    }
+
+    .search-box {
+      background: var(--card-bg);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    body.dark-theme .search-box {
+      border: 1px solid var(--border-color);
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 234, 0.1);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+      background: white;
+      border-radius: 16px;
+    }
+
+    /* Responsive Design - Comprehensive Mobile Support */
+    
+    /* Tablets (max-width: 1024px) */
+    @media (max-width: 1024px) {
+      .container {
+        max-width: 95%;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    /* Mobile and Tablets (max-width: 768px) */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+        padding: 1.25rem 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.625rem 1.25rem;
+      }
+
+      .search-box {
+        padding: 1rem;
+      }
+
+      .search-box input {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .user-card {
+        padding: 1.25rem;
+      }
+
+      .user-info h3 {
+        font-size: 1rem;
+      }
+
+      .user-info p {
+        font-size: 0.85rem;
+      }
+
+      .actions {
+        flex-wrap: wrap;
+      }
+
+      .actions button {
+        flex: 1;
+        min-width: 120px;
+      }
+    }
+
+    /* Small Mobile (max-width: 480px) */
+    @media (max-width: 480px) {
+      body {
+        padding: 0.75rem 0.25rem;
+      }
+
+      .header {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .search-box {
+        padding: 0.75rem;
+        border-radius: 12px;
+      }
+
+      .search-box input {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9rem;
+      }
+
+      .grid {
+        gap: 0.75rem;
+      }
+
+      .user-card {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1.125rem;
+      }
+
+      .user-info h3 {
+        font-size: 0.95rem;
+      }
+
+      .user-info p {
+        font-size: 0.8rem;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+
+      .btn-small {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Extra Small Mobile (max-width: 375px) */
+    @media (max-width: 375px) {
+      .header h1 {
+        font-size: 1.125rem;
+      }
+
+      .user-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+      }
+    }
+
+    /* Touch Device Optimization */
+    @media (hover: none) and (pointer: coarse) {
+      .btn,
+      .tab,
+      .actions button {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .search-box input {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      .user-card:active {
+        transform: scale(0.98);
+      }
+    }
+
+    /* High DPI Screens */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>👥 All Users</h1>
+      <a href="../index.html" class="btn btn-secondary">← Back to App</a>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="🔍 Search users by name or username..." oninput="filterUsers()">
+    </div>
+
+    <div id="loading" class="loading">Loading users...</div>
+    <div id="users-grid" class="grid" style="display: none;"></div>
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <p>No users found.</p>
+    </div>
+  </div>
+
+  <script>
+    // Use relative API URL for domain-based access only
+    // Smart API URL detection
+    let API_URL;
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      API_URL = `${protocol}//${hostname}:5000/api`;
+    } else {
+      API_URL = '/api';
+    }
+    
+    console.log('Using API URL:', API_URL);
+    
+    const token = localStorage.getItem('token');
+    let allUsers = [];
+
+    if (!token) {
+      showAlert('Please log in first', 'warning').then(() => {
+        window.location.href = '../index.html';
+      });
+    }
+
+    async function loadAllUsers() {
+      try {
+        const res = await fetch(`${API_URL}/friends/all-users`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          console.error('Failed to load users', data);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('empty-state').style.display = 'block';
+          return;
+        }
+
+        allUsers = data.users || [];
+        document.getElementById('loading').style.display = 'none';
+        renderUsers(allUsers);
+      } catch (err) {
+        console.error('Load users error', err);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'block';
+      }
+    }
+
+    function filterUsers() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = allUsers.filter(u =>
+        (u.firstName + ' ' + u.lastName).toLowerCase().includes(query) ||
+        u.username.toLowerCase().includes(query) ||
+        (u.email || '').toLowerCase().includes(query)
+      );
+      renderUsers(filtered);
+    }
+
+    function renderUsers(users) {
+      const container = document.getElementById('users-grid');
+      const emptyState = document.getElementById('empty-state');
+
+      if (users.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      container.style.display = 'grid';
+      emptyState.style.display = 'none';
+
+      container.innerHTML = users.map(u => {
+        const initials = (u.firstName?.charAt(0) || '?') + (u.lastName?.charAt(0) || '');
+        const avatarHtml = u.profilePicture
+          ? `<img src="${u.profilePicture}" alt="${u.firstName}">`
+          : initials;
+
+        let statusBadge = '';
+        let actionButtons = '';
+
+        if (u.isFriend) {
+          statusBadge = '<span class="friend-status status-friend">✓ Friend</span>';
+          actionButtons = `
+            <button class="btn btn-danger btn-small flex-1" onclick="unfriend('${u.id}')">Unfriend</button>
+            <button class="btn btn-secondary btn-small flex-1" onclick="viewSharedContacts('${u.id}')">View Contacts</button>
+          `;
+        } else if (u.isRequestSent) {
+          statusBadge = '<span class="friend-status status-pending">⏳ Request Sent</span>';
+          actionButtons = '<button class="btn btn-secondary btn-small" disabled>Pending...</button>';
+        } else if (u.friendStatus === 'pending') {
+          statusBadge = '<span class="friend-status status-pending">📩 Request Received</span>';
+          actionButtons = `
+            <button class="btn btn-success btn-small flex-1" onclick="acceptRequest('${u.id}')">Accept</button>
+            <button class="btn btn-secondary btn-small flex-1" onclick="rejectRequest('${u.id}')">Decline</button>
+          `;
+        } else {
+          statusBadge = '<span class="friend-status status-none">Not Connected</span>';
+          actionButtons = `<button class="btn btn-primary btn-small" onclick="sendFriendRequest('${u.id}')">Add Friend</button>`;
+        }
+
+        return `
+          <div class="user-card">
+            <div class="user-header">
+              <div class="avatar">${avatarHtml}</div>
+              <div class="user-info">
+                <div class="user-name">${u.firstName} ${u.lastName}</div>
+                <div class="user-username">@${u.username}</div>
+                ${statusBadge}
+              </div>
+            </div>
+            <div class="action-buttons">
+              ${actionButtons}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function sendFriendRequest(userId) {
+      const confirmed = await showConfirm(
+        'Send a friend request to this user?',
+        'Add Friend',
+        { confirmText: 'Send Request', cancelText: 'Cancel' }
+      );
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`${API_URL}/friends/request/${userId}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Friend request sent successfully!', 'success');
+          loadAllUsers();
+        } else {
+          await showAlert(data.error || 'Failed to send request', 'error');
+        }
+      } catch (err) {
+        console.error('Send request error', err);
+        await showAlert('Failed to send friend request', 'error');
+      }
+    }
+
+    async function unfriend(userId) {
+      const confirmed = await showConfirm(
+        'Remove this friend? You will need to send a new friend request to reconnect.',
+        'Remove Friend',
+        { confirmText: 'Remove', cancelText: 'Keep', type: 'danger' }
+      );
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`${API_URL}/friends/${userId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Friend removed', 'success');
+          loadAllUsers();
+        } else {
+          await showAlert(data.error || 'Failed to remove friend', 'error');
+        }
+      } catch (err) {
+        console.error('Unfriend error', err);
+        await showAlert('Failed to remove friend', 'error');
+      }
+    }
+
+    async function acceptRequest(userId) {
+      try {
+        const res = await fetch(`${API_URL}/friends/request/accept-user/${userId}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Friend request accepted!', 'success');
+          loadAllUsers();
+        } else {
+          await showAlert(data.error || 'Failed to accept request', 'error');
+        }
+      } catch (err) {
+        console.error('Accept error', err);
+        await showAlert('Failed to accept friend request', 'error');
+      }
+    }
+
+    async function rejectRequest(userId) {
+      try {
+        const res = await fetch(`${API_URL}/friends/request/reject-user/${userId}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast('Friend request declined', 'info');
+          loadAllUsers();
+        } else {
+          await showAlert(data.error || 'Failed to decline request', 'error');
+        }
+      } catch (err) {
+        console.error('Reject error', err);
+        await showAlert('Failed to decline friend request', 'error');
+      }
+    }
+
+    async function viewSharedContacts(userId) {
+      try {
+        const res = await fetch(`${API_URL}/users/shared-contacts/${userId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (data.contacts && data.contacts.length > 0) {
+            const contactsList = data.contacts.map(c =>
+              `${c.name}\n  Email: ${c.email || 'N/A'}\n  Phone: ${c.phone || 'N/A'}`
+            ).join('\n\n');
+            await showAlert(`Shared Contacts:\n\n${contactsList}`, 'info', 'Shared Contacts');
+          } else {
+            await showAlert('No shared contacts available', 'info', 'Shared Contacts');
+          }
+        }
+      } catch (err) {
+        console.error('View contacts error', err);
+        await showAlert('Failed to load shared contacts', 'error');
+      }
+    }
+
+    loadAllUsers();
+
+    // Theme management for find friends page
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    }
+    
+    // Apply theme on page load
+    (function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(savedTheme);
+    })();
+  </script>
+  <script src="../js/popup-system.js"></script>
+</body>
+
+</html>

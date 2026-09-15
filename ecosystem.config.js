@@ -24,5 +24,16 @@ module.exports = {
       restart_delay: 3000,
       max_restarts: 10
     },
+    {
+      name: 'aurelia-app',
+      script: 'backend/server.js',
+      cwd: path.join(__dirname, 'Aurelia-app'),
+      env: {
+        NODE_ENV: 'production',
+        PORT: 5000
+      },
+      restart_delay: 3000,
+      max_restarts: 10
+    },
   ]
 };
