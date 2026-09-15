@@ -102,6 +102,7 @@ app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', '
 app.get('/projects/scoopDEMO', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/sova-demo', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/aurelia', (_, res) => res.redirect('/aurelia/'));
+app.get('/projects/luxe-botanics', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'luxe-botanics.html')));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));
