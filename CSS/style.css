@@ -17,31 +17,31 @@
   /* ╔══════════════════════════════════════════════════════════════════╗
      ║  BRAND PALETTE  —  change these 5 to retheme everything         ║
      ╚══════════════════════════════════════════════════════════════════╝ */
-  --bg:           #f5d3f3;   /* page background (keep paired with bg image) */
-  --bg-card:      #e07ba8;   /* nav / sidebar / card surface colour         */
-  --bg-elevated:  #fef5ff;   /* input / popover surface (on dark bg)        */
-  --accent:       #e6315a;   /* primary brand colour                        */
-  --accent-light: #ff6b8a;   /* lighter / hover variant of brand colour     */
+  --bg:           #fff4f8;
+  --bg-card:      #c94f7c;
+  --bg-elevated:  #ffffff;
+  --accent:       #df3f6d;
+  --accent-light: #f36f94;
 
   /* ── Accent opacity scale ───────────────────────────────────────────
      All derived from --accent (rgb 230 49 90).
      Adjust the alpha values to make hover states subtler or bolder.    */
-  --accent-glow:     rgba(230, 49, 90, 0.25);  /* focus rings              */
-  --accent-subtle:   rgba(230, 49, 90, 0.08);  /* icon / chip bg tint      */
-  --accent-faint:    rgba(230, 49, 90, 0.05);  /* very faint hover tint    */
-  --accent-border:   rgba(230, 49, 90, 0.20);  /* default borders           */
-  --accent-hover:    rgba(230, 49, 90, 0.30);  /* hover borders             */
-  --accent-featured: rgba(230, 49, 90, 0.18);  /* featured-card glow        */
-  --accent-strong:   rgba(230, 49, 90, 0.45);  /* chatbot button shadow     */
-  --accent-bold:     rgba(230, 49, 90, 0.55);  /* chatbot button shadow:hover */
+  --accent-glow:     rgba(223, 63, 109, 0.24);
+  --accent-subtle:   rgba(223, 63, 109, 0.10);
+  --accent-faint:    rgba(223, 63, 109, 0.05);
+  --accent-border:   rgba(223, 63, 109, 0.24);
+  --accent-hover:    rgba(223, 63, 109, 0.36);
+  --accent-featured: rgba(223, 63, 109, 0.18);
+  --accent-strong:   rgba(223, 63, 109, 0.42);
+  --accent-bold:     rgba(223, 63, 109, 0.58);
 
   /* ── On-brand text — sitting ON --accent / --bg-card surfaces ──────
      Change these if you switch to a dark accent colour.                */
   --on-accent:            #fff;                    /* text on accent buttons */
   --on-accent-muted:      rgba(255,255,255,0.80);  /* subtitles on accent bg */
   --on-accent-overlay:    rgba(255,255,255,0.20);  /* icon-avatar on accent  */
-  --btn-primary-text:     #ffa9da;                 /* text colour on .btn-primary */
-  --on-card:              #f0f0f5;                 /* main text on --bg-card */
+  --btn-primary-text:     #fffdf8;
+  --on-card:              #f7fbf6;
   --on-card-muted:        rgba(255,255,255,0.75);  /* muted text on --bg-card */
   --on-card-border:       rgba(255,255,255,0.35);  /* border on --bg-card surface */
   --on-card-border-soft:  rgba(255,255,255,0.20);  /* softer border / hover   */
@@ -49,14 +49,14 @@
   --on-card-overlay:      rgba(255,255,255,0.08);  /* hover fill on --bg-card */
 
   /* ── Legacy aliases (keep — used throughout stylesheets) ───────────── */
-  --text:       var(--on-card);
-  --text-muted: var(--on-card-muted);
+  --text:       #3d2430;
+  --text-muted: #765766;
   --border:     var(--accent-border);
 
   /* ── Nav ────────────────────────────────────────────────────────────
      --nav-scrolled-bg controls the colour when the user scrolls.       */
   --nav-h:           72px;
-  --nav-scrolled-bg: rgba(210, 80, 130, 0.90);
+  --nav-scrolled-bg: rgba(193, 64, 111, 0.94);
 
   /* ── Light-section text — on white / --section-card-bg surfaces ─────
      Change these to restyle all text inside the floating white cards.  */
@@ -72,12 +72,12 @@
 
   /* ── Section cards (floating white panels on main pages) ────────────
      Change --section-card-bg to switch sections from white to tinted.  */
-  --section-card-bg:      #ffffff;
-  --section-card-radius:  24px;
-  --section-card-shadow:  0 8px 48px rgba(0, 0, 0, 0.10);
+  --section-card-bg:      #fffdf8;
+  --section-card-radius:  18px;
+  --section-card-shadow:  0 18px 50px rgba(36, 75, 64, 0.10);
   --section-card-padding: 64px 48px;
-  --section-gap-v:        32px;   /* vertical space around card — bg shows here  */
-  --section-gap-h:        24px;   /* horizontal space around card                */
+  --section-gap-v:        20px;
+  --section-gap-h:        20px;
 
   /* ── Overlays & glass ───────────────────────────────────────────────── */
   --overlay:      rgba(0,   0,   0,   0.70);  /* modal backdrop           */
@@ -118,11 +118,11 @@
   --service-shop-accent:    #16a34a;
 
   /* ── Portfolio image placeholders ──────────────────────────────────── */
-  --portfolio-img-bg: #ecbbe3;
+  --portfolio-img-bg: #f4c4d5;
 
   /* ── Shadows ────────────────────────────────────────────────────────── */
-  --shadow:    0 4px 24px  rgba(180, 0, 60, 0.14);
-  --shadow-lg: 0 12px 48px rgba(180, 0, 60, 0.22);
+  --shadow:    0 4px 24px rgba(164, 36, 82, 0.12);
+  --shadow-lg: 0 18px 48px rgba(164, 36, 82, 0.18);
 
   /* ── Shape ──────────────────────────────────────────────────────────── */
   --radius:    12px;
@@ -133,13 +133,13 @@
   --transition: 0.2s ease;
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  --font: 'Inter', system-ui, sans-serif;
+  --font: 'DM Sans', system-ui, sans-serif;
 
   /* ── Per-section colour aliases ─────────────────────────────────────────
      Change any of these to restyle one section independently.
      Sections are transparent; the white card inside uses --section-card-bg. */
   --hero-bg:             transparent;
-  --hero-text:           var(--on-card);
+  --hero-text:           #3d2430;
   --services-text:       var(--section-text);
   --services-text-muted: var(--section-text-muted);
   --about-text:          var(--section-text);
@@ -162,6 +162,7 @@ body::before {
   inset: 0;
   z-index: -1;
   background: url('/images/CherryPOPBG2.png') center top / cover no-repeat;
+  display: none;
 }
 img  { max-width: 100%; display: block; }
 a    { color: inherit; text-decoration: none; }
@@ -196,7 +197,7 @@ input, select, textarea, button { font-family: inherit; font-size: inherit; }
   color: var(--btn-primary-text);
   box-shadow: 0 0 20px var(--accent-glow);
 }
-.btn-primary:hover { background: var(--accent-light); box-shadow: 0 0 32px var(--accent-glow); transform: translateY(-1px); }
+.btn-primary:hover { background: var(--accent-light); box-shadow: 0 10px 24px var(--accent-glow); transform: translateY(-2px); }
 .btn-ghost {
   background: transparent;
   color: var(--text-muted);
@@ -251,7 +252,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .navbar.scrolled {
   background: var(--nav-scrolled-bg);
   backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 var(--accent-glow);
+  box-shadow: 0 1px 0 rgba(255,255,255,.14), 0 8px 28px rgba(36,75,64,.16);
 }
 .nav-inner {
   max-width: 1160px;
@@ -297,7 +298,8 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   text-align: center;
   position: relative;
   overflow: hidden;
-
+  background: linear-gradient(180deg, rgba(255,253,248,.24), transparent 72%);
+  color: var(--hero-text);
 }
 .hero-bg { position: absolute; inset: 0; pointer-events: none; }
 .hero-orb {
@@ -306,6 +308,18 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   filter: blur(80px);
   opacity: .18;
 }
+.hero-grid {
+  position: absolute;
+  inset: 12% 8% 8%;
+  border: 1px solid rgba(36,75,64,.10);
+  background-image: linear-gradient(rgba(193,64,111,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(193,64,111,.08) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, transparent, black 22%, black 72%, transparent);
+  transform: perspective(700px) rotateX(58deg) translateY(22%);
+  transform-origin: center bottom;
+  opacity: .55;
+}
+.hero-orb { display: none; }
 .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; right: -150px; }
 .orb-2 { width: 400px; height: 400px; background: var(--accent-light); bottom: -100px; left: -100px; }
 .hero-content { position: relative; max-width: 780px; }
@@ -328,11 +342,12 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   font-size: clamp(2.6rem, 6vw, 4.5rem);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -.03em;
+  letter-spacing: 0;
   margin-bottom: 1.25rem;
 }
-.hero-sub { font-size: 1.15rem; color: var(--text-muted); max-width: 520px; margin: 0 auto 2.5rem; }
+.hero-sub { font-size: 1.15rem; color: var(--hero-text); opacity: .74; max-width: 520px; margin: 0 auto 2.5rem; }
 .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+.hero .btn-ghost { color: var(--hero-text); border-color: rgba(193,64,111,.28); }
 
 .hero-stats {
   position: relative;
@@ -390,9 +405,10 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   border-radius: var(--radius-lg);
   padding: 2rem;
   position: relative;
-  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  color: var(--on-card);
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition), background var(--transition);
 }
-.service-card:hover { border-color: var(--accent-hover); transform: translateY(-4px); box-shadow: 0 20px 48px var(--accent-subtle); }
+.service-card:hover { border-color: var(--accent-hover); transform: translateY(-6px); box-shadow: 0 20px 48px var(--accent-subtle); background: #d65f8d; }
 .service-card--featured {
   border-color: var(--accent);
   background: var(--bg-card);
@@ -412,10 +428,10 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 }
 .service-icon { width: 48px; height: 48px; color: var(--accent); margin-bottom: 1.25rem; }
 .service-icon svg { width: 100%; height: 100%; }
-.service-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: .75rem; }
-.service-card p { color: var(--text-muted); font-size: .92rem; margin-bottom: 1.25rem; }
+.service-card h3 { font-size: 1.2rem; font-weight: 700; color: var(--on-card); margin-bottom: .75rem; }
+.service-card p { color: var(--on-card-muted); font-size: .92rem; margin-bottom: 1.25rem; }
 .service-list { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
-.service-list li { font-size: .88rem; color: var(--text-muted); display: flex; align-items: center; gap: .5rem; }
+.service-list li { font-size: .88rem; color: var(--on-card-muted); display: flex; align-items: center; gap: .5rem; }
 .service-list li::before { content: '✓'; color: var(--accent); font-weight: 700; font-size: .9rem; }
 .service-link { color: var(--accent); font-size: .9rem; font-weight: 600; transition: color var(--transition); }
 .service-link:hover { color: var(--accent-light); }
@@ -488,9 +504,10 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
+  color: var(--on-card);
   transition: transform var(--transition), box-shadow var(--transition);
 }
-.portfolio-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.portfolio-card:hover { transform: translateY(-7px); box-shadow: var(--shadow-lg); }
 .portfolio-img {
   height: 180px;
   position: relative;
@@ -498,10 +515,10 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   align-items: flex-end;
   padding: 1rem;
 }
-.portfolio-img--web  { background: var(--portfolio-img-bg); }
-.portfolio-img--app  { background: var(--portfolio-img-bg); }
+.portfolio-img--web  { background: linear-gradient(135deg, #f9dbe6, #e891b0); }
+.portfolio-img--app  { background: linear-gradient(135deg, #f6d9e5, #d77caa); }
 .portfolio-card--link { display: block; text-decoration: none; color: inherit; cursor: pointer; }
-.portfolio-img--shop { background: var(--portfolio-img-bg);
+.portfolio-img--shop { background: linear-gradient(135deg, #fff0f5, #eab0c4); }
 .portfolio-tag {
   background: var(--accent);
   backdrop-filter: blur(4px);
@@ -515,8 +532,30 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   border-radius: 999px;
 }
 .portfolio-info { padding: 1.25rem; }
-.portfolio-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
-.portfolio-info p  { font-size: .87rem; color: var(--text-muted); }
+.portfolio-info h4 { font-size: 1rem; font-weight: 700; color: var(--on-card); margin-bottom: .4rem; }
+.portfolio-info p  { font-size: .87rem; color: var(--on-card-muted); }
+
+/* ── Fluid reveal motion ──────────────────────────────────────────────── */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-content { animation: rise-in .7s cubic-bezier(.22,1,.36,1) both; }
+.service-card, .portfolio-card { animation: rise-in .65s cubic-bezier(.22,1,.36,1) both; }
+.service-card:nth-child(2), .portfolio-card:nth-child(2) { animation-delay: .08s; }
+.service-card:nth-child(3), .portfolio-card:nth-child(3) { animation-delay: .16s; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+@media (max-width: 768px) {
+  .section { padding: 64px 0; }
+  .services, .about, .portfolio, .contact { padding: 12px; }
+  .services > .container, .about > .container, .portfolio > .container, .contact > .container { padding: 42px 24px; border-radius: 14px; }
+  .hero { min-height: 86vh; padding: calc(var(--nav-h) + 42px) 20px 48px; }
+  .hero-sub { font-size: 1.02rem; }
+  .portfolio-img { height: 160px; }
+}
 
 /* ── Contact ─────────────────────────────────────────────────────────────── */
 .contact {
