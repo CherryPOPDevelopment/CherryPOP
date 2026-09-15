@@ -113,23 +113,17 @@ async function testFullPasswordResetFlow() {
 
     // Step 6: Try login with new password
     console.log(`${colors.blue}Step 6: Testing login with new password...${colors.reset}`);
-    console.log(`${colors.yellow}Note: This will fail if reCAPTCHA is enabled without a valid token${colors.reset}`);
     try {
       const loginResponse = await axios.post(`${BASE_URL}/login`, {
         email: testEmail,
-        password: newPassword,
-        recaptchaToken: 'test-token' // This will fail but that's okay for this test
+        password: newPassword
       });
       
       if (loginResponse.status === 200) {
         console.log(`${colors.green}✓ Login successful with new password${colors.reset}\n`);
       }
     } catch (error) {
-      if (error.response?.status === 400 && error.response.data.error.includes('reCAPTCHA')) {
-        console.log(`${colors.green}✓ Password accepted (reCAPTCHA validation blocked login, which is expected)${colors.reset}\n`);
-      } else {
-        console.log(`${colors.yellow}⚠ Login test: ${error.response?.data?.error || error.message}${colors.reset}\n`);
-      }
+      console.log(`${colors.yellow}⚠ Login test: ${error.response?.data?.error || error.message}${colors.reset}\n`);
     }
 
     // Step 7: Restore original password for future tests

@@ -10,8 +10,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="format-detection" content="telephone=no">
     <title>Aurelia</title>
-    <!-- reCAPTCHA v2 with explicit rendering -->
-    <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit" async defer></script>
     <link rel="icon" type="image/avif" href="images/aureliaappicon.avif">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="images/aureliaappicon.avif">
@@ -4395,10 +4393,6 @@
                                 <small style="color: #64748b; font-size: 0.875rem;">Check your email for the
                                     verification code</small>
                             </div>
-                            <!-- reCAPTCHA for website, Send Code button for Electron -->
-                            <div id="recaptcha-login-container" class="form-group" style="margin-bottom: 1rem;">
-                                <div class="g-recaptcha"></div>
-                            </div>
                             <button id="electron-send-code-btn" type="button" onclick="requestLoginCode()"
                                 class="btn btn-secondary btn-block" style="display: none; margin-bottom: 1rem;">Send
                                 Verification Code</button>
@@ -4421,8 +4415,6 @@
                                     Download our app!
                                 </a>
                             </div>
-                            <!-- Hide reCAPTCHA in Electron -->
-                            <div id="recaptcha-login-container" class="g-recaptcha"></div>
                             <div style="text-align: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
                                 <span style="color: #64748b;">Don't have an account? </span>
                                 <a href="#" onclick="switchToRegister(event)"
@@ -4518,9 +4510,6 @@
                                     </button>
                                 </div>
                                 <div id="password-match" class="password-match" style="display: none;"></div>
-                            </div>
-                            <div id="recaptcha-register-container" class="form-group" style="margin-bottom: 1rem;">
-                                <div class="g-recaptcha"></div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Create Account</button>
                             <div style="text-align: center; margin-top: 1rem;">
@@ -4933,22 +4922,8 @@
                     menuDownloadBtn.style.display = 'none';
                 }
 
-                // Hide reCAPTCHA containers in Electron
-                const recaptchaContainers = document.querySelectorAll('.g-recaptcha, #recaptcha-login-container, #recaptcha-register-container');
-                recaptchaContainers.forEach(container => {
-                    if (container && container.closest('.form-group')) {
-                        container.closest('.form-group').style.display = 'none';
-                    } else if (container) {
-                        container.style.display = 'none';
-                    }
-                });
-
-                // Show Electron login UI - keep password field, replace reCAPTCHA with send code button
-                const recaptchaContainer = document.getElementById('recaptcha-login-container');
                 const sendCodeBtn = document.getElementById('electron-send-code-btn');
 
-                // Hide reCAPTCHA, show send code button
-                if (recaptchaContainer) recaptchaContainer.style.display = 'none';
                 if (sendCodeBtn) sendCodeBtn.style.display = 'block';
             }
         })();
@@ -5075,16 +5050,6 @@
             if (loginTab) loginTab.classList.add('active');
             if (loginForm) loginForm.classList.remove('hidden');
 
-            // Reset and re-initialize reCAPTCHA
-            if (typeof resetRecaptcha === 'function') {
-                resetRecaptcha('login');
-            }
-            setTimeout(() => {
-                if (typeof initializeRecaptcha === 'function') {
-                    initializeRecaptcha();
-                }
-            }, 100);
-
             console.log('Switched to login');
         }
 
@@ -5102,16 +5067,6 @@
 
             if (registerTab) registerTab.classList.add('active');
             if (registerForm) registerForm.classList.remove('hidden');
-
-            // Reset and re-initialize reCAPTCHA
-            if (typeof resetRecaptcha === 'function') {
-                resetRecaptcha('register');
-            }
-            setTimeout(() => {
-                if (typeof initializeRecaptcha === 'function') {
-                    initializeRecaptcha();
-                }
-            }, 100);
 
             console.log('Switched to register');
         }

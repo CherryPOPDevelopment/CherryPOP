@@ -589,7 +589,7 @@
               <li>Birthday (must be at least 13 years old)</li>
             </ul>
             <p><strong>Important:</strong> After registration, you'll receive a verification email with a 6-digit code. You must verify your email before you can log in. Check your inbox (and spam folder) for the verification code.</p>
-            <p>You'll also need to complete the reCAPTCHA verification to prevent automated account creation.</p>
+            <p>Rate limiting and server-side validation help prevent automated account creation.</p>
           </div>
         </div>
 
@@ -837,7 +837,7 @@
               <li>Make sure you're using the correct email and password</li>
               <li>Check if Caps Lock is enabled</li>
               <li>Try the "Forgot Password" feature to reset your password</li>
-              <li>Complete the reCAPTCHA verification if prompted (this prevents automated login attempts)</li>
+              <li>Use a strong password and verify your email when prompted</li>
               <li>Clear your browser cache and cookies</li>
               <li>Make sure JavaScript is enabled in your browser</li>
               <li>Try using a different browser or device</li>
@@ -848,17 +848,16 @@
 
         <div class="faq-item" data-category="technical">
           <div class="faq-question" onclick="toggleFAQ(this)">
-            What is reCAPTCHA and why do I see it?
+            How does Aurelia protect accounts?
           </div>
           <div class="faq-answer">
-            reCAPTCHA is a security feature that helps protect Aurelia Contacts from automated bots and spam:
+            Aurelia protects accounts with rate limiting, input validation, and secure authentication:
             <ul>
-              <li><strong>When you see it:</strong> During registration and login attempts</li>
-              <li><strong>What it does:</strong> Verifies that you're a real person, not an automated program</li>
-              <li><strong>How to complete:</strong> Simply check the box or follow the simple verification instructions</li>
-              <li><strong>Why it's important:</strong> Prevents fake accounts, spam, and automated attacks on the system</li>
+              <li><strong>When it applies:</strong> During registration and login attempts</li>
+              <li><strong>What it does:</strong> Validates requests and limits abusive traffic</li>
+              <li><strong>Why it's important:</strong> Helps prevent fake accounts, spam, and automated attacks</li>
             </ul>
-            <p>Most users complete reCAPTCHA in just a few seconds. If you have trouble with reCAPTCHA, make sure your browser is up to date and JavaScript is enabled.</p>
+            <p>Contact support if you have trouble signing in or creating an account.</p>
           </div>
         </div>
 
@@ -919,7 +918,7 @@
           <li>Respond to your comments and questions</li>
           <li>Facilitate friend connections and contact sharing (only with your explicit permission)</li>
           <li>Remember your preferences (such as theme settings)</li>
-          <li>Protect against fraud, spam, and abuse through reCAPTCHA verification</li>
+          <li>Protect against fraud, spam, and abuse through rate limiting and validation</li>
         </ul>
       </div>
 
@@ -942,7 +941,7 @@
           <li>Email verification required for all new accounts</li>
           <li>Password reset tokens expire after 1 hour</li>
           <li>Verification codes expire after 24 hours</li>
-          <li>reCAPTCHA protection against automated attacks</li>
+          <li>Request throttling against automated attacks</li>
           <li>Rate limiting to prevent abuse and DDoS attacks</li>
           <li>Database connections are secured</li>
           <li>JWT tokens for secure session management (7-day expiration)</li>

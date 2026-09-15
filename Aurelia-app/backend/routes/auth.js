@@ -5,40 +5,16 @@ const express = require('express');
 const { getOne, getAll, insert, update } = require('../config/mysql-database');
 const { generateToken } = require('../middleware/auth');
 const { sendWelcomeEmail, sendResetEmail, sendLoginCodeEmail } = require('../config/email');
-const { verifyRecaptcha } = require('../middleware/recaptcha');
 
 const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, firstName, lastName, birthday, phone, recaptchaToken } = req.body;
+    const { username, email, password, firstName, lastName, birthday, phone } = req.body;
 
     if (!username || !email || !password || !firstName || !lastName || !birthday) {
       return res.status(400).json({ error: 'All fields are required, including birthday' });
-    }
-
-    // Verify reCAPTCHA (bypass for Electron/localhost)
-    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1' || req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
-    const isElectronBypass = recaptchaToken === 'ELECTRON_BYPASS';
-    
-    if (!recaptchaToken) {
-      return res.status(400).json({ error: 'reCAPTCHA verification required' });
-    }
-
-    // Allow bypass for Electron/localhost requests
-    if (isElectronBypass || isLocalhost) {
-      console.log('ℹ️ Skipping reCAPTCHA verification for Electron/localhost request (register)');
-    } else {
-      try {
-        const recaptchaValid = await verifyRecaptcha(recaptchaToken, req.ip || null);
-        if (!recaptchaValid) {
-          return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
-        }
-      } catch (recaptchaError) {
-        console.error('reCAPTCHA verification error:', recaptchaError);
-        return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
-      }
     }
 
     // Validate birthday - must be at least 13 years old
@@ -233,33 +209,10 @@ router.post('/verify-email', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password, recaptchaToken } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Username/email and password required' });
-    }
-
-    // Verify reCAPTCHA (bypass for Electron/localhost)
-    const isLocalhost = req.hostname === 'localhost' || req.hostname === '127.0.0.1' || req.ip === '127.0.0.1' || req.ip === '::1' || req.ip === '::ffff:127.0.0.1';
-    const isElectronBypass = recaptchaToken === 'ELECTRON_BYPASS';
-    
-    if (!recaptchaToken) {
-      return res.status(400).json({ error: 'reCAPTCHA verification required' });
-    }
-
-    // Allow bypass for Electron/localhost requests
-    if (isElectronBypass || isLocalhost) {
-      console.log('ℹ️ Skipping reCAPTCHA verification for Electron/localhost request (login)');
-    } else {
-      try {
-        const recaptchaValid = await verifyRecaptcha(recaptchaToken, req.ip || null);
-        if (!recaptchaValid) {
-          return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
-        }
-      } catch (recaptchaError) {
-        console.error('reCAPTCHA verification error:', recaptchaError);
-        return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
-      }
     }
 
     console.log('Login attempt for:', email);
