@@ -17,58 +17,58 @@
   /* ╔══════════════════════════════════════════════════════════════════╗
      ║  BRAND PALETTE  —  change these 5 to retheme everything         ║
      ╚══════════════════════════════════════════════════════════════════╝ */
-  --bg:           #fff4f8;
-  --bg-card:      #c94f7c;
-  --bg-elevated:  #ffffff;
-  --accent:       #df3f6d;
-  --accent-light: #f36f94;
+  --bg:           #f5d3f3;
+  --bg-card:      #e07ba8;
+  --bg-elevated:  #fef5ff;
+  --accent:       #e6315a;
+  --accent-light: #ff6b8a;
 
   /* ── Accent opacity scale ───────────────────────────────────────────
      All derived from --accent (rgb 230 49 90).
      Adjust the alpha values to make hover states subtler or bolder.    */
-  --accent-glow:     rgba(223, 63, 109, 0.24);
-  --accent-subtle:   rgba(223, 63, 109, 0.10);
-  --accent-faint:    rgba(223, 63, 109, 0.05);
-  --accent-border:   rgba(223, 63, 109, 0.24);
-  --accent-hover:    rgba(223, 63, 109, 0.36);
-  --accent-featured: rgba(223, 63, 109, 0.18);
-  --accent-strong:   rgba(223, 63, 109, 0.42);
-  --accent-bold:     rgba(223, 63, 109, 0.58);
+  --accent-glow:     rgba(230, 49, 90, 0.25);
+  --accent-subtle:   rgba(230, 49, 90, 0.08);
+  --accent-faint:    rgba(230, 49, 90, 0.05);
+  --accent-border:   rgba(230, 49, 90, 0.20);
+  --accent-hover:    rgba(230, 49, 90, 0.30);
+  --accent-featured: rgba(230, 49, 90, 0.18);
+  --accent-strong:   rgba(230, 49, 90, 0.45);
+  --accent-bold:     rgba(230, 49, 90, 0.55);
 
   /* ── On-brand text — sitting ON --accent / --bg-card surfaces ──────
      Change these if you switch to a dark accent colour.                */
   --on-accent:            #fff;                    /* text on accent buttons */
   --on-accent-muted:      rgba(255,255,255,0.80);  /* subtitles on accent bg */
   --on-accent-overlay:    rgba(255,255,255,0.20);  /* icon-avatar on accent  */
-  --btn-primary-text:     #fffdf8;
-  --on-card:              #f7fbf6;
-  --on-card-muted:        rgba(255,255,255,0.75);  /* muted text on --bg-card */
+  --btn-primary-text:     #ffffff;
+  --on-card:              #ffffff;
+  --on-card-muted:        rgba(255,255,255,0.90);  /* muted text on --bg-card */
   --on-card-border:       rgba(255,255,255,0.35);  /* border on --bg-card surface */
   --on-card-border-soft:  rgba(255,255,255,0.20);  /* softer border / hover   */
   --on-card-border-hover: rgba(255,255,255,0.55);  /* hover border            */
   --on-card-overlay:      rgba(255,255,255,0.08);  /* hover fill on --bg-card */
 
   /* ── Legacy aliases (keep — used throughout stylesheets) ───────────── */
-  --text:       #3d2430;
-  --text-muted: #765766;
+  --text:       #2d1823;
+  --text-muted: #604452;
   --border:     var(--accent-border);
 
   /* ── Nav ────────────────────────────────────────────────────────────
      --nav-scrolled-bg controls the colour when the user scrolls.       */
   --nav-h:           72px;
-  --nav-scrolled-bg: rgba(193, 64, 111, 0.94);
+  --nav-scrolled-bg: rgba(210, 80, 130, 0.90);
 
   /* ── Light-section text — on white / --section-card-bg surfaces ─────
      Change these to restyle all text inside the floating white cards.  */
   --section-text:       #1a1a2e;
-  --section-text-muted: #555577;
-  --section-text-sub:   #777799;
+  --section-text-muted: #4f3541;
+  --section-text-sub:   #6f5662;
 
   /* ── Form / input controls ──────────────────────────────────────────
      Used by contact form, chatbot input bar, dashboard editor, etc.    */
   --input-bg:          #f8f8fd;
   --input-border:      #e0e0ee;
-  --input-placeholder: #aaaacc;
+  --input-placeholder: #806673;
 
   /* ── Section cards (floating white panels on main pages) ────────────
      Change --section-card-bg to switch sections from white to tinted.  */
@@ -118,11 +118,11 @@
   --service-shop-accent:    #16a34a;
 
   /* ── Portfolio image placeholders ──────────────────────────────────── */
-  --portfolio-img-bg: #f4c4d5;
+  --portfolio-img-bg: #ecbbe3;
 
   /* ── Shadows ────────────────────────────────────────────────────────── */
-  --shadow:    0 4px 24px rgba(164, 36, 82, 0.12);
-  --shadow-lg: 0 18px 48px rgba(164, 36, 82, 0.18);
+  --shadow:    0 4px 24px rgba(180, 0, 60, 0.14);
+  --shadow-lg: 0 12px 48px rgba(180, 0, 60, 0.22);
 
   /* ── Shape ──────────────────────────────────────────────────────────── */
   --radius:    12px;
@@ -133,13 +133,13 @@
   --transition: 0.2s ease;
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  --font: 'DM Sans', system-ui, sans-serif;
+  --font: 'Inter', system-ui, sans-serif;
 
   /* ── Per-section colour aliases ─────────────────────────────────────────
      Change any of these to restyle one section independently.
      Sections are transparent; the white card inside uses --section-card-bg. */
   --hero-bg:             transparent;
-  --hero-text:           #3d2430;
+  --hero-text:           #2d1823;
   --services-text:       var(--section-text);
   --services-text-muted: var(--section-text-muted);
   --about-text:          var(--section-text);
@@ -162,7 +162,8 @@ body::before {
   inset: 0;
   z-index: -1;
   background: url('/images/CherryPOPBG2.png') center top / cover no-repeat;
-  display: none;
+  opacity: .26;
+  pointer-events: none;
 }
 img  { max-width: 100%; display: block; }
 a    { color: inherit; text-decoration: none; }
@@ -298,7 +299,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255,253,248,.24), transparent 72%);
+  background: linear-gradient(180deg, rgba(255,244,248,.62), rgba(255,255,255,.18) 72%, rgba(255,244,248,.62));
   color: var(--hero-text);
 }
 .hero-bg { position: absolute; inset: 0; pointer-events: none; }
@@ -311,7 +312,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .hero-grid {
   position: absolute;
   inset: 12% 8% 8%;
-  border: 1px solid rgba(36,75,64,.10);
+  border: 1px solid rgba(193,64,111,.10);
   background-image: linear-gradient(rgba(193,64,111,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(193,64,111,.08) 1px, transparent 1px);
   background-size: 42px 42px;
   mask-image: linear-gradient(to bottom, transparent, black 22%, black 72%, transparent);
@@ -388,7 +389,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   padding: var(--section-gap-v) var(--section-gap-h);
 }
 .services > .container {
-  background: var(--section-card-bg);
+  background: rgba(255,255,255,.94);
   border-radius: var(--section-card-radius);
   box-shadow: var(--section-card-shadow);
   padding: var(--section-card-padding);
@@ -443,7 +444,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   padding: var(--section-gap-v) var(--section-gap-h);
 }
 .about > .container {
-  background: var(--section-card-bg);
+  background: rgba(255,255,255,.94);
   border-radius: var(--section-card-radius);
   box-shadow: var(--section-card-shadow);
   padding: var(--section-card-padding);
@@ -488,7 +489,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   padding: var(--section-gap-v) var(--section-gap-h);
 }
 .portfolio > .container {
-  background: var(--section-card-bg);
+  background: rgba(255,255,255,.94);
   border-radius: var(--section-card-radius);
   box-shadow: var(--section-card-shadow);
   padding: var(--section-card-padding);
@@ -564,7 +565,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   padding: var(--section-gap-v) var(--section-gap-h);
 }
 .contact > .container {
-  background: var(--section-card-bg);
+  background: rgba(255,255,255,.94);
   border-radius: var(--section-card-radius);
   box-shadow: var(--section-card-shadow);
   padding: var(--section-card-padding);

@@ -98,7 +98,7 @@ app.get('/services/:name', (req, res) => {
   if (!allowed.includes(req.params.name)) return res.redirect('/');
   res.sendFile(path.join(__dirname, '..', 'Frontend', 'services', `${req.params.name}.html`));
 });
-app.get('/projects/scoop', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'scoop.html')));
+app.get('/projects/scoop', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/scoopDEMO', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/sova-demo', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/aurelia', (_, res) => res.redirect('/aurelia/'));
