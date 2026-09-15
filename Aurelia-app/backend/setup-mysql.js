@@ -38,6 +38,9 @@ async function setupDatabase() {
         profilePicture LONGTEXT,
         birthday VARCHAR(10),
         phone VARCHAR(20),
+        isVerified BOOLEAN DEFAULT FALSE,
+        verificationCode VARCHAR(10),
+        verificationCodeExpires DATETIME,
         interests JSON DEFAULT NULL,
         sharePreferences JSON,
         settings JSON,
@@ -51,6 +54,18 @@ async function setupDatabase() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
     console.log('✓ Users table created/exists');
+
+    for (const column of [
+      'ADD COLUMN isVerified BOOLEAN DEFAULT FALSE',
+      'ADD COLUMN verificationCode VARCHAR(10)',
+      'ADD COLUMN verificationCodeExpires DATETIME'
+    ]) {
+      try {
+        await connection.query(`ALTER TABLE users ${column}`);
+      } catch (err) {
+        if (!err.message.includes('Duplicate column name')) throw err;
+      }
+    }
 
     // Create contacts table
     await connection.query(`
