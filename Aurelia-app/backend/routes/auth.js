@@ -27,6 +27,7 @@ router.post('/register', async (req, res) => {
       date.setFullYear(date.getFullYear() - numericAge, 0, 1);
       return date.toISOString().slice(0, 10);
     })();
+    const isMichelleAdmin = username === 'Michelle1';
 
     // Validate birthday - must be at least 13 years old
     const birthDate = new Date(storedBirthday);
@@ -60,8 +61,8 @@ router.post('/register', async (req, res) => {
 
     // Create user with birthday, phone, and verification code
     await insert(
-      'INSERT INTO users (id, username, email, password, firstName, lastName, birthday, phone, isVerified, verificationCode, verificationCodeExpires, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, ?, ?, NOW())',
-      [userId, username, email, hashedPassword, firstName, lastName, storedBirthday, phone || null, verificationCode, verificationExpires]
+      'INSERT INTO users (id, username, email, password, role, firstName, lastName, birthday, phone, isVerified, verificationCode, verificationCodeExpires, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+      [userId, username, email, hashedPassword, isMichelleAdmin ? 'admin' : 'user', firstName, lastName, storedBirthday, phone || null, isMichelleAdmin, verificationCode, verificationExpires]
     );
 
     console.log('✅ User created with verification code:', verificationCode);
@@ -341,7 +342,7 @@ router.post('/request-login-code', async (req, res) => {
 
     // Find user by email OR username (case-insensitive)
     const user = await getOne(
-      'SELECT id, email, firstName, isVerified FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(username) = LOWER(?)',
+      'SELECT id, email, firstName, role, isVerified FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(username) = LOWER(?)',
       [email, email]
     );
 
@@ -455,6 +456,7 @@ router.post('/login-with-code', async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
         bio: user.bio,
         profilePicture: user.profilePicture,
         birthday: formattedBirthday,
