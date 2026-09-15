@@ -115,7 +115,7 @@ window.loginWithCode = async function loginWithCode() {
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userData', JSON.stringify(data.user));
             
-            console.log('Γ£à Session saved persistently');
+            console.log('Session saved persistently');
 
             // Update state for compatibility with existing code
             if (typeof state !== 'undefined') {
@@ -225,13 +225,13 @@ async function login() {
     }
 
     try {
-        console.log('≡ƒôí Sending login request to:', `${API_URL}/auth/login`);
+        console.log('Sending login request to:', `${API_URL}/auth/login`);
         
         // Add timeout to detect hanging requests (reduced to 10 seconds for faster feedback)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => {
             controller.abort();
-            console.error('Γ¥î Request timeout after 10 seconds - Server not responding');
+            console.error('Request timeout after 10 seconds - Server not responding');
         }, 10000);
 
         const response = await fetch(`${API_URL}/auth/login`, {
@@ -243,8 +243,8 @@ async function login() {
 
         clearTimeout(timeoutId);
 
-        console.log('≡ƒôÑ Login response status:', response.status);
-        console.log('≡ƒôÑ Response headers:', {
+        console.log('Login response status:', response.status);
+        console.log('Response headers:', {
             'content-type': response.headers.get('content-type'),
             'access-control-allow-origin': response.headers.get('access-control-allow-origin')
         });
@@ -252,7 +252,7 @@ async function login() {
         // Check if response is JSON
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            console.error('Γ¥î Server returned non-JSON response');
+            console.error('Server returned non-JSON response');
             console.error('Content-Type:', contentType);
             const text = await response.text();
             console.error('Response body:', text.substring(0, 200));
@@ -268,11 +268,11 @@ async function login() {
         }
 
         const data = await response.json();
-        console.log('≡ƒôÑ Login response data:', data);
+        console.log('Login response data:', data);
 
         if (response.ok && data.success) {
             if (!data.token || !data.user) {
-                console.error('Γ¥î Missing token or user data in response');
+                console.error('Missing token or user data in response');
                 
                 // Restore button
                 if (submitBtn) {
@@ -284,32 +284,32 @@ async function login() {
                 return;
             }
 
-            console.log('Γ£à Login successful');
-            console.log('Γ£à User:', data.user.username);
-            console.log('Γ£à Token:', data.token.substring(0, 20) + '...');
+            console.log('Login successful');
+            console.log('User:', data.user.username);
+            console.log('Token:', data.token.substring(0, 20) + '...');
             
             // Store credentials
             state.user = data.user;
             state.token = data.token;
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            console.log('Γ£à Credentials stored in localStorage');
+            console.log('Credentials stored in localStorage');
             
             // Show success message
             showToast('Login successful! Welcome back!', 'success');
             
             // Transition to app screen
-            console.log('Γ£à Transitioning to app screen...');
+            console.log('Transitioning to app screen...');
             await showAppScreen();
             
             // Load dashboard data
-            console.log('Γ£à Loading dashboard...');
+            console.log('Loading dashboard...');
             await loadDashboard();
             
-            console.log('Γ£à Login flow complete!');
+            console.log('Login flow complete!');
         } else {
-            console.error('Γ¥î Login failed with status:', response.status);
-            console.error('Γ¥î Error message:', data.error);
+            console.error('Login failed with status:', response.status);
+            console.error('Error message:', data.error);
 
             // Restore button
             if (submitBtn) {
@@ -319,7 +319,7 @@ async function login() {
 
             // Check if account needs verification
             if (data.requiresVerification && data.email) {
-                await showAlert('≡ƒôº ' + data.error, 'warning', 'Email Verification Required');
+                await showAlert('' + data.error, 'warning', 'Email Verification Required');
                 localStorage.setItem('verificationEmail', data.email);
 
                 // Redirect to verification page after 2 seconds
@@ -331,10 +331,10 @@ async function login() {
             }
         }
     } catch (error) {
-        console.error('Γ¥î Login exception:', error);
-        console.error('Γ¥î Error type:', error.name);
-        console.error('Γ¥î Error message:', error.message);
-        console.error('Γ¥î Error stack:', error.stack);
+        console.error('Login exception:', error);
+        console.error('Error type:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
         
         // Restore button
         if (submitBtn) {
@@ -395,7 +395,7 @@ async function electronLoginWithPassword(emailOrUsername, password) {
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('userData', JSON.stringify(data.user));
-            console.log('Γ£à Credentials stored in localStorage (persistent)');
+            console.log('Credentials stored in localStorage (persistent)');
 
             // Show success message
             if (typeof showToast === 'function') {
@@ -480,7 +480,7 @@ async function register() {
         if (response.ok) {
             if (data.requiresVerification) {
                 // Registration successful, redirect to verification page
-                await showAlert(data.message || '≡ƒôº Account created! Check your email for verification code.', 'success', 'Registration Successful');
+                await showAlert(data.message || 'Account created! Check your email for verification code.', 'success', 'Registration Successful');
 
                 // Store email for verification page
                 localStorage.setItem('verificationEmail', email);
@@ -747,7 +747,7 @@ async function resendResetEmail() {
 
         if (response.ok) {
             // Show brief success message
-            btn.textContent = 'Γ£ô Email Sent!';
+            btn.textContent = 'Email Sent!';
             btn.style.background = 'var(--success)';
             btn.style.color = 'white';
 
@@ -841,7 +841,7 @@ async function refreshUserDataFromServer() {
                 // Update state and localStorage with fresh data from server
                 state.user = { ...state.user, ...data.user };
                 localStorage.setItem('user', JSON.stringify(state.user));
-                console.log('Γ£à User data refreshed from server - username:', data.user.username);
+                console.log('User data refreshed from server - username:', data.user.username);
                 return true;
             }
         }
@@ -1281,19 +1281,19 @@ function renderFriends() {
         const sharedInfoParts = [];
 
         if (shareAll || sharePrefs.includes('email')) {
-            sharedInfoParts.push(`<div class="card-text">≡ƒôº ${friend.email || 'N/A'}</div>`);
+            sharedInfoParts.push(`<div class="card-text">${friend.email || 'N/A'}</div>`);
         }
         if (shareAll || sharePrefs.includes('phone')) {
-            if (friend.phone) sharedInfoParts.push(`<div class="card-text">≡ƒô₧ ${friend.phone}</div>`);
+            if (friend.phone) sharedInfoParts.push(`<div class="card-text">${friend.phone}</div>`);
         }
         if (friend.birthday) {
-            sharedInfoParts.push(`<div class="card-text">≡ƒÄé ${new Date(friend.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>`);
+            sharedInfoParts.push(`<div class="card-text">${new Date(friend.birthday).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>`);
         }
 
         if (sharedInfoParts.length > 0) {
             sharedInfoHtml = `
                 <div style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
-                    <div style="font-weight: 600; color: #475569; margin-bottom: 0.5rem;">≡ƒôï Shared Information</div>
+                    <div style="font-weight: 600; color: #475569; margin-bottom: 0.5rem;">Shared Information</div>
                     ${sharedInfoParts.join('')}
                 </div>
             `;
@@ -1496,7 +1496,7 @@ function viewFriendInterests(friendId) {
                     <div style="display: grid; gap: 0.5rem;">
                         ${favorites.map(f => `
                             <div style="padding: 0.6rem 0.75rem; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
-                                <span style="font-size: 1.2rem;">Γ¡É</span>
+                                <span style="font-size: 1.2rem;"></span>
                                 <span style="color: #1e40af; font-weight: 500;">${f}</span>
                             </div>
                         `).join('')}
@@ -1512,7 +1512,7 @@ function viewFriendInterests(friendId) {
             <div style="margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
                 <button onclick="toggleInterestCategory(${idx})" style="width: 100%; padding: 1rem; background: #f8fafc; border: none; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 1rem; font-weight: 600; color: #1e40af;">
                     <span>${category}</span>
-                    <span id="interest-arrow-${idx}" style="transition: transform 0.3s;">Γû╝</span>
+                    <span id="interest-arrow-${idx}" style="transition: transform 0.3s;"></span>
                 </button>
                 <div id="interest-content-${idx}" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;">
                     <div style="padding: 1.25rem; background: white;">
@@ -1634,7 +1634,7 @@ function viewFullContact(contactData) {
                                 <div style="display: grid; gap: 0.5rem;">
                                     ${favorites.map(f => `
                                         <div style="padding: 0.6rem 0.75rem; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 4px; display: flex; align-items: center; gap: 0.5rem;">
-                                            <span style="font-size: 1.2rem;">Γ¡É</span>
+                                            <span style="font-size: 1.2rem;"></span>
                                             <span style="color: #1e40af; font-weight: 500;">${f}</span>
                                         </div>
                                     `).join('')}
@@ -1652,21 +1652,21 @@ function viewFullContact(contactData) {
 
                     // Category icons
                     const icons = {
-                        'Video Games': '≡ƒÄ«',
-                        'Board Games': '≡ƒÄ▓',
-                        'Movies': '≡ƒÄ¼',
-                        'Books': '≡ƒôÜ',
-                        'Music': '≡ƒÄ╡',
-                        'Sports': 'ΓÜ╜',
-                        'Travel': 'Γ£ê∩╕Å',
-                        'Cooking': '≡ƒì│'
+                        'Video Games': '',
+                        'Board Games': '',
+                        'Movies': '',
+                        'Books': '',
+                        'Music': '',
+                        'Sports': '',
+                        'Travel': '',
+                        'Cooking': ''
                     };
-                    const icon = icons[category] || '≡ƒÄ»';
+                    const icon = icons[category] || '';
 
                     return `
                         <details ${idx === 0 ? 'open' : ''} style="margin-bottom: 1rem; padding: 1rem; background: white; border-radius: 10px; border: 2px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s;">
                             <summary style="font-weight: 700; color: #1e40af; cursor: pointer; user-select: none; list-style: none; display: flex; align-items: center; font-size: 1.1rem;">
-                                <span class="dropdown-arrow" style="margin-right: 0.75rem; font-size: 0.9rem; transition: transform 0.2s; display: inline-block;">Γû╢</span>
+                                <span class="dropdown-arrow" style="margin-right: 0.75rem; font-size: 0.9rem; transition: transform 0.2s; display: inline-block;"></span>
                                 <span style="margin-right: 0.5rem;">${icon}</span>
                                 <span>${category}</span>
                                 <span style="margin-left: auto; font-size: 0.85rem; font-weight: 500; color: #64748b; background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 12px;">
@@ -1692,7 +1692,7 @@ function viewFullContact(contactData) {
             if (interestsList.length > 0) {
                 interestsHtml = `
                     <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
-                        <div style="font-weight: 600; color: #475569; font-size: 1rem; margin-bottom: 1rem;">≡ƒôï Listed Interests</div>
+                        <div style="font-weight: 600; color: #475569; font-size: 1rem; margin-bottom: 1rem;">Listed Interests</div>
                         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                             ${interestsList.map(interest => `
                                 <span style="padding: 0.5rem 1rem; background: white; border: 2px solid #e2e8f0; border-radius: 8px; color: #1e40af; font-weight: 500;">
@@ -1722,7 +1722,7 @@ function viewFullContact(contactData) {
 
         document.getElementById('contact-detail-body').innerHTML = `
             <div style="padding: 2rem; text-align: center; color: #64748b;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">≡ƒÄ»</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;"></div>
                 <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">No Interests Added</div>
                 <div style="font-size: 0.9rem;">This contact hasn't added any interests yet.</div>
             </div>
@@ -2061,7 +2061,7 @@ async function handleContactImport(event) {
             }
         }
 
-        statusEl.textContent = `Γ£ô Successfully imported ${imported} of ${contacts.length} contacts`;
+        statusEl.textContent = `Successfully imported ${imported} of ${contacts.length} contacts`;
         statusEl.style.color = '#059669';
 
         // Reload contacts
@@ -2078,7 +2078,7 @@ async function handleContactImport(event) {
 
     } catch (error) {
         console.error('Import error:', error);
-        statusEl.textContent = 'Γ£ù Error importing file';
+        statusEl.textContent = 'Error importing file';
         statusEl.style.color = '#ef4444';
     }
 }
@@ -2203,7 +2203,7 @@ function updateRegisterBirthdayDisplay() {
         }
 
         document.getElementById('register-birthday-display').value = formatted;
-        document.getElementById('register-birthday-info').innerHTML = `<span>≡ƒÄé Age: ${age}</span>`;
+        document.getElementById('register-birthday-info').innerHTML = `<span>Age: ${age}</span>`;
     } else {
         document.getElementById('register-birthday-display').value = '';
         document.getElementById('register-birthday-info').innerHTML = '';
@@ -2456,7 +2456,7 @@ function copyInviteMessage() {
         navigator.clipboard.write([clipboardItem])
             .then(() => {
                 if (statusElement) {
-                    statusElement.textContent = 'Γ£à Invitation copied to clipboard!';
+                    statusElement.textContent = 'Invitation copied to clipboard!';
                     statusElement.style.color = 'var(--success)';
 
                     // Clear status after 3 seconds
@@ -2475,7 +2475,7 @@ function copyInviteMessage() {
         navigator.clipboard.writeText(plainText)
             .then(() => {
                 if (statusElement) {
-                    statusElement.textContent = 'Γ£à Invitation copied to clipboard!';
+                    statusElement.textContent = 'Invitation copied to clipboard!';
                     statusElement.style.color = 'var(--success)';
 
                     // Clear status after 3 seconds
@@ -2505,7 +2505,7 @@ function fallbackCopyText(text, statusElement) {
     try {
         document.execCommand('copy');
         if (statusElement) {
-            statusElement.textContent = 'Γ£à Invitation copied to clipboard!';
+            statusElement.textContent = 'Invitation copied to clipboard!';
             statusElement.style.color = 'var(--success)';
             setTimeout(() => {
                 statusElement.textContent = '';
@@ -2513,7 +2513,7 @@ function fallbackCopyText(text, statusElement) {
         }
     } catch (err) {
         if (statusElement) {
-            statusElement.textContent = 'ΓÜá∩╕Å Please manually copy the text above';
+            statusElement.textContent = 'Please manually copy the text above';
             statusElement.style.color = 'var(--warning)';
         }
     }
@@ -2555,7 +2555,7 @@ function copyShareLink(url) {
         navigator.clipboard.writeText(url)
             .then(() => {
                 if (statusElement) {
-                    statusElement.textContent = 'Γ£à Website link copied to clipboard!';
+                    statusElement.textContent = 'Website link copied to clipboard!';
                     statusElement.style.color = 'var(--success)';
                     setTimeout(() => {
                         statusElement.textContent = '';
@@ -2565,7 +2565,7 @@ function copyShareLink(url) {
             .catch(err => {
                 console.error('Copy failed:', err);
                 if (statusElement) {
-                    statusElement.textContent = 'ΓÜá∩╕Å Could not copy link';
+                    statusElement.textContent = 'Could not copy link';
                     statusElement.style.color = 'var(--warning)';
                 }
             });
