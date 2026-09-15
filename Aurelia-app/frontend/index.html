@@ -4454,15 +4454,8 @@
                                 <input type="text" id="register-username" required>
                             </div>
                             <div class="form-group">
-                                <label>Birthday</label>
-                                <input type="text" id="register-birthday-display" placeholder="Select your birthday..."
-                                    readonly style="cursor: pointer;" onclick="openRegisterBirthdayPicker()">
-                                <input type="date" id="register-birthday" style="display: none;" required max="">
-                                <div class="birthday-display" id="register-birthday-info"
-                                    style="margin-top: 0.5rem; font-size: 0.9rem; color: #667eea;"></div>
-                                <small style="color: #64748b; font-size: 0.875rem; display: block; margin-top: 0.5rem;">
-                                    You must be at least 13 years old. Birthday cannot be changed after registration.
-                                </small>
+                                <label>Age</label>
+                                <input type="number" id="register-age" min="13" max="120" step="1" required>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number (Optional)</label>

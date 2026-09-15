@@ -11,21 +11,32 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, firstName, lastName, birthday, phone } = req.body;
+    const { username, email, password, firstName, lastName, age, birthday, phone } = req.body;
 
-    if (!username || !email || !password || !firstName || !lastName || !birthday) {
-      return res.status(400).json({ error: 'All fields are required, including birthday' });
+    if (!username || !email || !password || !firstName || !lastName || !age) {
+      return res.status(400).json({ error: 'All fields are required' });
     }
+
+    const numericAge = Number(age);
+    if (!Number.isInteger(numericAge) || numericAge < 13 || numericAge > 120) {
+      return res.status(400).json({ error: 'You must be at least 13 years old to register' });
+    }
+
+    const storedBirthday = birthday || (() => {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() - numericAge, 0, 1);
+      return date.toISOString().slice(0, 10);
+    })();
 
     // Validate birthday - must be at least 13 years old
-    const birthDate = new Date(birthday);
+    const birthDate = new Date(storedBirthday);
     const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
+    let calculatedAge = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
+      calculatedAge--;
     }
-    if (age < 13) {
+    if (calculatedAge < 13) {
       return res.status(400).json({ error: 'You must be at least 13 years old to register' });
     }
 
@@ -50,7 +61,7 @@ router.post('/register', async (req, res) => {
     // Create user with birthday, phone, and verification code
     await insert(
       'INSERT INTO users (id, username, email, password, firstName, lastName, birthday, phone, isVerified, verificationCode, verificationCodeExpires, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, ?, ?, NOW())',
-      [userId, username, email, hashedPassword, firstName, lastName, birthday, phone || null, verificationCode, verificationExpires]
+      [userId, username, email, hashedPassword, firstName, lastName, storedBirthday, phone || null, verificationCode, verificationExpires]
     );
 
     console.log('✅ User created with verification code:', verificationCode);

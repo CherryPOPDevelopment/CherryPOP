@@ -438,13 +438,13 @@ async function register() {
     const lastName = document.getElementById('register-lastName').value;
     const email = document.getElementById('register-email').value;
     const username = document.getElementById('register-username').value;
-    const birthday = document.getElementById('register-birthday').value;
+    const age = Number(document.getElementById('register-age').value);
     const phone = document.getElementById('register-phone').value.trim() || null;
     const password = document.getElementById('register-password').value;
     const confirmPassword = document.getElementById('register-password-confirm').value;
 
-    if (!firstName || !lastName || !email || !username || !birthday || !password) {
-        await showAlert('Please fill all fields including birthday', 'warning', 'Registration Required');
+    if (!firstName || !lastName || !email || !username || !age || !password) {
+        await showAlert('Please fill all fields', 'warning', 'Registration Required');
         return;
     }
 
@@ -460,24 +460,19 @@ async function register() {
         return;
     }
 
-    // Validate birthday - must be at least 13 years old
-    const birthDate = new Date(birthday);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    if (age < 13) {
+    if (!Number.isInteger(age) || age < 13 || age > 120) {
         await showAlert('You must be at least 13 years old to register', 'warning', 'Age Requirement');
         return;
     }
+
+    const birthday = new Date();
+    birthday.setFullYear(birthday.getFullYear() - age, 0, 1);
 
     try {
         const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ firstName, lastName, email, username, birthday, phone, password })
+            body: JSON.stringify({ firstName, lastName, email, username, age, birthday: birthday.toISOString().slice(0, 10), phone, password })
         });
 
         const data = await response.json();
