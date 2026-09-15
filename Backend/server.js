@@ -13,27 +13,6 @@ const paymentsRouter  = require('./routes/payments');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors({ origin: true, credentials: true }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(session({
-  secret:            process.env.SESSION_SECRET || 'dev_secret_change_me',
-  resave:            false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure:   process.env.NODE_ENV === 'production',
-    maxAge:   1000 * 60 * 60 * 8, // 8 hours
-  },
-}));
-
-// ── Static files ──────────────────────────────────────────────────────────────
-app.use(express.static(path.join(__dirname, '..', 'Frontend')));
-app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
-app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
-
 const sovaProxy = createProxyMiddleware({
   target: 'http://127.0.0.1:4000',
   changeOrigin: true,
@@ -53,8 +32,6 @@ const sovaProxy = createProxyMiddleware({
     }),
   },
 });
-
-app.use('/sova-demo', sovaProxy);
 
 const aureliaProxy = createProxyMiddleware({
   target: 'http://127.0.0.1:5000',
@@ -77,7 +54,29 @@ const aureliaProxy = createProxyMiddleware({
   },
 });
 
+// ── Middleware ────────────────────────────────────────────────────────────────
+app.use(cors({ origin: true, credentials: true }));
+
+app.use(session({
+  secret:            process.env.SESSION_SECRET || 'dev_secret_change_me',
+  resave:            false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === 'production',
+    maxAge:   1000 * 60 * 60 * 8, // 8 hours
+  },
+}));
+
+app.use('/sova-demo', sovaProxy);
 app.use('/aurelia', aureliaProxy);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ── Static files ──────────────────────────────────────────────────────────────
+app.use(express.static(path.join(__dirname, '..', 'Frontend')));
+app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
+app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
 
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
