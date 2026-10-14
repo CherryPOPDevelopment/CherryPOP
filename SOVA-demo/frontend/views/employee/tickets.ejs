@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Tickets - SOVA Employee</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-employee">
+    <section class="workspace-hero">
+      <div class="container">
+        <h1>Staff Tickets</h1>
+        <p>Submit requests to Management, Maintenance, or IT. Track the status of tickets you've submitted.</p>
+      </div>
+    </section>
+
+    <section class="container shift-notes-layout">
+      <section class="workspace-card shift-notes-form-card">
+        <h2>New Ticket</h2>
+        <% if (message) { %>
+          <p class="admin-inline-message"><%= message %></p>
+        <% } %>
+
+        <form method="POST" action="/employee/tickets" class="shift-notes-form">
+          <div class="form-group">
+            <label for="ticketTitle">Title</label>
+            <input id="ticketTitle" name="title" type="text" maxlength="200" required placeholder="Brief summary of the issue or request">
+          </div>
+
+          <div class="shift-notes-row">
+            <div class="form-group">
+              <label for="ticketDepartment">Department</label>
+              <select id="ticketDepartment" name="department" required>
+                <option value="management">Management</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="it">IT</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ticketPriority">Priority</label>
+              <select id="ticketPriority" name="priority" required>
+                <option value="normal" selected>Normal</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketDescription">Description</label>
+            <textarea id="ticketDescription" name="description" maxlength="3000" rows="6" required placeholder="Describe the issue in detail — include location, time, affected guests or equipment, and any steps already taken."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit Ticket</button>
+        </form>
+      </section>
+
+      <section class="workspace-card shift-notes-list-card">
+        <div class="shift-notes-list-head">
+          <h2><%= isAdmin ? 'All Open Tickets' : 'My Tickets' %></h2>
+          <% if (isAdmin) { %>
+            <a href="/admin/tickets" class="btn btn-secondary btn-sm">Full Ticket Board</a>
+          <% } %>
+        </div>
+        <p class="muted-text"><%= isAdmin ? 'Showing all open and in-progress tickets for this property.' : 'Showing your open and in-progress tickets.' %></p>
+
+        <% if (tickets && tickets.length > 0) { %>
+          <div class="shift-notes-list">
+            <% tickets.forEach(ticket => { %>
+              <% const isOwnTicket = user && user.id === ticket.created_by; %>
+              <% const initials = (ticket.created_by_username || '')
+                .split(/[\s._-]+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part.charAt(0).toUpperCase())
+                .join('') || '?'; %>
+              <% const deptLabel = ticket.department === 'it' ? 'IT' : ticket.department.charAt(0).toUpperCase() + ticket.department.slice(1); %>
+
+              <article class="shift-note-item">
+                <div class="shift-note-head">
+                  <div>
+                    <strong><%= ticket.title %></strong>
+                    <p>By <%= ticket.created_by_username %> &bull; <%= new Date(ticket.created_at).toLocaleString() %></p>
+                  </div>
+                  <div class="shift-note-badges">
+                    <span class="badge-status ticket-badge-dept-<%= ticket.department %>"><%= deptLabel %></span>
+                    <span class="badge-status <%= ticket.priority === 'urgent' ? 'badge-cancelled' : 'badge-confirmed' %>"><%= ticket.priority %></span>
+                    <span class="badge-status <%= ticket.status === 'open' ? 'badge-pending' : ticket.status === 'in_progress' ? 'badge-city' : 'badge-approved' %>">
+                      <%= ticket.status === 'in_progress' ? 'In Progress' : ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1) %>
+                    </span>
+                    <span class="badge-status badge-city-soft"><%= initials %></span>
+                  </div>
+                </div>
+
+                <p class="shift-note-body"><%= ticket.description %></p>
+
+                <% if (ticket.resolution_note) { %>
+                  <p class="shift-note-meta ticket-resolution-note"><strong>Resolution:</strong> <%= ticket.resolution_note %></p>
+                <% } %>
+
+                <% if (isAdmin) { %>
+                  <div class="shift-note-actions">
+                    <form method="POST" action="/employee/tickets/<%= ticket.id %>/status" class="ticket-status-form">
+                      <select name="status" class="ticket-inline-select" aria-label="Update status">
+                        <option value="open" <%= ticket.status === 'open' ? 'selected' : '' %>>Open</option>
+                        <option value="in_progress" <%= ticket.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                        <option value="resolved" <%= ticket.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                        <option value="closed" <%= ticket.status === 'closed' ? 'selected' : '' %>>Closed</option>
+                      </select>
+                      <input type="text" name="resolutionNote" class="ticket-inline-note" maxlength="500" placeholder="Resolution note (optional)">
+                      <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                  </div>
+                <% } %>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="muted-text"><%= isAdmin ? 'No open tickets for this property.' : 'You have no open tickets.' %></p>
+        <% } %>
+      </section>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

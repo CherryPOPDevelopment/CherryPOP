@@ -1,0 +1,106 @@
+<%
+  // guidePlaces must be defined by the including template
+  const _guidePlaces = typeof guidePlaces !== 'undefined'
+    ? guidePlaces
+    : (typeof places !== 'undefined' ? places : []);
+%>
+
+<!-- Adventure Guide Builder Sidebar -->
+<aside class="adventure-guide-sidebar">
+  <div class="adventure-guide-card">
+    <div class="adventure-guide-header">
+      <button
+        type="button"
+        class="adventure-guide-toggle"
+        id="guideToggleBtn"
+        aria-expanded="false"
+        aria-controls="adventureGuideBody"
+      >
+        <span class="adventure-guide-icon">&#9788;</span>
+        <span class="adventure-guide-title">Guest Day Itinerary Planner</span>
+        <span class="adventure-guide-chevron" aria-hidden="true">&#9662;</span>
+      </button>
+    </div>
+
+    <div class="adventure-guide-body" id="adventureGuideBody" hidden>
+      <p class="muted-text guide-intro-text">
+        Build print-ready guest day itineraries from your current recommendations.
+        Add stops by click or drag, then print as a concierge tour guide handout.
+      </p>
+
+      <div class="guide-action-row">
+        <button type="button" class="btn btn-primary btn-sm" id="guideQuizBtn">&#10067; Auto-Build with Quiz</button>
+        <button type="button" class="btn btn-secondary btn-sm" id="guideSurpriseBtn">&#127922; Surprise Itinerary</button>
+      </div>
+
+      <!-- Drop Zone -->
+      <div class="guide-dropzone" id="guideDropzone" aria-label="Guide drop zone">
+        <p class="guide-dropzone-placeholder" id="guideDropzonePlaceholder">Add recommendations here to build the guest itinerary</p>
+        <ul class="guide-dropzone-list" id="guideDropzoneList" aria-label="Guide items"></ul>
+      </div>
+
+      <div class="guide-dropzone-actions" id="guideDropzoneActions" hidden>
+        <div class="guide-stop-row">
+          <input type="text" class="guide-name-input" id="guideNameInput" placeholder="Name this itinerary…" maxlength="80" aria-label="Guide name">
+          <span class="guide-stop-count" id="guideStopCount" aria-live="polite"></span>
+        </div>
+
+        <div class="guide-itinerary-meta">
+          <input type="text" class="guide-name-input" id="guideGuestNameInput" placeholder="Guest name (optional)" maxlength="80" aria-label="Guest name">
+          <input type="date" class="guide-template-select" id="guideDateInput" aria-label="Itinerary date">
+        </div>
+        <textarea id="guideNotesInput" class="guide-notes-input" rows="3" maxlength="240" placeholder="Optional notes for guest preferences, pacing, or accessibility"></textarea>
+
+        <div class="guide-template-row">
+          <label for="guideTemplateSelect" class="guide-template-label">Display:</label>
+          <select id="guideTemplateSelect" class="guide-template-select" aria-label="Guide view template">
+            <option value="standard">Itinerary list</option>
+            <option value="time_of_day">Timeline (time of day)</option>
+          </select>
+        </div>
+        <div class="guide-action-row">
+          <button type="button" class="btn btn-secondary btn-sm" id="guideTimelineBtn">Assign Timeline</button>
+          <button type="button" class="btn btn-secondary btn-sm" id="guidePrintBtn">Print Handout</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="guideClearBtn">Clear</button>
+        </div>
+      </div>
+
+      <!-- Source Chips (draggable) -->
+      <div class="guide-source-section">
+        <p class="guide-source-label">Available recommendations (click or drag to add):</p>
+        <input type="search" class="guide-chip-search" id="guideChipSearch" placeholder="Search recommendations…" aria-label="Search recommendations">
+        <div class="guide-category-filter" id="guideCategoryFilter" aria-label="Filter by category"></div>
+        <div class="guide-source-chips" id="guideSourceChips">
+          <% if (_guidePlaces.length > 0) { %>
+            <% _guidePlaces.forEach(function(place) { %>
+              <div class="guide-chip"
+                   draggable="true"
+                   data-place-id="<%= place.id %>"
+                   data-place-title="<%= place.title.replace(/"/g, '&quot;') %>"
+                   data-place-category="<%= place.category %>"
+                   data-place-location="<%= (place.location || '').replace(/"/g, '&quot;') %>"
+                   data-place-rating="<%= place.rating || '' %>"
+                   role="button"
+                   tabindex="0"
+                   aria-label="Add <%= place.title %> to guide">
+                <span class="guide-chip-title"><%= place.title %></span>
+                <span class="badge-status badge-category-soft"><%= place.category %></span>
+                <% if (place.rating) { %><span class="guide-chip-rating" aria-label="<%= place.rating %> stars">&#9733; <%= Number(place.rating).toFixed(1) %></span><% } %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="muted-text">No recommendations available yet.</p>
+          <% } %>
+          <p class="muted-text guide-chip-no-results" id="guideChipNoResults" hidden>No spots match your filter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Quiz Modal -->
+<script type="application/json" id="guidePlacesData"><%- JSON.stringify(_guidePlaces).replace(/</g, '\\u003c') %></script>
+
+<%- include('./adventure-guide-quiz-modal') %>
+
+<script src="/js/adventure-guide.js"></script>

@@ -26,9 +26,9 @@
     <section class="container workspace-grid">
       <% if (canViewInviteCodes) { %>
       <div class="workspace-card workspace-card-critical">
-        <h2>Employee Invite Codes</h2>
-        <p>Generate and manage onboarding invite codes in a dedicated management page.</p>
-        <a href="/admin/invite-codes" class="btn btn-danger">Open Invite Code Manager</a>
+        <h2>Staff Invite Links</h2>
+        <p>Generate and manage onboarding invite links with account-type selection.</p>
+        <a href="/admin/invite-codes" class="btn btn-danger">Open Invite Link Manager</a>
       </div>
       <% } %>
 
@@ -78,6 +78,21 @@
         <a href="/admin/suggestions" class="btn btn-danger">Open Suggestion Inbox</a>
       </div>
       <% } %>
+
+      <div class="workspace-card workspace-card-critical">
+        <h2>Staff Ticket Board</h2>
+        <p>Review and triage tickets submitted by employees for Management, Maintenance, and IT.</p>
+        <% if (typeof openTicketCount !== 'undefined' && openTicketCount > 0) { %>
+          <p><span class="badge-status badge-pending"><%= openTicketCount %> open ticket<%= openTicketCount !== 1 ? 's' : '' %></span></p>
+        <% } %>
+        <a href="/admin/tickets" class="btn btn-danger">Open Ticket Board</a>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Browse Recommendations</h2>
+        <p>Explore all approved recommendations for this property — restaurants, bars, entertainment, and more.</p>
+        <a href="/places" class="btn btn-secondary">Browse Recommendations</a>
+      </div>
 
       <% if (canViewAudit) { %>
       <div class="workspace-card workspace-card-critical">

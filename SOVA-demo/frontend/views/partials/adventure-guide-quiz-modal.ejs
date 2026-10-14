@@ -1,0 +1,110 @@
+<div class="guide-quiz-overlay" id="guideQuizOverlay" hidden aria-modal="true" role="dialog" aria-labelledby="quizModalTitle">
+  <div class="guide-quiz-modal">
+    <button type="button" class="guide-quiz-close" id="guideQuizClose" aria-label="Close quiz">&times;</button>
+    <h2 id="quizModalTitle">Build Your Adventure</h2>
+    <p class="muted-text">Answer a few quick questions and we'll build a personalised itinerary for your guest.</p>
+
+    <form id="guideQuizForm" novalidate>
+
+      <!-- Q1: Vibe -->
+      <div class="quiz-question" data-question="1">
+        <p class="quiz-q-label">1. What's the vibe?</p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="radio" name="vibe" value="lively"> &#127881; Lively &amp; Fun</label>
+          <label class="quiz-option"><input type="radio" name="vibe" value="chill"> &#9749; Chill &amp; Relaxed</label>
+          <label class="quiz-option"><input type="radio" name="vibe" value="romantic"> &#10084;&#65039; Romantic</label>
+          <label class="quiz-option"><input type="radio" name="vibe" value="adventure"> &#127939; Active / Adventure</label>
+          <label class="quiz-option"><input type="radio" name="vibe" value="foodie"> &#127829; Foodie Tour</label>
+          <label class="quiz-option"><input type="radio" name="vibe" value="cultural"> &#127981; Arts &amp; Culture</label>
+        </div>
+      </div>
+
+      <!-- Q2: Time of day -->
+      <div class="quiz-question" data-question="2">
+        <p class="quiz-q-label">2. What time of day?</p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="radio" name="time_of_day" value="morning"> &#9728;&#65039; Morning</label>
+          <label class="quiz-option"><input type="radio" name="time_of_day" value="afternoon"> &#127767; Afternoon</label>
+          <label class="quiz-option"><input type="radio" name="time_of_day" value="evening"> &#127768; Evening / Night</label>
+          <label class="quiz-option"><input type="radio" name="time_of_day" value="flexible"> &#128344; Flexible / All Day</label>
+        </div>
+      </div>
+
+      <!-- Q3: Group -->
+      <div class="quiz-question" data-question="3">
+        <p class="quiz-q-label">3. Who's the guest with?</p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="radio" name="group" value="solo"> &#129331; Solo traveller</label>
+          <label class="quiz-option"><input type="radio" name="group" value="couple"> &#128145; Couple</label>
+          <label class="quiz-option"><input type="radio" name="group" value="friends_small"> &#129309; Small group (2&ndash;4)</label>
+          <label class="quiz-option"><input type="radio" name="group" value="friends_large"> &#127881; Large group (5+)</label>
+          <label class="quiz-option"><input type="radio" name="group" value="family_kids"> &#128106; Family &mdash; young kids</label>
+          <label class="quiz-option"><input type="radio" name="group" value="family_teens"> &#128104;&#8205;&#128105;&#8205;&#128102; Family &mdash; teens</label>
+          <label class="quiz-option"><input type="radio" name="group" value="seniors"> &#129491; Seniors</label>
+        </div>
+      </div>
+
+      <!-- Q4: Duration -->
+      <div class="quiz-question" data-question="4">
+        <p class="quiz-q-label">4. How much time do they have?</p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="radio" name="duration" value="activity"> &#9889; Just an Activity &mdash; 1&ndash;2 hrs</label>
+          <label class="quiz-option"><input type="radio" name="duration" value="half_day"> &#127774; Half Day &mdash; 3&ndash;4 hrs</label>
+          <label class="quiz-option"><input type="radio" name="duration" value="full_day"> &#127775; Full Day (breakfast &rarr; activity &rarr; lunch &rarr; activity &rarr; dinner)</label>
+        </div>
+      </div>
+
+      <!-- Q5: Budget -->
+      <div class="quiz-question" data-question="5">
+        <p class="quiz-q-label">5. What's the budget?</p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="radio" name="budget" value="budget"> &#128176; Budget-friendly</label>
+          <label class="quiz-option"><input type="radio" name="budget" value="midrange"> &#128181; Mid-range</label>
+          <label class="quiz-option"><input type="radio" name="budget" value="splurge"> &#128142; Special occasion</label>
+        </div>
+      </div>
+
+      <!-- Q6: Interests -->
+      <div class="quiz-question" data-question="6">
+        <p class="quiz-q-label">6. Any particular interests? <span class="muted-text quiz-optional">(optional, pick all that apply)</span></p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="checkbox" name="interests" value="food"> &#127829; Food &amp; Drinks</label>
+          <label class="quiz-option"><input type="checkbox" name="interests" value="shopping"> &#128717; Shopping</label>
+          <label class="quiz-option"><input type="checkbox" name="interests" value="entertainment"> &#127917; Live Entertainment</label>
+          <label class="quiz-option"><input type="checkbox" name="interests" value="outdoors"> &#127807; Outdoors &amp; Active</label>
+          <label class="quiz-option"><input type="checkbox" name="interests" value="culture"> &#127981; Arts &amp; Culture</label>
+          <label class="quiz-option"><input type="checkbox" name="interests" value="local"> &#128205; Local &amp; Hidden Gems</label>
+        </div>
+      </div>
+
+      <!-- Q7: Accessibility & special needs -->
+      <div class="quiz-question" data-question="7">
+        <p class="quiz-q-label">7. Any special considerations? <span class="muted-text quiz-optional">(optional, pick all that apply)</span></p>
+        <div class="quiz-options quiz-options-grid">
+          <label class="quiz-option"><input type="checkbox" name="special" value="quiet"> &#128263; Quiet / low-sensory environment</label>
+          <label class="quiz-option"><input type="checkbox" name="special" value="no_alcohol"> &#128683; Alcohol-free options important</label>
+          <label class="quiz-option"><input type="checkbox" name="special" value="wheelchair"> &#9855;&#65039; Wheelchair / mobility accessible</label>
+          <label class="quiz-option"><input type="checkbox" name="special" value="outdoor_seating"> &#127968; Outdoor seating a plus</label>
+          <label class="quiz-option"><input type="checkbox" name="special" value="pet_friendly"> &#128054; Pet-friendly</label>
+          <label class="quiz-option"><input type="checkbox" name="special" value="kids_activities"> &#127744; Kid-focused activities</label>
+        </div>
+      </div>
+
+      <div class="quiz-error" id="quizError" hidden></div>
+
+      <div class="quiz-footer">
+        <button type="submit" class="btn btn-primary">Build My Guide &#8594;</button>
+        <button type="button" class="btn btn-ghost" id="guideQuizCancel">Cancel</button>
+      </div>
+    </form>
+
+    <!-- Inline Results (shown after quiz submit) -->
+    <div id="quizResults" hidden>
+      <div id="quizResultsContent" class="quiz-results-content"></div>
+      <div class="quiz-result-footer">
+        <button type="button" class="btn btn-primary" id="quizUseGuide">&#10003; Use This Guide</button>
+        <button type="button" class="btn btn-ghost btn-sm" id="quizRetry">&#8592; Change Answers</button>
+      </div>
+    </div>
+  </div>
+</div>

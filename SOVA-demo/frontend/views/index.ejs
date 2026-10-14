@@ -32,7 +32,20 @@
       </div>
     </section>
 
-
+    <% if (!user) { %>
+      <section class="container" style="margin-top: 18px; margin-bottom: 4px;">
+        <div class="workspace-card" style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+          <div>
+            <h2 style="margin-bottom: 6px;">Guest Features In Progress</h2>
+            <p style="margin-bottom: 0;">A few guest tools are still being built. Tap below to preview what's next.</p>
+          </div>
+          <div class="coming-soon-actions">
+            <a href="#" class="btn btn-secondary" data-coming-soon="Saved itineraries are in progress and will let guests keep trip plans across sessions." data-coming-soon-title="Saved Itineraries Coming Soon">Saved Itineraries</a>
+            <a href="#" class="btn btn-secondary" data-coming-soon="The guest rewards dashboard is still under development. You will be able to track perks and benefits here." data-coming-soon-title="Guest Rewards Coming Soon">Guest Rewards</a>
+          </div>
+        </div>
+      </section>
+    <% } %>
 
     <!-- Services Section -->
     <section class="services">

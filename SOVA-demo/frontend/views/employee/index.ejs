@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <% const activeRole = (user && user.role ? user.role.toLowerCase() : 'employee'); %>
+  <% const workspaceTitleMap = {
+    employee: 'Employee Workspace',
+    management: 'Management Operations Workspace',
+    maintenance: 'Maintenance Workspace',
+    it: 'IT Workspace',
+    housekeeping: 'Housekeeping Workspace',
+    admin: 'Administrator Operations Workspace'
+  }; %>
+  <% const workspaceDescriptionMap = {
+    employee: 'Collaborate with team members, share recommendations, and discover new events and places to recommend to guests.',
+    management: 'Coordinate teams, oversee service quality, and keep daily operations moving smoothly across the property.',
+    maintenance: 'Track service requests, monitor operational tasks, and keep facilities running reliably for guests and staff.',
+    it: 'Manage technical incidents, support team systems, and keep operational technology healthy across the property.',
+    housekeeping: 'Coordinate room-readiness updates, respond to service needs, and keep guest-facing spaces in top condition.',
+    admin: 'Monitor operational workflows, coordinate support teams, and keep property systems aligned.'
+  }; %>
+  <% const workspaceTitle = workspaceTitleMap[activeRole] || workspaceTitleMap.employee; %>
+  <% const workspaceDescription = workspaceDescriptionMap[activeRole] || workspaceDescriptionMap.employee; %>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Workspace - SOVA Scoop</title>
+  <title><%= workspaceTitle %> - SOVA Scoop</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -12,8 +31,8 @@
   <main class="workspace-page workspace-employee">
     <section class="workspace-hero">
       <div class="container">
-        <h1>MY WORKSPACE</h1>
-        <p>Collaborate with team members, share recommendations, and discover new events and places to recommend to guests.</p>
+        <h1><%= workspaceTitle.toUpperCase() %></h1>
+        <p><%= workspaceDescription %></p>
         <div class="workspace-location-banner">
           <span class="badge-status badge-city">Active Location: <%= city %></span>
           <span class="workspace-location-copy">Your workspace is showing only content for this property.</span>
@@ -23,21 +42,21 @@
 
     <section class="container workspace-grid">
       <div class="workspace-card">
-        <h2>Discussion Board</h2>
-        <p>Connect with team members, share updates, and collaborate on guest experiences.</p>
-        <a href="/discussion" class="btn btn-primary">Discussion Board</a>
-      </div>
-
-      <div class="workspace-card">
-        <h2>Recommendations</h2>
-        <p>Create new recommendations or update existing ones without waiting for approval.</p>
-        <a href="/places/my-recommendations" class="btn btn-primary">My Recommendations</a>
+        <h2>Browse Recommendations</h2>
+        <p>Explore all approved recommendations for this property — restaurants, bars, entertainment, and more.</p>
+        <a href="/places" class="btn btn-primary">Browse Recommendations</a>
       </div>
 
       <div class="workspace-card">
         <h2>Shift Notes</h2>
         <p>Maintain internal notes for handoff between concierge shifts.</p>
         <a href="/employee/shift-notes" class="btn btn-secondary">Open Shift Notes</a>
+      </div>
+
+      <div class="workspace-card">
+        <h2>Staff Tickets</h2>
+        <p>Submit requests or issues to Management, Maintenance, or IT and track their status.</p>
+        <a href="/employee/tickets" class="btn btn-secondary">Open Tickets</a>
       </div>
 
       <div class="workspace-card">

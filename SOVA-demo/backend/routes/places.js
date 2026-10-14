@@ -56,11 +56,19 @@ router.get('/', (req, res) => {
   const search = req.query.search || '';
 
   const places = getSessionPlaces(req.session, { city, category, search });
+  const guidePlaces = getSessionPlaces(req.session, { city }).map((place) => ({
+    id: place.id,
+    title: place.title,
+    category: place.category,
+    location: place.location,
+    rating: place.rating
+  }));
   const sidebar = getSessionSidebar(req.session, city);
 
   return res.render('places/index', {
     user: req.session.user || null,
     places,
+    guidePlaces,
     category,
     search,
     sidebar

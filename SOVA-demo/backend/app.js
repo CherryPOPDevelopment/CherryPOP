@@ -197,6 +197,7 @@ app.get('/location/set', (req, res) => {
 app.use('/auth', require('./routes/auth'));
 app.use('/places', require('./routes/places'));
 app.use('/events', require('./routes/events'));
+app.use('/', require('./routes/tickets'));
 app.use('/', require('./routes/index'));
 
 // ---------------------------------------------------------------------------

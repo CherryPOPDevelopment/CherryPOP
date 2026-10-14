@@ -45,6 +45,8 @@ DEMO_CUSTOMER_PASSWORD=Demo1234
 
 ## How It Works
 
+- Staff ticket boards store changes in the current session; all demo tickets reset on logout.
+- The recommendation planner and quiz build itineraries in the browser; itinerary data is not sent to the server.
 - All data lives in `backend/data/mockData.js` — no MySQL, no external services.
 - Session-scoped writes (create/edit/delete places and events) are allowed and stored in the session, but **wiped on logout**.
 - Admin-only features (user governance, platform config, invite codes, audit log) show a "not available in demo" message.

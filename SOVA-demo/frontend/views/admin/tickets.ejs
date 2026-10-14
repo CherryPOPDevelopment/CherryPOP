@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticket Board - SOVA Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <main class="workspace-page workspace-admin">
+    <section class="workspace-hero workspace-hero-admin">
+      <div class="container">
+        <h1>Staff Ticket Board</h1>
+        <p>Review, triage, and resolve tickets submitted by employees for Management, Maintenance, and IT.</p>
+        <% if (openCount > 0) { %>
+          <div class="workspace-location-banner">
+            <span class="badge-status badge-pending"><%= openCount %> open ticket<%= openCount !== 1 ? 's' : '' %></span>
+            <span class="workspace-location-copy">Awaiting action at this property.</span>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="container">
+      <section class="workspace-card">
+        <div class="shift-notes-list-head">
+          <h2>All Tickets</h2>
+          <a href="/employee/tickets" class="btn btn-secondary btn-sm">My Tickets</a>
+        </div>
+
+        <!-- Filters -->
+        <form method="GET" action="/admin/tickets" class="ticket-filters">
+          <div class="ticket-filter-row">
+            <div class="form-group">
+              <label for="filterDept">Department</label>
+              <select id="filterDept" name="dept">
+                <option value="">All Departments</option>
+                <option value="management" <%= filterDept === 'management' ? 'selected' : '' %>>Management</option>
+                <option value="maintenance" <%= filterDept === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                <option value="it" <%= filterDept === 'it' ? 'selected' : '' %>>IT</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus" name="status">
+                <option value="">All Statuses</option>
+                <option value="open" <%= filterStatus === 'open' ? 'selected' : '' %>>Open</option>
+                <option value="in_progress" <%= filterStatus === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                <option value="resolved" <%= filterStatus === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                <option value="closed" <%= filterStatus === 'closed' ? 'selected' : '' %>>Closed</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm ticket-filter-btn">Filter</button>
+            <a href="/admin/tickets" class="btn btn-ghost btn-sm">Reset</a>
+          </div>
+        </form>
+
+        <% if (message) { %>
+          <p class="admin-inline-message"><%= message %></p>
+        <% } %>
+
+        <% if (tickets && tickets.length > 0) { %>
+          <div class="shift-notes-list">
+            <% tickets.forEach(ticket => { %>
+              <% const initials = (ticket.created_by_username || '')
+                .split(/[\s._-]+/)
+                .filter(Boolean)
+                .slice(0, 2)
+                .map((part) => part.charAt(0).toUpperCase())
+                .join('') || '?'; %>
+              <% const deptLabel = ticket.department === 'it' ? 'IT' : ticket.department.charAt(0).toUpperCase() + ticket.department.slice(1); %>
+
+              <article class="shift-note-item">
+                <div class="shift-note-head">
+                  <div>
+                    <strong><%= ticket.title %></strong>
+                    <p>Submitted by <strong><%= ticket.created_by_username %></strong> &bull; <%= new Date(ticket.created_at).toLocaleString() %></p>
+                  </div>
+                  <div class="shift-note-badges">
+                    <span class="badge-status ticket-badge-dept-<%= ticket.department %>"><%= deptLabel %></span>
+                    <span class="badge-status <%= ticket.priority === 'urgent' ? 'badge-cancelled' : 'badge-confirmed' %>"><%= ticket.priority %></span>
+                    <span class="badge-status <%= ticket.status === 'open' ? 'badge-pending' : ticket.status === 'in_progress' ? 'badge-city' : 'badge-approved' %>">
+                      <%= ticket.status === 'in_progress' ? 'In Progress' : ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1) %>
+                    </span>
+                  </div>
+                </div>
+
+                <p class="shift-note-body"><%= ticket.description %></p>
+
+                <% if (ticket.resolution_note) { %>
+                  <p class="shift-note-meta ticket-resolution-note"><strong>Resolution:</strong> <%= ticket.resolution_note %></p>
+                <% } %>
+
+                <% if (ticket.resolved_by_username && ticket.resolved_at) { %>
+                  <p class="shift-note-meta">Resolved by <strong><%= ticket.resolved_by_username %></strong> &bull; <%= new Date(ticket.resolved_at).toLocaleString() %></p>
+                <% } %>
+
+                <div class="shift-note-actions">
+                  <form method="POST" action="/admin/tickets/<%= ticket.id %>/status" class="ticket-status-form">
+                    <select name="status" class="ticket-inline-select" aria-label="Update status">
+                      <option value="open" <%= ticket.status === 'open' ? 'selected' : '' %>>Open</option>
+                      <option value="in_progress" <%= ticket.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+                      <option value="resolved" <%= ticket.status === 'resolved' ? 'selected' : '' %>>Resolved</option>
+                      <option value="closed" <%= ticket.status === 'closed' ? 'selected' : '' %>>Closed</option>
+                    </select>
+                    <input type="text" name="resolutionNote" class="ticket-inline-note" maxlength="500" placeholder="Resolution note (optional)">
+                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                  </form>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="muted-text">No tickets match the current filters.</p>
+        <% } %>
+      </section>
+    </section>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>
