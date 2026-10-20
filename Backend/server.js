@@ -86,6 +86,7 @@ app.use(express.urlencoded({ extended: true }));
 // ── Static files ──────────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
+app.use('/images', express.static(path.join(__dirname, '..', 'IMAGES')));
 app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
 
 // ── API routes ────────────────────────────────────────────────────────────────
