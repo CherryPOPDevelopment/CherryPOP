@@ -131,6 +131,20 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.nav-brand {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 2px;
+}
+
+.nav-brand > a {
+  grid-row: 1 / span 2;
 }
 
 .nav-brand a {
@@ -244,19 +258,34 @@ body {
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 2rem;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px 10px;
 }
 
 .nav-menu a {
-  color: #e2e8f0;
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--navbar-text);
   text-decoration: none;
   transition: color 0.3s;
   font-weight: 500;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .nav-menu a:hover {
-  color: #3b82f6;
+  color: var(--navbar-hover);
+  background: var(--menu-hover);
+}
+
+@media (max-width: 1200px) {
+  .nav-menu {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
 }
 
 /* Hero Section */
@@ -1902,8 +1931,17 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .nav-container {
+    gap: 12px;
+  }
+
   .nav-menu {
-    gap: 1rem;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .nav-menu {
+    flex: 1 1 100%;
   }
 
   .hero-content h1 {

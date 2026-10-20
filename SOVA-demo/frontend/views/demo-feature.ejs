@@ -28,6 +28,9 @@
         <h1><%= feature.title %></h1>
         <p><%= feature.description %></p>
       </div>
+      <% if (feature.settingsHref) { %>
+        <a class="btn btn-primary" href="<%= feature.settingsHref %>">Account Settings</a>
+      <% } %>
       <a class="btn btn-secondary" href="/">SOVA Demo Home</a>
     </header>
 

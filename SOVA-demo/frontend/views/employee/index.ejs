@@ -64,6 +64,14 @@
         <p>View coworker account details for the current property without opening anyone else’s settings.</p>
         <a href="/account/team" class="btn btn-secondary">Browse Team Accounts</a>
       </div>
+
+      <% if (['employee', 'management', 'admin'].includes(activeRole)) { %>
+      <div class="workspace-card">
+        <h2>Discussion Board</h2>
+        <p>Share updates and discuss recommendations with the team.</p>
+        <a href="/discussion" class="btn btn-secondary">Open Discussion Board</a>
+      </div>
+      <% } %>
     </section>
   </main>
 

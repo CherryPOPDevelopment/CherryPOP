@@ -233,6 +233,7 @@ router.get('/account/profile', requireLogin, (req, res) => {
       description: 'Your current demo account profile.',
       fields: [],
       records: [{ title: profile.username, detail: `${profile.email} · ${profile.role} · ${profile.home_city} · ${profile.bio || 'No bio yet.'}` }],
+      settingsHref: '/account/settings',
       emptyText: ''
     }
   });
