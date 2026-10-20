@@ -3,7 +3,7 @@
 </script>
 <% if (isDemoUser) { %>
 <div style="background:#1a1a2e;color:#e0e0ff;text-align:center;padding:8px 16px;font-size:0.85rem;letter-spacing:0.03em;">
-  <strong>Demo Mode</strong> &mdash; This is a read-only preview account. All data is sample content for demonstration purposes.
+  <strong>Demo Mode</strong> &mdash; Explore SOVA Scoop. Changes are private to this session and reset when you log out; file uploads are disabled.
 </div>
 <% } %>
 <nav class="navbar">
@@ -41,11 +41,12 @@
         <% } else if (role === 'employee') { %>
           <li><a href="/employee">Employee Workspace</a></li>
         <% } %>
+        <li><a href="/reservations">Reservations</a></li>
+        <li><a href="/discussion">Discussion Board</a></li>
+        <li><a href="/account/profile">My Profile</a></li>
         <li><a href="/account/settings">Account Settings</a></li>
         <li><a href="/auth/logout">Logout (<%= user.username %>)</a></li>
       <% } else { %>
-        <li><a href="/events">Events</a></li>
-        <li><a href="/reservations">Reservations</a></li>
         <li><a href="/auth/login">Login</a></li>
         <li><a href="/auth/register">Sign Up</a></li>
       <% } %>

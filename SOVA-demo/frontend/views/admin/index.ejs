@@ -51,7 +51,7 @@
       </div>
       <% } %>
 
-      <% if (canViewGovernance) { %>
+      <% if (workspaceRole === 'admin' && canViewGovernance) { %>
       <div class="workspace-card workspace-card-critical">
         <h2>User Governance</h2>
         <p>Review account roles, access scopes, and policy compliance for all users.</p>
@@ -59,7 +59,7 @@
       </div>
       <% } %>
 
-      <% if (canViewPlatformConfig) { %>
+      <% if (workspaceRole === 'admin' && canViewPlatformConfig) { %>
       <div class="workspace-card workspace-card-critical">
         <h2>Platform Configuration</h2>
         <p>Review platform settings, city configuration, and system documentation.</p>
@@ -94,7 +94,7 @@
         <a href="/places" class="btn btn-secondary">Browse Recommendations</a>
       </div>
 
-      <% if (canViewAudit) { %>
+      <% if (workspaceRole === 'admin' && canViewAudit) { %>
       <div class="workspace-card workspace-card-critical">
         <h2>Audit & Monitoring</h2>
         <p>Track reservations, event changes, and recommendation activity across the platform.</p>
@@ -102,7 +102,7 @@
       </div>
       <% } %>
 
-      <% if (canViewDiagnostics) { %>
+      <% if (workspaceRole === 'admin' && canViewDiagnostics) { %>
       <div class="workspace-card workspace-card-critical">
         <h2>System Diagnostics</h2>
         <p>Check application and database health, uptime, and connectivity diagnostics.</p>

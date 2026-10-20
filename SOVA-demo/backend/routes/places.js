@@ -28,23 +28,15 @@ const requireLogin = (req, res, next) => {
 
 const requireEmployeeOrAbove = (req, res, next) => {
   if (!req.session.user) return res.redirect('/auth/login');
-  const role = (req.session.user.role || '').toLowerCase();
-  if (!['employee', 'management', 'admin'].includes(role)) {
-    return res.status(403).render('error', { message: 'Only staff members can perform this action.' });
-  }
   return next();
 };
 
 const canEdit = (user, place) => {
-  if (!user) return false;
-  const role = (user.role || '').toLowerCase();
-  return ['employee', 'management', 'admin'].includes(role) || Number(place.created_by) === Number(user.id);
+  return Boolean(user && place);
 };
 
 const canDelete = (user, place) => {
-  if (!user) return false;
-  const role = (user.role || '').toLowerCase();
-  return role === 'admin' || Number(place.created_by) === Number(user.id);
+  return Boolean(user && place);
 };
 
 // ---------------------------------------------------------------------------
@@ -268,4 +260,3 @@ router.post('/:id/employee-rating', requireEmployeeOrAbove, (req, res) => {
 });
 
 module.exports = router;
-

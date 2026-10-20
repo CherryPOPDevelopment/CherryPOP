@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <% if (user && user.role === 'admin' && !isDemoUser) { %>
+    <% if (user) { %>
       <section class="workspace-card" style="margin-bottom: 20px;">
         <h2>Create a New Event</h2>
         <p>Add a one-time or recurring event directly from this page, or review events that have been hidden or automatically archived after they ended.</p>
@@ -81,7 +81,7 @@
 
             <div class="place-actions" style="margin-top:16px;">
               <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Details</a>
-              <% if (user && user.role === 'admin') { %>
+              <% if (user) { %>
                 <a href="/events/<%= event.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
                 <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
                   <button
@@ -108,7 +108,7 @@
     <% } else { %>
       <div class="empty-state">
         <p>No SOVA events scheduled right now.
-          <% if (user && user.role === 'admin') { %>
+          <% if (user) { %>
             <a href="/events/new/form">Create the first event!</a>
           <% } %>
         </p>
@@ -168,7 +168,7 @@
 
             <div class="place-actions" style="margin-top:16px;">
               <a href="/events/<%= event.id %>" class="btn btn-primary btn-sm">View Details</a>
-              <% if (user && user.role === 'admin') { %>
+              <% if (user) { %>
                 <a href="/events/<%= event.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
                 <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
                   <button
@@ -199,7 +199,7 @@
     </section>
   </main>
 
-  <% if (user && user.role === 'admin') { %>
+  <% if (user) { %>
     <div class="modal-backdrop" id="archiveModal" hidden>
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
         <div class="modal-dialog-head">

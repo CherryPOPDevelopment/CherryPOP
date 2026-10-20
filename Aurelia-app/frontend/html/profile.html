@@ -2013,6 +2013,12 @@
 
       // Handle file upload and open cropper
       async function handleProfilePictureUpload(event) {
+        const demoUser = JSON.parse(localStorage.getItem('user') || '{}').isDemo;
+        if (demoUser) {
+          await showAlert('File uploads are disabled in demo mode.', 'error', 'Demo restriction');
+          event.target.value = '';
+          return;
+        }
         const file = event.target.files[0];
         if (!file) return;
 
@@ -2673,6 +2679,17 @@
         // Add event listener for profile picture file upload
         const profilePictureFileInput = document.getElementById('profile-picture-file');
         if (profilePictureFileInput) {
+          const demoUser = JSON.parse(localStorage.getItem('user') || '{}').isDemo;
+          if (demoUser) {
+            profilePictureFileInput.disabled = true;
+            const uploadButton = profilePictureFileInput.parentElement.querySelector('button');
+            const uploadNote = profilePictureFileInput.parentElement.querySelector('small');
+            if (uploadButton) {
+              uploadButton.disabled = true;
+              uploadButton.querySelector('span:last-child').textContent = 'Photo uploads disabled in demo';
+            }
+            if (uploadNote) uploadNote.textContent = 'Other profile details can still be edited.';
+          }
           profilePictureFileInput.addEventListener('change', handleProfilePictureUpload);
         }
 

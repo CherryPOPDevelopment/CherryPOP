@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= feature.title %> - SOVA Scoop Demo</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .demo-feature-page { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .demo-feature-head, .demo-feature-card, .demo-feature-form { background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+    .demo-feature-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .demo-feature-head h1 { margin: 0 0 .35rem; }
+    .demo-feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .demo-feature-form { display: grid; gap: .85rem; }
+    .demo-feature-form label { display: grid; gap: .35rem; font-weight: 600; }
+    .demo-feature-form input, .demo-feature-form select, .demo-feature-form textarea { width: 100%; padding: .7rem; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; }
+    .demo-feature-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .demo-feature-meta { color: #64748b; font-size: .9rem; }
+    .demo-feature-note { color: #475569; font-size: .9rem; }
+    .demo-feature-status { display: inline-block; padding: .2rem .55rem; background: #eef2ff; color: #3730a3; border-radius: 99px; font-size: .8rem; }
+  </style>
+</head>
+<body>
+  <%- include('partials/navbar') %>
+  <main class="demo-feature-page">
+    <header class="demo-feature-head">
+      <div>
+        <h1><%= feature.title %></h1>
+        <p><%= feature.description %></p>
+      </div>
+      <a class="btn btn-secondary" href="/">SOVA Demo Home</a>
+    </header>
+
+    <% if (message) { %><p class="alert alert-info" role="status"><%= message %></p><% } %>
+    <% if (feature.mode === 'profile') { %>
+      <form class="demo-feature-form" method="POST">
+        <input type="hidden" name="action" value="<%= feature.formAction %>">
+        <% feature.fields.forEach(field => { %>
+          <label><%= field.label %>
+            <% if (field.type === 'textarea') { %>
+              <textarea name="<%= field.name %>" rows="4" <%= field.required ? 'required' : '' %>><%= field.value %></textarea>
+            <% } else if (field.type === 'select') { %>
+              <select name="<%= field.name %>" <%= field.required ? 'required' : '' %>>
+                <% field.options.forEach(option => { %><option value="<%= option %>" <%= field.value === option ? 'selected' : '' %>><%= option %></option><% }); %>
+              </select>
+            <% } else { %>
+              <input type="<%= field.type || 'text' %>" name="<%= field.name %>" value="<%= field.value %>" <%= field.required ? 'required' : '' %>>
+            <% } %>
+          </label>
+        <% }); %>
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+        <p class="demo-feature-note">Profile changes are stored only in this demo session. Uploads are unavailable.</p>
+      </form>
+    <% } else if (feature.key === 'platform') { %>
+      <form class="demo-feature-form" method="POST">
+        <input type="hidden" name="action" value="<%= feature.formAction %>">
+        <% feature.fields.forEach(field => { %>
+          <label><%= field.label %>
+            <% if (field.type === 'select') { %>
+              <select name="<%= field.name %>" <%= field.required ? 'required' : '' %>>
+                <% field.options.forEach(option => { %><option value="<%= option %>" <%= field.value === option ? 'selected' : '' %>><%= option %></option><% }); %>
+              </select>
+            <% } else { %>
+              <input type="<%= field.type || 'text' %>" name="<%= field.name %>" value="<%= field.value %>" <%= field.required ? 'required' : '' %>>
+            <% } %>
+          </label>
+        <% }); %>
+        <button class="btn btn-primary" type="submit">Save Configuration</button>
+      </form>
+    <% } else if (feature.fields.length) { %>
+      <form class="demo-feature-form" method="POST">
+        <input type="hidden" name="action" value="add">
+        <% feature.fields.forEach(field => { %>
+          <label><%= field.label %>
+            <% if (field.type === 'textarea') { %>
+              <textarea name="<%= field.name %>" rows="4" <%= field.required ? 'required' : '' %>></textarea>
+            <% } else if (field.type === 'select') { %>
+              <select name="<%= field.name %>" <%= field.required ? 'required' : '' %>>
+                <% field.options.forEach(option => { %><option value="<%= option %>"><%= option %></option><% }); %>
+              </select>
+            <% } else { %>
+              <input type="<%= field.type || 'text' %>" name="<%= field.name %>" <%= field.required ? 'required' : '' %> <%= field.type === 'number' ? 'min="1"' : '' %>>
+            <% } %>
+          </label>
+        <% }); %>
+        <button class="btn btn-primary" type="submit">Add to Demo</button>
+      </form>
+    <% } %>
+
+    <% if (feature.records.length) { %>
+      <section class="demo-feature-grid" aria-label="<%= feature.title %> entries">
+        <% feature.records.forEach(record => { %>
+          <article class="demo-feature-card">
+            <div style="display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;">
+              <h2 style="font-size:1.1rem;margin:0;"><% if (record.href) { %><a href="<%= record.href %>"><%= record.title %></a><% } else { %><%= record.title %><% } %></h2>
+              <% if (record.status) { %><span class="demo-feature-status"><%= record.status %></span><% } %>
+            </div>
+            <% if (record.detail) { %><p style="white-space:pre-wrap;"><%= record.detail %></p><% } %>
+            <% if (record.createdBy) { %><p class="demo-feature-meta">By <%= record.createdBy %></p><% } %>
+            <% if (feature.key === 'users') { %>
+              <form method="POST" class="demo-feature-actions">
+                <input type="hidden" name="action" value="status">
+                <input type="hidden" name="id" value="<%= record.id %>">
+                <select name="status" aria-label="Change role for <%= record.title %>">
+                  <% ['customer', 'employee', 'management', 'admin'].forEach(role => { %><option value="<%= role %>" <%= record.status === role ? 'selected' : '' %>><%= role %></option><% }); %>
+                </select>
+                <button class="btn btn-secondary btn-sm" type="submit">Update Role</button>
+              </form>
+            <% } else if (feature.key === 'suggestions' || feature.key === 'supportSuggestions') { %>
+              <div class="demo-feature-actions">
+                <% ['approved', 'completed', 'archived', 'rejected'].forEach(status => { %>
+                  <form method="POST">
+                    <input type="hidden" name="action" value="status">
+                    <input type="hidden" name="id" value="<%= record.id %>">
+                    <input type="hidden" name="status" value="<%= status %>">
+                    <button class="btn btn-secondary btn-sm" type="submit"><%= status %></button>
+                  </form>
+                <% }); %>
+              </div>
+            <% } else if (feature.key === 'shiftNotes') { %>
+              <div class="demo-feature-actions">
+                <% ['resolved', 'archived'].forEach(status => { %>
+                  <form method="POST">
+                    <input type="hidden" name="action" value="status">
+                    <input type="hidden" name="id" value="<%= record.id %>">
+                    <input type="hidden" name="status" value="<%= status %>">
+                    <button class="btn btn-secondary btn-sm" type="submit"><%= status %></button>
+                  </form>
+                <% }); %>
+              </div>
+            <% } %>
+            <% if (!record.href && !['audit', 'archivedNotes'].includes(feature.key)) { %>
+              <form method="POST" class="demo-feature-actions">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="id" value="<%= record.id %>">
+                <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+              </form>
+            <% } %>
+          </article>
+        <% }); %>
+      </section>
+    <% } else if (feature.emptyText) { %>
+      <p class="demo-feature-card"><%= feature.emptyText %></p>
+    <% } %>
+    <p class="demo-feature-note">Demo mode: changes are scoped to your session and disappear when you log out. File uploads are disabled.</p>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

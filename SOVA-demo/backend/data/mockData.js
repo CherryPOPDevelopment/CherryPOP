@@ -43,6 +43,26 @@ const DEMO_USERS = [
     isDemo: true,
     interface_theme: 'light',
     is_active: 1
+  },
+  {
+    id: 4,
+    username: 'management',
+    email: 'management@sova.com',
+    password: process.env.DEMO_MANAGEMENT_PASSWORD || 'Management1234',
+    role: 'management',
+    isDemo: true,
+    interface_theme: 'light',
+    is_active: 1
+  },
+  {
+    id: 5,
+    username: 'guest',
+    email: 'guest@sova.com',
+    password: process.env.DEMO_GUEST_PASSWORD || 'Guest1234',
+    role: 'customer',
+    isDemo: true,
+    interface_theme: 'light',
+    is_active: 1
   }
 ];
 

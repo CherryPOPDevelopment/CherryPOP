@@ -78,7 +78,7 @@
 
       <div class="place-actions">
         <a href="/events" class="btn btn-secondary">← Back to Events</a>
-        <% if (user && user.role === 'admin' && !isDemoUser) { %>
+        <% if (user) { %>
           <a href="/events/<%= event.id %>/edit" class="btn btn-primary">Edit</a>
           <% if (event.is_active) { %>
             <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
@@ -107,7 +107,7 @@
     </div>
   </main>
 
-  <% if (user && user.role === 'admin' && event.is_active) { %>
+  <% if (user && event.is_active) { %>
     <div class="modal-backdrop" id="archiveModal" hidden>
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
         <div class="modal-dialog-head">

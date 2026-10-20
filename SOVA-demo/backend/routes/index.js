@@ -6,48 +6,43 @@
 
 const express = require('express');
 const router = express.Router();
-const { getSessionEvents } = require('../data/mockData');
+const { getSessionEvents, getSessionStore } = require('../data/mockData');
+const { applyFeatureAction, featureView, getFeatureStore, getProfile, pushAudit } = require('../data/demoFeatures');
 
 // ---------------------------------------------------------------------------
-// Role helpers
+// Demo feature helpers
 // ---------------------------------------------------------------------------
-const getInterfaceType = (user) => {
-  if (!user) return 'public';
-  const role = (user.role || '').toLowerCase();
-  if (role === 'admin') return 'admin';
-  if (role === 'management') return 'management';
-  if (role === 'employee') return 'employee';
-  return 'public';
+const requireLogin = (req, res, next) => {
+  if (!req.session.user) return res.redirect('/auth/login');
+  return next();
 };
 
-const requireEmployee = (req, res, next) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  const t = getInterfaceType(req.session.user);
-  if (t !== 'employee' && t !== 'management' && t !== 'admin') {
-    return res.status(403).render('error', { message: 'Access denied.' });
+const requireAdmin = (req, res, next) => {
+  if (String(req.session.user.role || '').toLowerCase() !== 'admin') {
+    return res.status(403).render('error', { message: 'Administrator access required.' });
   }
   return next();
 };
 
-const requireManagementOrAdmin = (req, res, next) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  const t = getInterfaceType(req.session.user);
-  if (t !== 'management' && t !== 'admin') {
-    return res.status(403).render('error', { message: 'Access denied.' });
-  }
-  return next();
-};
+function renderFeature(req, res, key, options = {}) {
+  const user = req.session.user || { username: 'Guest', role: 'customer' };
+  return res.render('demo-feature', {
+    user: req.session.user || null,
+    feature: featureView(req.session, user, key, options),
+    message: req.query.message || null
+  });
+}
+
+function updateFeature(req, res, key) {
+  const user = req.session.user || { username: 'Guest', role: 'customer' };
+  const message = applyFeatureAction(req.session, user, key, req.body);
+  return res.redirect(`${req.path}?message=${encodeURIComponent(message)}`);
+}
 
 // ---------------------------------------------------------------------------
 // Home page
 // ---------------------------------------------------------------------------
 router.get('/', (req, res) => {
-  const type = getInterfaceType(req.session.user);
-
-  // Mirror main-app redirect behaviour
-  if (type === 'employee') return res.redirect('/employee');
-  if (type === 'admin' || type === 'management') return res.redirect('/admin');
-
   const city = res.locals.city || 'DALLAS';
   const { sovaEvents, dallasEvents } = getSessionEvents(req.session, city);
 
@@ -55,49 +50,46 @@ router.get('/', (req, res) => {
     user: req.session.user || null,
     sovaEvents,
     cityEvents: dallasEvents,
-    canReserveEvents: false,
+    canReserveEvents: true,
     maintenanceMode: false,
     databaseError: null
   });
 });
 
 // ---------------------------------------------------------------------------
-// Admin workspace (read-only mock data)
+// Admin workspace (session-scoped demo data)
 // ---------------------------------------------------------------------------
-router.get('/admin', requireManagementOrAdmin, (req, res) => {
-  const role = (req.session.user?.role || '').toLowerCase();
-  const isAdmin = role === 'admin';
-
+router.get('/admin', requireLogin, (req, res) => {
+  if (!['management', 'admin'].includes(String(req.session.user.role || '').toLowerCase())) {
+    return res.redirect(req.session.user.role === 'employee' ? '/employee' : '/');
+  }
+  const isAdmin = String(req.session.user.role || '').toLowerCase() === 'admin';
+  const features = getFeatureStore(req.session);
   return res.render('admin/index', {
     user: req.session.user,
-    inactiveEventsCount: 2,
-    suggestionInboxCount: 5,
-    recentSuggestionCount: 2,
+    inactiveEventsCount: getSessionStore(req.session).events.filter(event => !event.is_active).length,
+    suggestionInboxCount: features.suggestions.length,
+    recentSuggestionCount: features.suggestions.length,
     canViewGovernance: isAdmin,
     canViewPlatformConfig: isAdmin,
-    canViewInviteCodes: isAdmin || role === 'management',
-    canViewTeamOperations: isAdmin || role === 'management',
-    canViewSuggestionInbox: isAdmin || role === 'management',
-    canViewInactiveEvents: isAdmin || role === 'management',
-    canViewAudit: isAdmin || role === 'management',
+    canViewInviteCodes: true,
+    canViewTeamOperations: true,
+    canViewSuggestionInbox: true,
+    canViewInactiveEvents: true,
+    canViewAudit: isAdmin,
     canViewDiagnostics: isAdmin
   });
 });
 
 // Admin sub-pages — stub responses so links don't hard-crash
-router.get('/admin/users', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'User governance is not available in the demo.' })
-);
-router.get('/admin/invite-codes', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'Invite code management is not available in the demo.' })
-);
-router.get('/admin/platform-config', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'Platform configuration is not available in the demo.' })
-);
-router.get('/admin/audit', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'Audit log is not available in the demo.' })
-);
-router.get('/admin/diagnostics', requireManagementOrAdmin, (req, res) =>
+router.get('/admin/users', requireLogin, requireAdmin, (req, res) => renderFeature(req, res, 'users'));
+router.post('/admin/users', requireLogin, requireAdmin, (req, res) => updateFeature(req, res, 'users'));
+router.get('/admin/invite-codes', requireLogin, (req, res) => renderFeature(req, res, 'invites'));
+router.post('/admin/invite-codes', requireLogin, (req, res) => updateFeature(req, res, 'invites'));
+router.get('/admin/platform-config', requireLogin, requireAdmin, (req, res) => renderFeature(req, res, 'platform'));
+router.post('/admin/platform-config', requireLogin, requireAdmin, (req, res) => updateFeature(req, res, 'platform'));
+router.get('/admin/audit', requireLogin, requireAdmin, (req, res) => renderFeature(req, res, 'audit'));
+router.get('/admin/diagnostics', requireLogin, requireAdmin, (req, res) =>
   res.render('admin/diagnostics', {
     user: req.session.user,
     diagnostics: {
@@ -116,56 +108,153 @@ router.get('/admin/diagnostics', requireManagementOrAdmin, (req, res) =>
     }
   })
 );
-router.get('/admin/shift-notes/archive', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'Shift notes archive is not available in the demo.' })
-);
+router.get('/admin/shift-notes/archive', requireLogin, (req, res) => renderFeature(req, res, 'archivedNotes'));
 
-// Suggestions inbox (stub)
-router.get('/admin/suggestions', requireManagementOrAdmin, (req, res) =>
-  res.render('error', { message: 'Suggestions inbox is not available in the demo.' })
+router.get('/admin/suggestions/:section?', requireLogin, (req, res) =>
+  renderFeature(req, res, 'suggestions', { section: req.params.section || 'open' })
 );
+router.post('/admin/suggestions/:section?', requireLogin, (req, res) => updateFeature(req, res, 'suggestions'));
 
 // ---------------------------------------------------------------------------
 // Employee workspace
 // ---------------------------------------------------------------------------
-router.get('/employee', requireEmployee, (req, res) =>
+router.get('/employee', requireLogin, (req, res) =>
   res.render('employee/index', { user: req.session.user })
 );
 
-router.get('/employee/shift-notes', requireEmployee, (req, res) =>
-  res.render('error', { message: 'Shift notes are not available in the demo.' })
-);
+router.get('/employee/shift-notes', requireLogin, (req, res) => {
+  const features = getFeatureStore(req.session);
+  const notes = features.shiftNotes.map((note) => {
+    const createdById = Number(note.createdById || (
+      features.users.find((account) => account.title === note.createdBy) || {}
+    ).id);
+    const createdAt = note.createdAt || new Date().toISOString();
+    return {
+      id: note.id,
+      shift_date: note.shiftDate || createdAt,
+      shift_label: note.shiftLabel || 'afternoon',
+      priority: note.priority || 'normal',
+      note_category: note.category || 'employees',
+      username: note.createdBy || 'Demo user',
+      created_by: createdById,
+      created_at: createdAt,
+      age_seconds: Math.max(0, Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000)),
+      note_text: note.noteText || note.details || ''
+    };
+  });
+  return res.render('employee/shift-notes', {
+    user: req.session.user,
+    isAdmin: ['management', 'admin'].includes(String(req.session.user.role || '').toLowerCase()),
+    notes,
+    message: req.query.message || null
+  });
+});
+router.post('/employee/shift-notes', requireLogin, (req, res) => {
+  const shiftDate = String(req.body.shiftDate || '').trim();
+  const shiftLabel = String(req.body.shiftLabel || '').trim();
+  const priority = String(req.body.priority || '').trim();
+  const noteCategory = String(req.body.noteCategory || '').trim();
+  const noteText = String(req.body.noteText || '').trim().slice(0, 2000);
+  if (!shiftDate || Number.isNaN(Date.parse(shiftDate)) || !shiftLabel || !priority || !noteCategory || !noteText) {
+    return res.redirect('/employee/shift-notes?message=Complete+all+shift+note+fields.');
+  }
+  const message = applyFeatureAction(req.session, req.session.user, 'shiftNotes', {
+    action: 'add',
+    title: `${shiftDate} ${shiftLabel}`,
+    category: noteCategory,
+    priority,
+    details: noteText
+  });
+  const note = getFeatureStore(req.session).shiftNotes[0];
+  if (note) {
+    note.shiftDate = shiftDate;
+    note.shiftLabel = shiftLabel;
+    note.noteText = noteText;
+    note.createdById = req.session.user.id;
+  }
+  return res.redirect(`/employee/shift-notes?message=${encodeURIComponent(message)}`);
+});
+router.post('/employee/shift-notes/:id/edit', requireLogin, (req, res) => {
+  const features = getFeatureStore(req.session);
+  const note = features.shiftNotes.find((entry) => entry.id === String(req.params.id));
+  if (!note) return res.status(404).render('error', { message: 'Shift note not found.' });
+  const ageSeconds = (Date.now() - new Date(note.createdAt).getTime()) / 1000;
+  if (Number(note.createdById) !== Number(req.session.user.id) || ageSeconds > 300) {
+    return res.status(403).render('error', { message: 'Only the author can edit a shift note within five minutes of submission.' });
+  }
+  const noteText = String(req.body.noteText || '').trim().slice(0, 2000);
+  if (!noteText) return res.redirect('/employee/shift-notes?message=Enter+a+note+before+saving.');
+  note.noteText = noteText;
+  note.details = noteText;
+  note.detail = `${note.category} · ${note.priority} · ${noteText}`;
+  pushAudit(features, req.session.user, 'Edited a shift note');
+  return res.redirect('/employee/shift-notes?message=Shift+note+updated+for+this+session.');
+});
+router.post('/employee/shift-notes/:id/resolve', requireLogin, (req, res) => {
+  const features = getFeatureStore(req.session);
+  const index = features.shiftNotes.findIndex((entry) => entry.id === String(req.params.id));
+  if (index < 0) return res.status(404).render('error', { message: 'Shift note not found.' });
+  const [note] = features.shiftNotes.splice(index, 1);
+  features.archivedNotes.unshift({ ...note, status: 'resolved' });
+  pushAudit(features, req.session.user, 'Resolved a shift note');
+  return res.redirect('/employee/shift-notes?message=Shift+note+resolved+for+this+session.');
+});
+router.post('/employee/shift-notes/:id/delete', requireLogin, (req, res) => {
+  const features = getFeatureStore(req.session);
+  const index = features.shiftNotes.findIndex((entry) => entry.id === String(req.params.id));
+  if (index < 0) return res.status(404).render('error', { message: 'Shift note not found.' });
+  const note = features.shiftNotes[index];
+  const isAdmin = ['management', 'admin'].includes(String(req.session.user.role || '').toLowerCase());
+  const isOwner = Number(note.createdById) === Number(req.session.user.id);
+  if (!isAdmin && !isOwner) return res.status(403).render('error', { message: 'You cannot delete another user’s shift note.' });
+  features.shiftNotes.splice(index, 1);
+  pushAudit(features, req.session.user, 'Deleted a shift note');
+  return res.redirect('/employee/shift-notes?message=Shift+note+deleted+from+this+session.');
+});
 
-// ---------------------------------------------------------------------------
-// Account (stub — no profile editing in demo)
-// ---------------------------------------------------------------------------
-router.get('/account/settings', (req, res) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  return res.render('error', { message: 'Account settings are not available in the demo.' });
+router.get('/account/settings', requireLogin, (req, res) => renderFeature(req, res, 'settings'));
+router.post('/account/settings', requireLogin, (req, res) => updateFeature(req, res, 'settings'));
+router.get('/account/profile', requireLogin, (req, res) => {
+  const profile = getProfile(req.session, req.session.user.id);
+  return res.render('demo-feature', {
+    user: req.session.user,
+    message: null,
+    feature: {
+      key: 'profile',
+      title: 'My Profile',
+      description: 'Your current demo account profile.',
+      fields: [],
+      records: [{ title: profile.username, detail: `${profile.email} · ${profile.role} · ${profile.home_city} · ${profile.bio || 'No bio yet.'}` }],
+      emptyText: ''
+    }
+  });
 });
-router.get('/account/profile', (req, res) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  return res.render('error', { message: 'Account profile is not available in the demo.' });
+router.get('/account/profile/:id', requireLogin, (req, res) => {
+  const profile = getProfile(req.session, req.params.id);
+  if (!profile) return res.status(404).render('error', { message: 'Demo account not found.' });
+  return res.render('demo-feature', {
+    user: req.session.user,
+    message: null,
+    feature: {
+      key: 'profile',
+      title: `${profile.username} — Demo Profile`,
+      description: 'Sample account profile preview.',
+      fields: [],
+      records: [{ title: profile.username, detail: `${profile.email} · ${profile.role} · ${profile.home_city} · ${profile.bio || 'No bio yet.'}` }],
+      emptyText: ''
+    }
+  });
 });
-router.get('/account/team', (req, res) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  return res.render('error', { message: 'Team directory is not available in the demo.' });
-});
+router.get('/account/team', requireLogin, (req, res) => renderFeature(req, res, 'team'));
 
 // ---------------------------------------------------------------------------
 // Discussion (stub)
 // ---------------------------------------------------------------------------
-router.get('/discussion', (req, res) => {
-  if (!req.session.user) return res.redirect('/auth/login');
-  return res.render('error', { message: 'Discussion board is not available in the demo.' });
-});
+router.get('/discussion', requireLogin, (req, res) => renderFeature(req, res, 'discussion'));
+router.post('/discussion', requireLogin, (req, res) => updateFeature(req, res, 'discussion'));
 
-// ---------------------------------------------------------------------------
-// Reservations (stub)
-// ---------------------------------------------------------------------------
-router.get('/reservations', (req, res) =>
-  res.render('error', { message: 'Reservations are not available in the demo.' })
-);
+router.get('/reservations', (req, res) => renderFeature(req, res, 'reservations'));
+router.post('/reservations', (req, res) => updateFeature(req, res, 'reservations'));
 
 // ---------------------------------------------------------------------------
 // Support pages
@@ -176,12 +265,10 @@ router.get('/support', (req, res) =>
 router.get('/support/faq', (req, res) =>
   res.render('faq', { user: req.session.user || null })
 );
-router.get('/support/contact', (req, res) =>
-  res.render('contact', { user: req.session.user || null, sent: false, error: null })
-);
-router.get('/support/suggestions', (req, res) =>
-  res.render('suggestions', { user: req.session.user || null, sent: false, error: null })
-);
+router.get('/support/contact', (req, res) => renderFeature(req, res, 'supportContact'));
+router.post('/support/contact', (req, res) => updateFeature(req, res, 'supportContact'));
+router.get('/support/suggestions', (req, res) => renderFeature(req, res, 'supportSuggestions'));
+router.post('/support/suggestions', (req, res) => updateFeature(req, res, 'supportSuggestions'));
 
 // ---------------------------------------------------------------------------
 // Service & travel section pages (static)

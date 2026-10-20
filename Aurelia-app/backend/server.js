@@ -8,6 +8,7 @@ const friendRoutes = require('./routes/friends');
 const userRoutes = require('./routes/users');
 const interestRoutes = require('./routes/interests');
 const { verifyToken } = require('./middleware/auth');
+const { handleDemoApi } = require('./demo-mode');
 const {
   apiLimiter,
   authLimiter,
@@ -97,6 +98,7 @@ app.use('/api/auth', sanitizeAuthInput, authRoutes);
 app.use('/api/interests', interestRoutes);
 
 // Protected routes with validation
+app.use('/api', verifyToken, sanitizeContactInput, sanitizeProfileInput, handleDemoApi);
 app.use('/api/contacts', verifyToken, validateIdParam, sanitizeContactInput, contactRoutes);
 app.use('/api/friends', verifyToken, validateIdParam, friendRoutes);
 app.use('/api/users', verifyToken, validateIdParam, sanitizeProfileInput, userRoutes);

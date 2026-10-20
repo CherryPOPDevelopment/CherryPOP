@@ -167,6 +167,37 @@ function isEmail(input) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
 }
 
+async function loadDemoAccounts() {
+    const section = document.getElementById('demo-accounts');
+    const list = document.getElementById('demo-account-list');
+    if (!section || !list) return;
+
+    try {
+        const response = await fetch(`${API_URL}/auth/demo-accounts`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (!Array.isArray(data.accounts) || data.accounts.length === 0) return;
+
+        data.accounts.forEach(account => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'demo-account-button';
+            button.textContent = `${account.role[0].toUpperCase()}${account.role.slice(1)} · ${account.password}`;
+            button.addEventListener('click', () => {
+                document.getElementById('login-email').value = account.email;
+                document.getElementById('login-password').value = account.password;
+                document.getElementById('login-email').focus();
+            });
+            list.appendChild(button);
+        });
+
+        section.classList.remove('hidden');
+    } catch (error) {
+        console.warn('Demo accounts are unavailable:', error);
+    }
+}
+
 async function login() {
     // Electron-specific login flow
     if (isElectron) {
@@ -817,6 +848,8 @@ function logout() {
 function showAuthScreen() {
     document.getElementById('auth-screen').classList.remove('hidden');
     document.getElementById('app-screen').classList.add('hidden');
+    document.getElementById('personal-workspace')?.classList.remove('hidden');
+    document.getElementById('demo-role-workspace')?.classList.add('hidden');
 }
 
 async function showAppScreen() {
@@ -826,10 +859,13 @@ async function showAppScreen() {
     // Refresh user data from server to ensure we have latest info
     await refreshUserDataFromServer();
 
+    configureDemoWorkspace();
     initializeWelcomeSection();
 }
 
 async function refreshUserDataFromServer() {
+    if (state.user?.isDemo) return false;
+
     try {
         const response = await fetch(`${API_URL}/users/profile`, {
             headers: { 'Authorization': `Bearer ${state.token}` }
@@ -849,6 +885,84 @@ async function refreshUserDataFromServer() {
         console.warn('Could not refresh user data:', error);
     }
     return false;
+}
+
+function configureDemoWorkspace() {
+    const isDemo = Boolean(state.user?.isDemo);
+    const role = (state.user?.role || '').toLowerCase();
+    document.getElementById('guest-demo-notice')?.classList.toggle('hidden', !(isDemo && role === 'guest'));
+    const isStaffDemo = isDemo && ['employee', 'management', 'admin'].includes(role);
+    const personalWorkspace = document.getElementById('personal-workspace');
+    const roleWorkspace = document.getElementById('demo-role-workspace');
+
+    if (!personalWorkspace || !roleWorkspace) return;
+
+    personalWorkspace.classList.remove('hidden');
+    roleWorkspace.classList.toggle('hidden', !isStaffDemo);
+
+    const inviteLink = document.querySelector('.invite-friend-link');
+    if (inviteLink) inviteLink.style.display = 'inline-block';
+    document.querySelectorAll('#mobile-nav-menu a[data-nav]').forEach(link => {
+        link.closest('li')?.classList.remove('hidden');
+    });
+    document.querySelectorAll('#mobile-nav-menu a[href="html/profile.html"]').forEach(link => {
+        link.closest('li')?.classList.remove('hidden');
+    });
+    document.querySelector('#contact-modal details')?.classList.toggle('hidden', isDemo);
+
+    if (!isStaffDemo) {
+        roleWorkspace.innerHTML = '';
+        return;
+    }
+
+    const workspaces = {
+        employee: {
+            title: 'Employee workspace',
+            description: 'A focused preview of the day-to-day Aurelia support experience.',
+            cards: [
+                ['🧭', 'Member directory', 'Preview member profiles and account details.'],
+                ['💬', 'Support queue', 'Review sample questions and follow-up requests.'],
+                ['✅', 'Verification review', 'See the account verification workflow.']
+            ]
+        },
+        management: {
+            title: 'Management workspace',
+            description: 'A team-level overview for coordinating people and daily operations.',
+            cards: [
+                ['👥', 'Team overview', 'Review sample team activity and staffing coverage.'],
+                ['📊', 'Service metrics', 'Explore a preview of member engagement indicators.'],
+                ['🗂️', 'Operations review', 'See the tools managers use to coordinate support.']
+            ]
+        },
+        admin: {
+            title: 'Administrator workspace',
+            description: 'A system administration preview with governance-focused tools.',
+            cards: [
+                ['🛡️', 'Account governance', 'Review sample access and account controls.'],
+                ['⚙️', 'Platform settings', 'Explore the configuration areas available to admins.'],
+                ['📋', 'Audit overview', 'See a preview of system activity and audit tools.']
+            ]
+        }
+    };
+    const workspace = workspaces[role];
+    if (!workspace) return;
+
+    roleWorkspace.innerHTML = `
+        <header class="demo-workspace-banner">
+            <h1>${workspace.title}</h1>
+            <p>${workspace.description}</p>
+        </header>
+        <div class="demo-workspace-grid">
+            ${workspace.cards.map(([icon, title, description]) => `
+                <article class="demo-workspace-card">
+                    <span aria-hidden="true">${icon}</span>
+                    <h2>${title}</h2>
+                    <p>${description}</p>
+                </article>
+            `).join('')}
+        </div>
+        <p class="demo-workspace-footnote">Demo preview · Contact, profile, and friend changes are saved to this demo account only. File uploads are disabled.</p>
+    `;
 }
 
 function initializeWelcomeSection() {
@@ -923,6 +1037,7 @@ async function loadContacts() {
         const data = await response.json();
         state.contacts = data.contacts;
         renderContacts();
+        updateStats();
     } catch (error) {
         console.error('Failed to load contacts:', error);
     }
@@ -1987,6 +2102,11 @@ function debounce(func, wait) {
 // ============ Contact Import Handler ============
 
 async function handleContactImport(event) {
+    if (state.user?.isDemo) {
+        showToast('File uploads are disabled in demo mode.', 'error');
+        event.target.value = '';
+        return;
+    }
     const file = event.target.files[0];
     if (!file) return;
 
@@ -2215,6 +2335,7 @@ function updateRegisterBirthdayDisplay() {
 // Set max date to today for birthday field and initialize date picker
 window.addEventListener('DOMContentLoaded', () => {
     console.log('DOM Content Loaded - Initializing event listeners');
+    loadDemoAccounts();
 
     // ============ Auth Form Event Listeners ============
     const loginForm = document.getElementById('login-form');

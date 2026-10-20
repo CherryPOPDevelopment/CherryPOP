@@ -6,7 +6,7 @@
  * All data is served from demo/backend/data/mockData.js.
  *
  * Users can browse and log in with pre-set demo credentials.
- * Every mutating request (POST / PUT / PATCH / DELETE) is blocked.
+ * Mutations are session-scoped, reset on logout, and never reach a database.
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
@@ -35,12 +35,20 @@ app.use(methodOverride('_method'));
 // Session
 app.use(
   session({
+    name: 'sova-demo.sid',
     secret: process.env.SESSION_SECRET || 'demo-fallback-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, httpOnly: true }
   })
 );
+
+app.use('/account/settings/profile', (req, res, next) => {
+  if (req.method === 'POST' && req.is('multipart/form-data')) {
+    return res.status(403).render('error', { message: 'File uploads are disabled in demo mode.' });
+  }
+  return next();
+});
 
 // ---------------------------------------------------------------------------
 // Auth guard — same public-prefix list as the main app
@@ -138,7 +146,7 @@ app.use((req, res, next) => {
   res.locals.recaptchaMode = 'v3';
 
   res.locals.platformConfig = {
-    platform_name: 'SOVA Scoop — Demo',
+    platform_name: 'SOVA Scoop',
     support_email: 'demo@sovascoop.local',
     default_city: 'DALLAS',
     time_zone: timeZone,

@@ -6,7 +6,9 @@ const NOTIFY_ADDRESSES = [
   'cherryDEVdirect@gmail.com',
 ];
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 function escapeHtml(str) {
   if (typeof str !== 'string') return '';

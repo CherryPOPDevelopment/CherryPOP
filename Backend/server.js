@@ -18,9 +18,17 @@ const sovaProxy = createProxyMiddleware({
   changeOrigin: true,
   selfHandleResponse: true,
   on: {
-    proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
+    proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+      const sessionCookies = proxyRes.headers['set-cookie'];
+      if (sessionCookies) {
+        const cookies = Array.isArray(sessionCookies) ? sessionCookies : [sessionCookies];
+        res.setHeader('set-cookie', cookies.map(cookie =>
+          cookie.replace(/;\s*Path=\/(?=;|$)/i, '; Path=/sova-demo')
+        ));
+      }
+
       if (proxyRes.headers.location?.startsWith('/')) {
-        proxyRes.headers.location = `/sova-demo${proxyRes.headers.location}`;
+        res.setHeader('location', `/sova-demo${proxyRes.headers.location}`);
       }
 
       const contentType = proxyRes.headers['content-type'] || '';
@@ -38,9 +46,9 @@ const aureliaProxy = createProxyMiddleware({
   changeOrigin: true,
   selfHandleResponse: true,
   on: {
-    proxyRes: responseInterceptor(async (responseBuffer, proxyRes) => {
+    proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
       if (proxyRes.headers.location?.startsWith('/')) {
-        proxyRes.headers.location = `/aurelia${proxyRes.headers.location}`;
+        res.setHeader('location', `/aurelia${proxyRes.headers.location}`);
       }
 
       const contentType = proxyRes.headers['content-type'] || '';
@@ -68,6 +76,8 @@ app.use(session({
   },
 }));
 
+// Serve Aurelia's frontend locally even when its API service is unavailable.
+app.use('/aurelia', express.static(path.join(__dirname, '..', 'Aurelia-app', 'frontend')));
 app.use('/sova-demo', sovaProxy);
 app.use('/aurelia', aureliaProxy);
 app.use(express.json());

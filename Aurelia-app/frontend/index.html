@@ -4302,6 +4302,118 @@
             }
         }
 
+        .demo-accounts {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            border: 1px solid #c7d2fe;
+            border-radius: 12px;
+            background: #eef2ff;
+        }
+
+        .demo-accounts h2 {
+            margin-bottom: 0.35rem;
+            color: #3730a3;
+            font-size: 1rem;
+        }
+
+        .demo-accounts p {
+            margin-bottom: 0.75rem;
+            color: #475569;
+            font-size: 0.8rem;
+        }
+
+        .demo-account-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.5rem;
+        }
+
+        .demo-account-button {
+            min-height: 42px;
+            padding: 0.5rem;
+            border: 1px solid #c7d2fe;
+            border-radius: 8px;
+            background: white;
+            color: #3730a3;
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .demo-account-button:hover,
+        .demo-account-button:focus-visible {
+            border-color: #6366f1;
+            background: #e0e7ff;
+        }
+
+        .demo-workspace {
+            width: min(100% - 2rem, 1100px);
+            margin: 2rem auto;
+        }
+
+        .demo-workspace-banner {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 18px;
+            background: linear-gradient(120deg, #312e81, #6366f1);
+            color: white;
+        }
+
+        .demo-workspace-banner h1 {
+            margin: 0 0 0.5rem;
+            color: white;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+        }
+
+        .demo-workspace-banner p {
+            margin: 0;
+            color: #e0e7ff;
+        }
+
+        .demo-workspace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1rem;
+        }
+
+        .demo-workspace-card {
+            min-height: 150px;
+            padding: 1.25rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .demo-workspace-card span {
+            display: block;
+            margin-bottom: 0.65rem;
+            font-size: 1.5rem;
+        }
+
+        .demo-workspace-card h2 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+        }
+
+        .demo-workspace-card p,
+        .demo-workspace-footnote {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .demo-workspace-footnote {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 480px) {
+            .demo-account-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Landscape mode - same layout, just more compact */
         @media (max-height: 500px) and (orientation: landscape) {
             .auth-container-wrapper {
@@ -4338,6 +4450,7 @@
             .auth-subtitle {
                 font-size: 0.8rem;
             }
+
         }
     </style>
 </head>
@@ -4385,6 +4498,11 @@
                                     </button>
                                 </div>
                             </div>
+                            <section id="demo-accounts" class="demo-accounts hidden" aria-label="Aurelia demo accounts">
+                                <h2>Preview a role</h2>
+                                <p>Choose a sample account to fill in its demo credentials.</p>
+                                <div id="demo-account-list" class="demo-account-list"></div>
+                            </section>
                             <!-- Electron login code input (hidden by default) -->
                             <div id="electron-code-group" class="form-group" style="display: none;">
                                 <label>Verification Code</label>
@@ -4574,7 +4692,8 @@
 
             <!-- Main Content -->
             <div class="container">
-                <div class="main">
+                <section id="demo-role-workspace" class="demo-workspace hidden" aria-live="polite"></section>
+                <div id="personal-workspace" class="main">
                     <!-- Sidebar -->
                     <aside class="sidebar">
                         <h3 class="mb-2">Quick Actions</h3>
@@ -4606,6 +4725,8 @@
                         <!-- Contacts Tab -->
                         <div id="contacts-section" class="section">
                             <h2 style="margin-bottom: 1.5rem;">My Contacts</h2>
+                            <p id="guest-demo-notice" class="hidden" role="status"
+                                style="margin-bottom: 1rem; color: #64748b;">Guest preview · These sample contacts are read-only.</p>
                             <div id="contacts-list" class="grid"></div>
                             <div id="contacts-empty" class="text-center" style="padding: 3rem; color: #64748b;">
                                 <p style="font-size: 1.1rem;">No contacts yet. Add one to get started!</p>

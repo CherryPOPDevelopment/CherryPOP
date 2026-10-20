@@ -5,8 +5,19 @@ const express = require('express');
 const { getOne, getAll, insert, update } = require('../config/mysql-database');
 const { generateToken } = require('../middleware/auth');
 const { sendWelcomeEmail, sendResetEmail, sendLoginCodeEmail } = require('../config/email');
+const {
+  demoAccountsEnabled,
+  findDemoAccount,
+  listDemoAccounts,
+  publicUser,
+  registerDemoAccount
+} = require('../demo-mode');
 
 const router = express.Router();
+
+router.get('/demo-accounts', (req, res) => {
+  return res.json({ accounts: listDemoAccounts() });
+});
 
 // Register
 router.post('/register', async (req, res) => {
@@ -39,6 +50,18 @@ router.post('/register', async (req, res) => {
     }
     if (calculatedAge < 13) {
       return res.status(400).json({ error: 'You must be at least 13 years old to register' });
+    }
+
+    if (demoAccountsEnabled()) {
+      const demoUser = registerDemoAccount({ username, email, password, firstName, lastName, phone, birthday: storedBirthday });
+      if (demoUser === false) return res.status(409).json({ error: 'User already exists' });
+      if (demoUser) {
+        return res.status(201).json({
+          success: true,
+          token: generateToken(demoUser.id),
+          user: publicUser(demoUser)
+        });
+      }
     }
 
     // Check if user exists
@@ -227,6 +250,17 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Username/email and password required' });
     }
 
+    if (demoAccountsEnabled()) {
+      const demoUser = findDemoAccount(email, password);
+      if (demoUser) {
+        return res.json({
+          success: true,
+          token: generateToken(demoUser.id),
+          user: publicUser(demoUser)
+        });
+      }
+    }
+
     console.log('Login attempt for:', email);
     const trimmedInput = email.trim();
     console.log('Trimmed input:', trimmedInput);
@@ -318,6 +352,8 @@ router.post('/login', async (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
+        isDemo: false,
         bio: user.bio,
         profilePicture: user.profilePicture,
         birthday: formattedBirthday,

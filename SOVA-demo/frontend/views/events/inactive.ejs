@@ -84,7 +84,7 @@
     <% } %>
   </main>
 
-  <% if (user && (user.role === 'admin' || user.role === 'management')) { %>
+  <% if (user) { %>
     <div class="modal-backdrop" id="deleteModal" hidden>
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
         <div class="modal-dialog-head">

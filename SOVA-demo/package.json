@@ -1,7 +1,7 @@
 {
   "name": "sova-demo",
   "version": "1.0.0",
-  "description": "SOVA Scoop — read-only demo site (no database, static mock data)",
+  "description": "SOVA Scoop — interactive session-scoped demo site (no database)",
   "main": "backend/app.js",
   "scripts": {
     "start": "node backend/app.js",
