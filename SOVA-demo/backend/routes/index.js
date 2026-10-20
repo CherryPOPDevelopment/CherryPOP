@@ -24,6 +24,14 @@ const requireAdmin = (req, res, next) => {
   return next();
 };
 
+const requireDiscussionAccess = (req, res, next) => {
+  const role = String(req.session.user.role || '').toLowerCase();
+  if (!['employee', 'management', 'admin'].includes(role)) {
+    return res.status(403).render('error', { message: 'Staff access is required to view the Discussion Board.' });
+  }
+  return next();
+};
+
 function renderFeature(req, res, key, options = {}) {
   const user = req.session.user || { username: 'Guest', role: 'customer' };
   return res.render('demo-feature', {
@@ -250,8 +258,8 @@ router.get('/account/team', requireLogin, (req, res) => renderFeature(req, res, 
 // ---------------------------------------------------------------------------
 // Discussion (stub)
 // ---------------------------------------------------------------------------
-router.get('/discussion', requireLogin, (req, res) => renderFeature(req, res, 'discussion'));
-router.post('/discussion', requireLogin, (req, res) => updateFeature(req, res, 'discussion'));
+router.get('/discussion', requireLogin, requireDiscussionAccess, (req, res) => renderFeature(req, res, 'discussion'));
+router.post('/discussion', requireLogin, requireDiscussionAccess, (req, res) => updateFeature(req, res, 'discussion'));
 
 router.get('/reservations', (req, res) => renderFeature(req, res, 'reservations'));
 router.post('/reservations', (req, res) => updateFeature(req, res, 'reservations'));

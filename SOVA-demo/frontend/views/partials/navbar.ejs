@@ -42,7 +42,9 @@
           <li><a href="/employee">Employee Workspace</a></li>
         <% } %>
         <li><a href="/reservations">Reservations</a></li>
-        <li><a href="/discussion">Discussion Board</a></li>
+        <% if (['employee', 'management', 'admin'].includes(role)) { %>
+          <li><a href="/discussion">Discussion Board</a></li>
+        <% } %>
         <li><a href="/account/profile">My Profile</a></li>
         <li><a href="/account/settings">Account Settings</a></li>
         <li><a href="/auth/logout">Logout (<%= user.username %>)</a></li>
