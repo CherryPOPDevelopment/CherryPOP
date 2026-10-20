@@ -1109,12 +1109,19 @@ body {
 .shift-notes-form {
   display: grid;
   gap: 12px;
+  min-width: 0;
+}
+
+.shift-notes-form .form-group {
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 .shift-notes-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
   gap: 10px;
+  min-width: 0;
 }
 
 .shift-notes-list {
