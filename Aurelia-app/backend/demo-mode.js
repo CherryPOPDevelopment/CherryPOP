@@ -57,7 +57,9 @@ function findDemoAccount(identifier, password) {
 
 function listDemoAccounts() {
   if (!demoAccountsEnabled()) return [];
-  return DEMO_ACCOUNTS.map(({ username, email, password, role }) => ({ username, email, password, role }));
+  return DEMO_ACCOUNTS
+    .filter(account => account.role === 'guest')
+    .map(({ username, email, password, role }) => ({ username, email, password, role }));
 }
 
 function registerDemoAccount(details) {
