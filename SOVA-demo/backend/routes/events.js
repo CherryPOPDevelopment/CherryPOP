@@ -26,11 +26,17 @@ const requireLogin = (req, res, next) => {
 
 const requireEmployeeOrAbove = (req, res, next) => {
   if (!req.session.user) return res.redirect('/auth/login');
+  if (!['employee', 'management', 'admin'].includes(String(req.session.user.role || '').toLowerCase())) {
+    return res.status(403).render('error', { message: 'Staff access is required.' });
+  }
   return next();
 };
 
 const requireManagementOrAdmin = (req, res, next) => {
   if (!req.session.user) return res.redirect('/auth/login');
+  if (!['management', 'admin'].includes(String(req.session.user.role || '').toLowerCase())) {
+    return res.status(403).render('error', { message: 'Management access is required.' });
+  }
   return next();
 };
 

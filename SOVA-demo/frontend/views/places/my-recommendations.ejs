@@ -98,7 +98,6 @@
 
                   <div class="queue-card-actions">
                     <a href="/places/<%= place.id %>" class="btn btn-secondary">View</a>
-                    <a href="/places/<%= place.id %>/edit" class="btn btn-primary">Edit</a>
                     <% if (isDraft) { %>
                       <form method="POST" action="/places/<%= place.id %>/publish" class="queue-inline-form">
                         <button type="submit" class="btn btn-secondary">Publish</button>
@@ -108,9 +107,6 @@
                         <button type="submit" class="btn btn-secondary">Move To Drafts</button>
                       </form>
                     <% } %>
-                    <form method="POST" action="/places/<%= place.id %>/delete?_method=DELETE" class="queue-inline-form">
-                      <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
                   </div>
                 </article>
               <% }) %>

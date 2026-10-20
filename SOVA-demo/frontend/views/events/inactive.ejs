@@ -64,14 +64,6 @@
               <form method="POST" action="/events/<%= event.id %>/reactivate" class="queue-inline-form">
                 <button type="submit" class="btn btn-primary btn-sm">Reactivate</button>
               </form>
-              <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE&redirect=inactive" class="queue-inline-form">
-                <button
-                  type="button"
-                  class="btn btn-danger btn-sm js-delete-trigger"
-                  data-event-title="<%= event.title %>"
-                  data-delete-action="/events/<%= event.id %>/delete?_method=DELETE&redirect=inactive"
-                >Delete</button>
-              </form>
             </div>
           </article>
         <% }) %>
@@ -83,72 +75,6 @@
       </div>
     <% } %>
   </main>
-
-  <% if (user) { %>
-    <div class="modal-backdrop" id="deleteModal" hidden>
-      <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-        <div class="modal-dialog-head">
-          <h2 id="deleteModalTitle">Delete Inactive Event</h2>
-          <button type="button" class="modal-close" id="deleteModalClose" aria-label="Close delete dialog">×</button>
-        </div>
-        <p class="modal-copy" id="deleteModalCopy">Delete this inactive event permanently?</p>
-        <p class="modal-copy modal-copy-soft">This permanently removes the event from the inactive list and it cannot be reactivated afterward.</p>
-        <form method="POST" action="/events/0/delete?_method=DELETE&redirect=inactive" id="deleteModalForm" class="modal-actions">
-          <button type="button" class="btn btn-secondary" id="deleteModalCancel">Cancel</button>
-          <button type="submit" class="btn btn-danger">Delete Event</button>
-        </form>
-      </div>
-    </div>
-
-    <script>
-    (function () {
-      const modal = document.getElementById('deleteModal');
-      const modalForm = document.getElementById('deleteModalForm');
-      const modalCopy = document.getElementById('deleteModalCopy');
-      const closeButton = document.getElementById('deleteModalClose');
-      const cancelButton = document.getElementById('deleteModalCancel');
-      const triggers = document.querySelectorAll('.js-delete-trigger');
-
-      if (!modal || !modalForm || !modalCopy || !closeButton || !cancelButton || !triggers.length) {
-        return;
-      }
-
-      let lastTrigger = null;
-
-      const closeModal = function () {
-        modal.hidden = true;
-        document.body.classList.remove('modal-open');
-        if (lastTrigger) {
-          lastTrigger.focus();
-        }
-      };
-
-      triggers.forEach(function (trigger) {
-        trigger.addEventListener('click', function () {
-          lastTrigger = trigger;
-          modalForm.action = trigger.getAttribute('data-delete-action');
-          modalCopy.textContent = 'Delete "' + trigger.getAttribute('data-event-title') + '" permanently?';
-          modal.hidden = false;
-          document.body.classList.add('modal-open');
-          closeButton.focus();
-        });
-      });
-
-      closeButton.addEventListener('click', closeModal);
-      cancelButton.addEventListener('click', closeModal);
-      modal.addEventListener('click', function (event) {
-        if (event.target === modal) {
-          closeModal();
-        }
-      });
-      document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && !modal.hidden) {
-          closeModal();
-        }
-      });
-    })();
-    </script>
-  <% } %>
 
   <%- include('../partials/footer') %>
 </body>

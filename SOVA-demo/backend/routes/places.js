@@ -28,15 +28,26 @@ const requireLogin = (req, res, next) => {
 
 const requireEmployeeOrAbove = (req, res, next) => {
   if (!req.session.user) return res.redirect('/auth/login');
+  if (!['employee', 'management', 'admin'].includes(String(req.session.user.role || '').toLowerCase())) {
+    return res.status(403).render('error', { message: 'Staff access is required.' });
+  }
   return next();
 };
 
 const canEdit = (user, place) => {
-  return Boolean(user && place);
+  return Boolean(
+    user &&
+    place &&
+    ['employee', 'management', 'admin'].includes(String(user.role || '').toLowerCase())
+  );
 };
 
 const canDelete = (user, place) => {
-  return Boolean(user && place);
+  return Boolean(
+    user &&
+    place &&
+    ['management', 'admin'].includes(String(user.role || '').toLowerCase())
+  );
 };
 
 // ---------------------------------------------------------------------------
@@ -150,7 +161,7 @@ router.get('/:id', (req, res) => {
 // ---------------------------------------------------------------------------
 // Edit
 // ---------------------------------------------------------------------------
-router.get('/:id/edit', requireLogin, (req, res) => {
+router.get('/:id/edit', requireEmployeeOrAbove, (req, res) => {
   const place = getSessionPlaceById(req.session, req.params.id);
   if (!place) return res.status(404).render('error', { message: 'Place not found.' });
   if (!canEdit(req.session.user, place)) {
@@ -164,7 +175,7 @@ router.get('/:id/edit', requireLogin, (req, res) => {
   });
 });
 
-router.put('/:id/update', requireLogin, (req, res) => {
+router.put('/:id/update', requireEmployeeOrAbove, (req, res) => {
   const place = getSessionPlaceById(req.session, req.params.id);
   if (!place) return res.status(404).render('error', { message: 'Place not found.' });
   if (!canEdit(req.session.user, place)) {
@@ -187,7 +198,7 @@ router.put('/:id/update', requireLogin, (req, res) => {
 // ---------------------------------------------------------------------------
 // Delete
 // ---------------------------------------------------------------------------
-router.delete('/:id/delete', requireLogin, (req, res) => {
+router.delete('/:id/delete', requireEmployeeOrAbove, (req, res) => {
   const place = getSessionPlaceById(req.session, req.params.id);
   if (!place) return res.status(404).render('error', { message: 'Place not found.' });
   if (!canDelete(req.session.user, place)) {
@@ -200,7 +211,7 @@ router.delete('/:id/delete', requireLogin, (req, res) => {
 // ---------------------------------------------------------------------------
 // Publish / draft status (my-recommendations queue)
 // ---------------------------------------------------------------------------
-router.post('/:id/publish', requireLogin, (req, res) => {
+router.post('/:id/publish', requireEmployeeOrAbove, (req, res) => {
   const place = getSessionPlaceById(req.session, req.params.id);
   if (place && canEdit(req.session.user, place)) {
     place.approval_status = 'published';
@@ -208,7 +219,7 @@ router.post('/:id/publish', requireLogin, (req, res) => {
   return res.redirect('/places/my-recommendations');
 });
 
-router.post('/:id/draft', requireLogin, (req, res) => {
+router.post('/:id/draft', requireEmployeeOrAbove, (req, res) => {
   const place = getSessionPlaceById(req.session, req.params.id);
   if (place && canEdit(req.session.user, place)) {
     place.approval_status = 'draft';

@@ -9,6 +9,10 @@
 <body>
   <%- include('../partials/navbar') %>
   
+  <% const role = user ? String(user.role || '').toLowerCase() : ''; %>
+  <% const canEditPlace = ['employee', 'management', 'admin'].includes(role); %>
+  <% const canDeletePlace = ['management', 'admin'].includes(role); %>
+
   <main class="container">
     <div class="place-detail">
       <div class="place-detail-nav">
@@ -232,16 +236,13 @@
         <% } else { %>
           <p class="reservation-empty">No available links yet, check back soon!</p>
         <% } %>
-        <% if (user) { %>
+        <% if (canEditPlace) { %>
           <a href="/places/<%= place.id %>/edit" class="reservation-edit-link">+ Add or Edit Links</a>
         <% } %>
       </div>
 
       <div class="place-actions">
         <a href="/places" class="btn btn-secondary">← Back to Recommendations</a>
-        <% const role = user ? (user.role || '').toLowerCase() : ''; %>
-        <% const canEditPlace = user && (isDemoUser || role === 'employee' || role === 'management' || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
-        <% const canDeletePlace = user && (isDemoUser || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
         <% if (canEditPlace) { %>
           <a href="/places/<%= place.id %>/edit" class="btn btn-primary">Edit</a>
         <% } %>

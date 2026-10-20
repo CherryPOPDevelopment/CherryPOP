@@ -54,9 +54,6 @@
         <% if (places.length > 0) { %>
           <div class="places-grid">
             <% places.forEach(place => { %>
-              <% const role = user ? (user.role || '').toLowerCase() : ''; %>
-              <% const canEditPlace = user && (isDemoUser || role === 'employee' || role === 'management' || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
-              <% const canDeletePlace = user && (isDemoUser || role === 'admin' || Number(place.created_by) === Number(user.id)); %>
               <div class="place-card">
                 <% if (Number(place.is_coming_soon || 0) === 1) { %>
                   <p><span class="badge-status badge-pending">Coming Soon</span></p>
@@ -103,19 +100,6 @@
 
                 <div class="place-actions">
                   <a href="/places/<%= place.id %>" class="btn btn-primary">View Details</a>
-                  <% if (canEditPlace) { %>
-                    <a href="/places/<%= place.id %>/edit" class="btn btn-secondary">Edit</a>
-                  <% } %>
-                  <% if (canDeletePlace) { %>
-                    <form
-                      method="POST"
-                      action="/places/<%= place.id %>/delete?_method=DELETE"
-                      style="display:inline;"
-                      onsubmit="return confirm('Delete this recommendation permanently?');"
-                    >
-                      <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                  <% } %>
                 </div>
               </div>
             <% }); %>

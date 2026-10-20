@@ -9,6 +9,10 @@
 <body>
   <%- include('../partials/navbar') %>
   
+  <% const role = user ? String(user.role || '').toLowerCase() : ''; %>
+  <% const canEditEvent = ['employee', 'management', 'admin'].includes(role); %>
+  <% const canDeleteEvent = ['management', 'admin'].includes(role); %>
+
   <main class="container">
     <div class="place-detail">
       <div class="detail-header">
@@ -78,22 +82,25 @@
 
       <div class="place-actions">
         <a href="/events" class="btn btn-secondary">← Back to Events</a>
-        <% if (user) { %>
+        <% if (canEditEvent) { %>
           <a href="/events/<%= event.id %>/edit" class="btn btn-primary">Edit</a>
-          <% if (event.is_active) { %>
-            <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
-              <button
-                type="button"
-                class="btn btn-secondary js-archive-trigger"
-                data-event-title="<%= event.title %>"
-                data-archive-action="/events/<%= event.id %>/archive"
-              >Archive</button>
-            </form>
-          <% } else { %>
+        <% } %>
+        <% if (canEditEvent && event.is_active) { %>
+          <form method="POST" action="/events/<%= event.id %>/archive" style="display:inline;">
+            <button
+              type="button"
+              class="btn btn-secondary js-archive-trigger"
+              data-event-title="<%= event.title %>"
+              data-archive-action="/events/<%= event.id %>/archive"
+            >Archive</button>
+          </form>
+        <% } %>
+        <% if (canDeleteEvent && !event.is_active) { %>
             <form method="POST" action="/events/<%= event.id %>/reactivate" style="display:inline;">
               <button type="submit" class="btn btn-primary">Reactivate</button>
             </form>
-          <% } %>
+        <% } %>
+        <% if (canDeleteEvent) { %>
           <form method="POST" action="/events/<%= event.id %>/delete?_method=DELETE" style="display:inline;">
             <button
               type="button"
@@ -107,7 +114,7 @@
     </div>
   </main>
 
-  <% if (user && event.is_active) { %>
+  <% if (canEditEvent && event.is_active) { %>
     <div class="modal-backdrop" id="archiveModal" hidden>
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="archiveModalTitle">
         <div class="modal-dialog-head">
@@ -123,6 +130,9 @@
       </div>
     </div>
 
+  <% } %>
+
+  <% if (canDeleteEvent) { %>
     <div class="modal-backdrop" id="deleteModal" hidden>
       <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
         <div class="modal-dialog-head">
@@ -137,7 +147,9 @@
         </form>
       </div>
     </div>
+  <% } %>
 
+  <% if (canEditEvent || canDeleteEvent) { %>
     <script>
     (function () {
       const activeModals = [];
