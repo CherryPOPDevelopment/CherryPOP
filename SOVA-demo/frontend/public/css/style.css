@@ -1419,12 +1419,6 @@ body {
   color: var(--text-soft);
 }
 
-.place-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
 /* Forms */
 .form-container {
   background: var(--surface);
@@ -4775,12 +4769,6 @@ body.account-avatar-crop-open {
 }
 
 @media (max-width: 1220px) {
-  .discussion-page .places-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
   .discussion-page .places-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

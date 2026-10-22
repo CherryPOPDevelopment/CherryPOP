@@ -80,6 +80,8 @@ app.use(session({
 app.use('/aurelia', express.static(path.join(__dirname, '..', 'Aurelia-app', 'frontend')));
 app.use('/sova-demo', sovaProxy);
 app.use('/aurelia', aureliaProxy);
+app.use('/botanics', express.static(path.join(__dirname, '..', 'Botanics')));
+app.use('/projects', express.static(path.join(__dirname, '..', 'SOVA-demo', 'frontend', 'showcase')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -88,6 +90,15 @@ app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
 app.use('/images', express.static(path.join(__dirname, '..', 'IMAGES')));
 app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
+app.get('/images/aureliadesign.jpg', (_, res) =>
+  res.sendFile(path.join(__dirname, '..', 'Aurelia-app', 'frontend', 'images', 'aureliadesign.jpg'))
+);
+app.get('/images/scoopdesign.jpg', (_, res) =>
+  res.sendFile(path.join(__dirname, '..', 'SOVA-demo', 'frontend', 'public', 'images', 'scoopdesign.jpg'))
+);
+app.get('/images/botanicsdesign.jpg', (_, res) =>
+  res.sendFile(path.join(__dirname, '..', 'Botanics', 'images', 'botanicsdesign.jpg'))
+);
 
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
@@ -113,7 +124,8 @@ app.get('/projects/scoop', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/scoopDEMO', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/sova-demo', (_, res) => res.redirect('/sova-demo'));
 app.get('/projects/aurelia', (_, res) => res.redirect('/aurelia/'));
-app.get('/projects/luxe-botanics', (_, res) => res.sendFile(path.join(__dirname, '..', 'Frontend', 'projects', 'luxe-botanics.html')));
+app.get('/projects/luxe-botanics', (_, res) => res.sendFile(path.join(__dirname, '..', 'Botanics', 'index.html')));
+app.get('/projects/luxe-botanics.html', (_, res) => res.sendFile(path.join(__dirname, '..', 'Botanics', 'index.html')));
 
 // ── 404 fallback ──────────────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).sendFile(path.join(__dirname, '..', 'Frontend', 'index.html')));

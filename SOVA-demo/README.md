@@ -60,7 +60,7 @@ DEMO_GUEST_PASSWORD=Guest1234
 ## Project Structure
 
 ```
-demo/
+SOVA-demo/
 ├── .env                        # Environment config (port, demo credentials)
 ├── package.json                # Dependencies
 ├── backend/
@@ -78,6 +78,8 @@ demo/
     ├── public/
     │   ├── css/style.css       # SOVA stylesheet
     │   ├── js/adventure-guide.js # Client-side itinerary planner
+    │   ├── images/scoopdesign.jpg # SCOOP project cover
     │   └── uploads/avatars/    # Demo avatar images
+    ├── showcase/               # SCOOP showcase pages served by CherryPOP
     └── views/                  # EJS templates (mirrors main app views)
 ```
