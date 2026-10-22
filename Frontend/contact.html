@@ -42,9 +42,9 @@
         </a>
 
         <div class="cp-headline">
-          <span class="section-tag">Let's build something</span>
+          <span class="section-tag" id="contactTag">Let's build something</span>
           <h1>Got a project<br/>in mind?</h1>
-          <p>Tell me what you need and I'll get back to you within 24 hours with a clear plan and honest quote.</p>
+          <p id="contactDescription">Tell me what you need and I'll get back to you within 24 hours with a clear plan and honest quote.</p>
         </div>
 
         <div class="cp-info-list">
@@ -54,7 +54,7 @@
             </span>
             <div>
               <strong>Fast turnaround</strong>
-              <span>Response within 24 hours</span>
+              <span id="contactInfo2">Response within 24 hours</span>
             </div>
           </div>
           <div class="cp-info-item">
@@ -62,7 +62,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
             </span>
             <div>
-              <strong>Remote — worldwide</strong>
+              <strong id="contactInfo1">Remote — worldwide</strong>
               <span>Working with clients globally</span>
             </div>
           </div>
@@ -72,7 +72,7 @@
             </span>
             <div>
               <strong>Currently open</strong>
-              <span>Accepting new projects now</span>
+              <span id="contactInfo3">Accepting new projects now</span>
             </div>
           </div>
         </div>
@@ -92,8 +92,8 @@
     <!-- Right panel: form -->
     <div class="cp-form-wrap">
       <div class="cp-form-card">
-        <h2 class="cp-form-title">Start a Project</h2>
-        <p class="cp-form-sub">Fill in the details below — the more info the better.</p>
+        <h2 class="cp-form-title" id="contactFormTitle">Start a Project</h2>
+        <p class="cp-form-sub" id="contactSubtitle">Fill in the details below — the more info the better.</p>
 
         <!-- Service chips -->
         <div class="cp-service-chips" role="group" aria-label="Service type">
@@ -181,6 +181,24 @@
       document.querySelector('.nav-links').classList.toggle('open');
     });
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    fetch('/api/content/contact')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Contact content could not be loaded (${response.status}).`);
+        }
+        return response.json();
+      })
+      .then(content => {
+        document.getElementById('contactTag').textContent = content.tag;
+        document.getElementById('contactFormTitle').textContent = content.title;
+        document.getElementById('contactSubtitle').textContent = content.subtitle;
+        document.getElementById('contactDescription').textContent = content.subtitle;
+        document.getElementById('contactInfo1').textContent = content.info1;
+        document.getElementById('contactInfo2').textContent = content.info2;
+        document.getElementById('contactInfo3').textContent = content.info3;
+      })
+      .catch(error => console.error(error));
 
     // ── Auth check
     (async () => {

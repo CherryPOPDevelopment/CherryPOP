@@ -51,58 +51,69 @@
 
     <!-- ════ INQUIRIES TAB ════ -->
     <div id="tab-inquiries" class="dash-tab">
-    <header class="dash-header">
-      <div>
-        <h1 class="dash-title">Inquiries</h1>
-        <p class="dash-sub">Manage all incoming project requests</p>
+      <header class="dash-header">
+        <div>
+          <h1 class="dash-title">Inquiries</h1>
+          <p class="dash-sub">Manage all incoming project requests</p>
+        </div>
+        <div class="dash-header-actions">
+          <button class="btn btn-ghost btn-sm" id="refreshBtn">↻ Refresh</button>
+        </div>
+      </header>
+
+      <div class="dash-stats" id="dashStats">
+        <div class="dash-stat-card">
+          <span class="dash-stat-num" id="statTotal">—</span>
+          <span class="dash-stat-label">Total</span>
+        </div>
+        <div class="dash-stat-card">
+          <span class="dash-stat-num" id="statNew">—</span>
+          <span class="dash-stat-label">New</span>
+        </div>
+        <div class="dash-stat-card">
+          <span class="dash-stat-num" id="statAccepted">—</span>
+          <span class="dash-stat-label">Accepted</span>
+        </div>
+        <div class="dash-stat-card">
+          <span class="dash-stat-num" id="statCompleted">—</span>
+          <span class="dash-stat-label">Completed</span>
+        </div>
       </div>
-      <div class="dash-header-actions">
-        <button class="btn btn-ghost btn-sm" id="refreshBtn">↻ Refresh</button>
+
+      <div class="dash-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="new">New</button>
+        <button class="filter-btn" data-filter="in_review">In Review</button>
+        <button class="filter-btn" data-filter="accepted">Accepted</button>
+        <button class="filter-btn" data-filter="completed">Completed</button>
+        <button class="filter-btn" data-filter="declined">Declined</button>
       </div>
-    </header>
 
-    <!-- Stats row -->
-    <div class="dash-stats" id="dashStats">
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statTotal">—</span><span class="dash-stat-label">Total</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statNew">—</span><span class="dash-stat-label">New</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statAccepted">—</span><span class="dash-stat-label">Accepted</span></div>
-      <div class="dash-stat-card"><span class="dash-stat-num" id="statCompleted">—</span><span class="dash-stat-label">Completed</span></div>
+      <div class="dash-table-wrapper">
+        <table class="dash-table" id="inquiriesTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Service</th>
+              <th>Budget</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inquiriesBody">
+            <tr>
+              <td colspan="8" class="table-empty">Loading…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <!-- Filters -->
-    <div class="dash-filters">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="new">New</button>
-      <button class="filter-btn" data-filter="in_review">In Review</button>
-      <button class="filter-btn" data-filter="accepted">Accepted</button>
-      <button class="filter-btn" data-filter="completed">Completed</button>
-      <button class="filter-btn" data-filter="declined">Declined</button>
-    </div>
-
-    <!-- Table -->
-    <div class="dash-table-wrapper">
-      <table class="dash-table" id="inquiriesTable">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Service</th>
-            <th>Budget</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="inquiriesBody">
-          <tr><td colspan="8" class="table-empty">Loading…</td></tr>
-        </tbody>
-      </table>
-    </div>
-    </div><!-- /tab-inquiries -->
 
     <!-- ════ EDITOR TAB ════ -->
-    <div id="tab-editor" class="dash-tab" style="display:none">
+    <div id="tab-editor" class="dash-tab dash-tab--hidden">
       <header class="dash-header">
         <div>
           <h1 class="dash-title">Edit Site</h1>
@@ -122,7 +133,7 @@
       <div class="editor-body" id="editorBody">
         <p class="editor-loading">Loading content…</p>
       </div>
-    </div><!-- /tab-editor -->
+    </div>
 
   </main>
 
@@ -135,39 +146,100 @@
   </div>
 
   <script>
-    const VALID_STATUSES = ['new', 'in_review', 'accepted', 'completed', 'declined'];
+    const VALID_STATUSES = [
+      'new',
+      'in_review',
+      'accepted',
+      'completed',
+      'declined',
+    ];
+    const DEFAULT_CONTENT = {
+      hero: {
+        badge: '✦ Available for projects',
+        title: 'I build digital experiences that convert & scale',
+        subtitle: 'Freelance developer specialising in websites, mobile apps, and full-featured online shops. Clean code. On time. No fluff.',
+        cta_primary: 'Start a Project',
+        cta_secondary: 'View My Work',
+        stat1_num: '40+',
+        stat1_label: 'Projects Delivered',
+        stat2_num: '98%',
+        stat2_label: 'Client Satisfaction',
+        stat3_num: '5yr',
+        stat3_label: 'Experience',
+      },
+      services: {
+        tag: 'What I do',
+        title: 'Services',
+        subtitle: 'End-to-end solutions built around your goals.',
+        website_title: 'Website Development',
+        website_desc: 'Blazing-fast, responsive websites engineered for performance and SEO. From landing pages to complex portals.',
+        app_title: 'App Development',
+        app_desc: 'Cross-platform mobile & web applications that feel native on every device. Built with modern frameworks.',
+        shop_title: 'Shop Development',
+        shop_desc: 'High-converting e-commerce stores with seamless checkout, inventory management, and payment integration.',
+      },
+      about: {
+        tag: 'About me',
+        title: 'Turning ideas into working products',
+        body1: "I'm a full-stack freelance developer with nearly 2 years of experienceon building websites, mobile apps, and online shops. I specialise in no-code development and design with a special interest in python, java, mysql, and css code. I am very passionate and excited to continue to learn and grow my skills and knowledge-- and to work with you!",
+        body2: '',
+        cta: 'Work with me',
+      },
+      contact: {
+        tag: "Let's talk",
+        title: 'Start a Project',
+        subtitle: "Fill in the form and I'll get back to you within 24 hours.",
+        info1: '📍 Remote — worldwide',
+        info2: '⏱ Response within 24h',
+        info3: '📅 Currently accepting new clients',
+      },
+    };
     let allInquiries = [];
     let currentFilter = 'all';
 
     // ════ AUTH GUARD ════════════════════════════════════════════════════════
     (async () => {
       try {
-        const res  = await fetch('/api/auth/check', { credentials: 'include' });
+        const res = await fetch('/api/auth/check', { credentials: 'include' });
         const data = await res.json();
-        if (!data.loggedIn) { window.location.href = '/login'; return; }
-        document.getElementById('userName').textContent   = data.user.username;
+        if (!data.loggedIn) {
+          window.location.href = '/login';
+          return;
+        }
+        document.getElementById('userName').textContent = data.user.username;
         document.getElementById('userAvatar').textContent = data.user.username[0].toUpperCase();
-      } catch (_) { window.location.href = '/login'; }
+      } catch (_) {
+        window.location.href = '/login';
+      }
     })();
 
     // ════ TAB SWITCHING ══════════════════════════════════════════════════════
     document.querySelectorAll('.sidebar-link[data-tab]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
+      link.addEventListener('click', event => {
+        event.preventDefault();
         const tab = link.dataset.tab;
-        document.querySelectorAll('.sidebar-link[data-tab]').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link[data-tab]').forEach(item => {
+          item.classList.remove('active');
+        });
         link.classList.add('active');
-        document.querySelectorAll('.dash-tab').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-' + tab).style.display = '';
-        if (tab === 'editor') loadEditorSection(currentEditorSection);
+        document.querySelectorAll('.dash-tab').forEach(item => {
+          item.classList.add('dash-tab--hidden');
+        });
+        document.getElementById('tab-' + tab).classList.remove('dash-tab--hidden');
+        if (tab === 'editor') {
+          loadEditorSection(currentEditorSection);
+        }
       });
     });
 
     // ════ INQUIRIES ══════════════════════════════════════════════════════════
     async function loadInquiries() {
       try {
-        const res  = await fetch('/api/inquiries', { credentials: 'include' });
-        if (res.status === 403) { window.location.href = '/login'; return; }
+        const res = await fetch('/api/inquiries', { credentials: 'include' });
+        if (res.status === 403) {
+          window.location.href = '/login';
+          return;
+        }
         allInquiries = await res.json();
         updateStats();
         renderTable();
@@ -178,11 +250,19 @@
     }
 
     function updateStats() {
-      document.getElementById('statTotal').textContent     = allInquiries.length;
-      document.getElementById('statNew').textContent       = allInquiries.filter(i => i.status === 'new').length;
-      document.getElementById('statAccepted').textContent  = allInquiries.filter(i => i.status === 'accepted').length;
-      document.getElementById('statCompleted').textContent = allInquiries.filter(i => i.status === 'completed').length;
-      const newCount = allInquiries.filter(i => i.status === 'new').length;
+      document.getElementById('statTotal').textContent = allInquiries.length;
+      document.getElementById('statNew').textContent = allInquiries.filter(
+        inquiry => inquiry.status === 'new',
+      ).length;
+      document.getElementById('statAccepted').textContent = allInquiries.filter(
+        inquiry => inquiry.status === 'accepted',
+      ).length;
+      document.getElementById('statCompleted').textContent = allInquiries.filter(
+        inquiry => inquiry.status === 'completed',
+      ).length;
+      const newCount = allInquiries.filter(
+        inquiry => inquiry.status === 'new',
+      ).length;
       const badge = document.getElementById('newBadge');
       badge.textContent = newCount || '';
       badge.style.display = newCount ? 'inline-flex' : 'none';
@@ -191,77 +271,107 @@
     function renderTable() {
       const filtered = currentFilter === 'all'
         ? allInquiries
-        : allInquiries.filter(i => i.status === currentFilter);
+        : allInquiries.filter(inquiry => inquiry.status === currentFilter);
       const tbody = document.getElementById('inquiriesBody');
       if (!filtered.length) {
         tbody.innerHTML = '<tr><td colspan="8" class="table-empty">No inquiries found.</td></tr>';
         return;
       }
-      tbody.innerHTML = filtered.map(i => `
-        <tr data-id="${i.id}">
-          <td class="td-id">${i.id}</td>
-          <td class="td-name">${esc(i.name)}</td>
-          <td class="td-email"><a href="mailto:${esc(i.email)}">${esc(i.email)}</a></td>
-          <td><span class="tag tag--${i.service_type}">${i.service_type}</span></td>
-          <td>${i.budget ? esc(i.budget) : '<span class="muted">—</span>'}</td>
+      tbody.innerHTML = filtered.map(inquiry => `
+        <tr data-id="${inquiry.id}">
+          <td class="td-id">${inquiry.id}</td>
+          <td class="td-name">${esc(inquiry.name)}</td>
+          <td class="td-email"><a href="mailto:${esc(inquiry.email)}">${esc(inquiry.email)}</a></td>
+          <td><span class="tag tag--${inquiry.service_type}">${inquiry.service_type}</span></td>
+          <td>${inquiry.budget ? esc(inquiry.budget) : '<span class="muted">—</span>'}</td>
           <td>
-            <select class="status-select status--${i.status}" data-id="${i.id}" title="Change status">
-              ${VALID_STATUSES.map(s => `<option value="${s}" ${s === i.status ? 'selected' : ''}>${fmt(s)}</option>`).join('')}
+            <select class="status-select status--${inquiry.status}" data-id="${inquiry.id}" title="Change status">
+              ${VALID_STATUSES.map(status => `<option value="${status}" ${status === inquiry.status ? 'selected' : ''}>${fmt(status)}</option>`).join('')}
             </select>
           </td>
-          <td class="td-date">${fmtDate(i.created_at)}</td>
-          <td><button class="btn btn-ghost btn-sm view-btn" data-id="${i.id}">View</button></td>
+          <td class="td-date">${fmtDate(inquiry.created_at)}</td>
+          <td><button class="btn btn-ghost btn-sm view-btn" data-id="${inquiry.id}">View</button></td>
         </tr>
       `).join('');
-      tbody.querySelectorAll('.status-select').forEach(sel => {
-        sel.addEventListener('change', () => updateStatus(sel.dataset.id, sel.value));
+      tbody.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', () => {
+          updateStatus(select.dataset.id, select.value);
+        });
       });
-      tbody.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', () => openModal(parseInt(btn.dataset.id)));
+      tbody.querySelectorAll('.view-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          openModal(parseInt(button.dataset.id));
+        });
       });
     }
 
     async function updateStatus(id, status) {
       try {
         await fetch(`/api/inquiries/${id}`, {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', body: JSON.stringify({ status }),
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ status }),
         });
-        const idx = allInquiries.findIndex(i => i.id == id);
-        if (idx !== -1) allInquiries[idx].status = status;
-        updateStats(); renderTable();
-      } catch (_) { alert('Failed to update status.'); }
+        const inquiryIndex = allInquiries.findIndex(inquiry => inquiry.id == id);
+        if (inquiryIndex !== -1) {
+          allInquiries[inquiryIndex].status = status;
+        }
+        updateStats();
+        renderTable();
+      } catch (_) {
+        alert('Failed to update status.');
+      }
     }
 
     function openModal(id) {
-      const i = allInquiries.find(x => x.id === id);
-      if (!i) return;
+      const inquiry = allInquiries.find(item => item.id === id);
+      if (!inquiry) return;
       document.getElementById('modalContent').innerHTML = `
         <div class="modal-head">
-          <h2>${esc(i.name)}</h2>
-          <span class="tag tag--${i.service_type}">${i.service_type}</span>
+          <h2>${esc(inquiry.name)}</h2>
+          <span class="tag tag--${inquiry.service_type}">${inquiry.service_type}</span>
         </div>
         <div class="modal-body">
-          <div class="modal-field"><label>Email</label><a href="mailto:${esc(i.email)}">${esc(i.email)}</a></div>
-          <div class="modal-field"><label>Budget</label><span>${i.budget ? esc(i.budget) : '—'}</span></div>
-          <div class="modal-field"><label>Status</label><span class="status-pill status--${i.status}">${fmt(i.status)}</span></div>
-          <div class="modal-field"><label>Submitted</label><span>${fmtDate(i.created_at)}</span></div>
-          <div class="modal-field full"><label>Message</label><p class="modal-message">${esc(i.message)}</p></div>
+          <div class="modal-field">
+            <label>Email</label>
+            <a href="mailto:${esc(inquiry.email)}">${esc(inquiry.email)}</a>
+          </div>
+          <div class="modal-field">
+            <label>Budget</label>
+            <span>${inquiry.budget ? esc(inquiry.budget) : '—'}</span>
+          </div>
+          <div class="modal-field">
+            <label>Status</label>
+            <span class="status-pill status--${inquiry.status}">${fmt(inquiry.status)}</span>
+          </div>
+          <div class="modal-field">
+            <label>Submitted</label>
+            <span>${fmtDate(inquiry.created_at)}</span>
+          </div>
+          <div class="modal-field full">
+            <label>Message</label>
+            <p class="modal-message">${esc(inquiry.message)}</p>
+          </div>
         </div>`;
       document.getElementById('modalOverlay').classList.add('open');
     }
 
-    document.getElementById('modalClose').addEventListener('click', () =>
-      document.getElementById('modalOverlay').classList.remove('open'));
-    document.getElementById('modalOverlay').addEventListener('click', (e) => {
-      if (e.target === document.getElementById('modalOverlay'))
-        document.getElementById('modalOverlay').classList.remove('open');
+    document.getElementById('modalClose').addEventListener('click', () => {
+      document.getElementById('modalOverlay').classList.remove('open');
     });
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
+    document.getElementById('modalOverlay').addEventListener('click', event => {
+      if (event.target === document.getElementById('modalOverlay')) {
+        document.getElementById('modalOverlay').classList.remove('open');
+      }
+    });
+    document.querySelectorAll('.filter-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(filterButton => {
+          filterButton.classList.remove('active');
+        });
+        button.classList.add('active');
+        currentFilter = button.dataset.filter;
         renderTable();
       });
     });
@@ -270,54 +380,55 @@
     // ════ SITE EDITOR ════════════════════════════════════════════════════════
     let currentEditorSection = 'hero';
 
-    // Field definitions for each section
     const SECTION_FIELDS = {
       hero: [
-        { key: 'badge',          label: 'Availability Badge',    type: 'text' },
-        { key: 'title',          label: 'Main Headline',         type: 'textarea' },
-        { key: 'subtitle',       label: 'Subtitle / Tagline',    type: 'textarea' },
-        { key: 'cta_primary',    label: 'Primary CTA Button',    type: 'text' },
-        { key: 'cta_secondary',  label: 'Secondary CTA Button',  type: 'text' },
-        { key: 'stat1_num',      label: 'Stat 1 — Number',       type: 'text' },
-        { key: 'stat1_label',    label: 'Stat 1 — Label',        type: 'text' },
-        { key: 'stat2_num',      label: 'Stat 2 — Number',       type: 'text' },
-        { key: 'stat2_label',    label: 'Stat 2 — Label',        type: 'text' },
-        { key: 'stat3_num',      label: 'Stat 3 — Number',       type: 'text' },
-        { key: 'stat3_label',    label: 'Stat 3 — Label',        type: 'text' },
+        { key: 'badge', label: 'Availability Badge', type: 'text' },
+        { key: 'title', label: 'Main Headline', type: 'textarea' },
+        { key: 'subtitle', label: 'Subtitle / Tagline', type: 'textarea' },
+        { key: 'cta_primary', label: 'Primary CTA Button', type: 'text' },
+        { key: 'cta_secondary', label: 'Secondary CTA Button', type: 'text' },
+        { key: 'stat1_num', label: 'Stat 1 — Number', type: 'text' },
+        { key: 'stat1_label', label: 'Stat 1 — Label', type: 'text' },
+        { key: 'stat2_num', label: 'Stat 2 — Number', type: 'text' },
+        { key: 'stat2_label', label: 'Stat 2 — Label', type: 'text' },
+        { key: 'stat3_num', label: 'Stat 3 — Number', type: 'text' },
+        { key: 'stat3_label', label: 'Stat 3 — Label', type: 'text' },
       ],
       services: [
-        { key: 'tag',            label: 'Section Tag',           type: 'text' },
-        { key: 'title',          label: 'Section Title',         type: 'text' },
-        { key: 'subtitle',       label: 'Section Subtitle',      type: 'text' },
-        { key: 'website_title',  label: 'Website Card — Title',  type: 'text' },
-        { key: 'website_desc',   label: 'Website Card — Desc',   type: 'textarea' },
-        { key: 'app_title',      label: 'App Card — Title',      type: 'text' },
-        { key: 'app_desc',       label: 'App Card — Desc',       type: 'textarea' },
-        { key: 'shop_title',     label: 'Shop Card — Title',     type: 'text' },
-        { key: 'shop_desc',      label: 'Shop Card — Desc',      type: 'textarea' },
+        { key: 'tag', label: 'Section Tag', type: 'text' },
+        { key: 'title', label: 'Section Title', type: 'text' },
+        { key: 'subtitle', label: 'Section Subtitle', type: 'text' },
+        { key: 'website_title', label: 'Website Card — Title', type: 'text' },
+        { key: 'website_desc', label: 'Website Card — Desc', type: 'textarea' },
+        { key: 'app_title', label: 'App Card — Title', type: 'text' },
+        { key: 'app_desc', label: 'App Card — Desc', type: 'textarea' },
+        { key: 'shop_title', label: 'Shop Card — Title', type: 'text' },
+        { key: 'shop_desc', label: 'Shop Card — Desc', type: 'textarea' },
       ],
       about: [
-        { key: 'tag',    label: 'Section Tag',    type: 'text' },
-        { key: 'title',  label: 'Headline',       type: 'textarea' },
-        { key: 'body1',  label: 'Paragraph 1',    type: 'textarea' },
-        { key: 'body2',  label: 'Paragraph 2',    type: 'textarea' },
-        { key: 'cta',    label: 'CTA Button Text',type: 'text' },
+        { key: 'tag', label: 'Section Tag', type: 'text' },
+        { key: 'title', label: 'Headline', type: 'textarea' },
+        { key: 'body1', label: 'Paragraph 1', type: 'textarea' },
+        { key: 'body2', label: 'Paragraph 2', type: 'textarea' },
+        { key: 'cta', label: 'CTA Button Text', type: 'text' },
       ],
       contact: [
-        { key: 'tag',      label: 'Section Tag',    type: 'text' },
-        { key: 'title',    label: 'Section Title',  type: 'text' },
-        { key: 'subtitle', label: 'Subtitle',       type: 'textarea' },
-        { key: 'info1',    label: 'Info Line 1',    type: 'text' },
-        { key: 'info2',    label: 'Info Line 2',    type: 'text' },
-        { key: 'info3',    label: 'Info Line 3',    type: 'text' },
+        { key: 'tag', label: 'Section Tag', type: 'text' },
+        { key: 'title', label: 'Section Title', type: 'text' },
+        { key: 'subtitle', label: 'Subtitle', type: 'textarea' },
+        { key: 'info1', label: 'Info Line 1', type: 'text' },
+        { key: 'info2', label: 'Info Line 2', type: 'text' },
+        { key: 'info3', label: 'Info Line 3', type: 'text' },
       ],
     };
 
-    document.querySelectorAll('.esec-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.esec-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentEditorSection = btn.dataset.sec;
+    document.querySelectorAll('.esec-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.esec-btn').forEach(sectionButton => {
+          sectionButton.classList.remove('active');
+        });
+        button.classList.add('active');
+        currentEditorSection = button.dataset.sec;
         loadEditorSection(currentEditorSection);
       });
     });
@@ -326,46 +437,51 @@
       const body = document.getElementById('editorBody');
       body.innerHTML = '<p class="editor-loading">Loading…</p>';
       try {
-        const res  = await fetch(`/api/content/${section}`, { credentials: 'include' });
+        const res = await fetch(`/api/content/${section}`, { credentials: 'include' });
+        if (!res.ok) {
+          throw new Error(`Content could not be loaded (${res.status}).`);
+        }
         const data = await res.json();
-        renderEditorForm(section, data);
-      } catch (_) {
-        body.innerHTML = '<p class="editor-loading" style="color:#f87171">Failed to load content.</p>';
+        renderEditorForm(section, { ...DEFAULT_CONTENT[section], ...data });
+      } catch (error) {
+        renderEditorForm(section, DEFAULT_CONTENT[section], error.message);
       }
     }
 
-    function renderEditorForm(section, data) {
+    function renderEditorForm(section, data, loadError = '') {
       const fields = SECTION_FIELDS[section] || [];
-      const body   = document.getElementById('editorBody');
+      const body = document.getElementById('editorBody');
       body.innerHTML = `
         <form class="editor-form" id="editorForm">
           <div class="editor-fields">
-            ${fields.map(f => `
-              <div class="editor-field ${f.type === 'textarea' ? 'editor-field--wide' : ''}">
-                <label>${esc(f.label)}</label>
-                ${f.type === 'textarea'
-                  ? `<textarea name="${f.key}" rows="3">${esc(data[f.key] || '')}</textarea>`
-                  : `<input type="text" name="${f.key}" value="${esc(data[f.key] || '')}" />`
+            ${fields.map(field => `
+              <div class="editor-field ${field.type === 'textarea' ? 'editor-field--wide' : ''}">
+                <label>${esc(field.label)}</label>
+                ${field.type === 'textarea'
+                  ? `<textarea name="${field.key}" rows="3">${esc(data[field.key] || '')}</textarea>`
+                  : `<input type="text" name="${field.key}" value="${esc(data[field.key] || '')}" />`
                 }
               </div>
             `).join('')}
           </div>
           <div class="editor-footer">
-            <div class="editor-alert" id="editorAlert"></div>
-            <button type="submit" class="btn btn-primary" id="editorSaveBtn">Save Changes</button>
+            <div class="editor-alert ${loadError ? 'editor-alert--error' : ''}" id="editorAlert">${esc(loadError ? `Saved content could not be loaded. Showing website defaults. ${loadError}` : '')}</div>
+            <button type="submit" class="btn btn-primary" id="editorSaveBtn" ${loadError ? 'disabled' : ''}>Save Changes</button>
           </div>
         </form>`;
 
       document.getElementById('editorForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn   = document.getElementById('editorSaveBtn');
+        const button = document.getElementById('editorSaveBtn');
         const alert = document.getElementById('editorAlert');
-        btn.disabled = true; btn.textContent = 'Saving…';
-        alert.className = 'editor-alert'; alert.textContent = '';
+        button.disabled = true;
+        button.textContent = 'Saving…';
+        alert.className = 'editor-alert';
+        alert.textContent = '';
 
         const payload = {};
-        fields.forEach(f => {
-          payload[f.key] = e.target[f.key].value;
+        fields.forEach(field => {
+          payload[field.key] = e.target[field.key].value;
         });
 
         try {
@@ -375,18 +491,29 @@
             credentials: 'include',
             body: JSON.stringify(payload),
           });
-          if (res.ok) {
-            alert.className = 'editor-alert editor-alert--success';
-            alert.textContent = '✓ Saved! Changes are live on your site.';
-          } else {
-            const d = await res.json();
-            throw new Error(d.error || 'Save failed.');
+          const result = await res.json();
+          if (!res.ok || !result.success) {
+            throw new Error(result.error || `Save failed (${res.status}).`);
           }
-        } catch (err) {
+          const savedResponse = await fetch(`/api/content/${section}`, {
+            credentials: 'include',
+          });
+          if (!savedResponse.ok) {
+            throw new Error(`Changes could not be verified (${savedResponse.status}).`);
+          }
+          const savedContent = await savedResponse.json();
+          const unsavedField = fields.find(field => savedContent[field.key] !== payload[field.key]);
+          if (unsavedField) {
+            throw new Error(`The saved ${unsavedField.label.toLowerCase()} could not be verified.`);
+          }
+          alert.className = 'editor-alert editor-alert--success';
+          alert.textContent = '✓ Saved! Changes are live on your site.';
+        } catch (error) {
           alert.className = 'editor-alert editor-alert--error';
-          alert.textContent = '✗ ' + err.message;
+          alert.textContent = '✗ ' + error.message;
         } finally {
-          btn.disabled = false; btn.textContent = 'Save Changes';
+          button.disabled = false;
+          button.textContent = 'Save Changes';
         }
       });
     }
@@ -402,7 +529,11 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-    function fmt(s)  { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+    function fmt(status) {
+      return status
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, character => character.toUpperCase());
+    }
     function fmtDate(d) {
       return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     }

@@ -37,19 +37,35 @@
       <div class="hero-grid" aria-hidden="true"></div>
     </div>
     <div class="hero-content">
-      <span class="hero-badge">✦ Available for projects</span>
-      <h1 class="hero-title">
+      <span class="hero-badge" id="heroBadge">✦ Available for projects</span>
+      <h1 class="hero-title" id="heroTitle">
         I build digital<br/>
         <span class="gradient-text">experiences that</span><br/>
         convert &amp; scale
       </h1>
-      <p class="hero-sub">
+      <p class="hero-sub" id="heroSubtitle">
         Freelance developer specialising in websites, mobile apps, and
         full-featured online shops. Clean code. On time. No fluff.
       </p>
       <div class="hero-cta">
-        <a href="/contact" class="btn btn-primary btn-lg">Start a Project</a>
-        <a href="#portfolio" class="btn btn-ghost btn-lg">View My Work</a>
+        <a href="/contact" class="btn btn-primary btn-lg" id="heroPrimaryCta">Start a Project</a>
+        <a href="#portfolio" class="btn btn-ghost btn-lg" id="heroSecondaryCta">View My Work</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" id="heroStat1Number">40+</span>
+          <span class="stat-label" id="heroStat1Label">Projects Delivered</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat">
+          <span class="stat-num" id="heroStat2Number">98%</span>
+          <span class="stat-label" id="heroStat2Label">Client Satisfaction</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat">
+          <span class="stat-num" id="heroStat3Number">5yr</span>
+          <span class="stat-label" id="heroStat3Label">Experience</span>
+        </div>
       </div>
     </div>
   </section>
@@ -58,9 +74,9 @@
   <section class="section services" id="services">
     <div class="container">
       <div class="section-header">
-        <span class="section-tag">What I do</span>
-        <h2 class="section-title">Services</h2>
-        <p class="section-sub">End-to-end solutions built around your goals.</p>
+        <span class="section-tag" id="servicesTag">What I do</span>
+        <h2 class="section-title" id="servicesTitle">Services</h2>
+        <p class="section-sub" id="servicesSubtitle">End-to-end solutions built around your goals.</p>
       </div>
       <div class="services-grid">
 
@@ -70,8 +86,8 @@
               <rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
             </svg>
           </div>
-          <h3>Website Development</h3>
-          <p>Blazing-fast, responsive websites engineered for performance and SEO. From landing pages to complex portals.</p>
+          <h3 id="websiteServiceTitle">Website Development</h3>
+          <p id="websiteServiceDescription">Blazing-fast, responsive websites engineered for performance and SEO. From landing pages to complex portals.</p>
           <ul class="service-list">
             <li>Custom design &amp; branding</li>
             <li>SEO-optimised architecture</li>
@@ -91,8 +107,8 @@
               <rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1"/>
             </svg>
           </div>
-          <h3>App Development</h3>
-          <p>Cross-platform mobile &amp; web applications that feel native on every device. Built with modern frameworks.</p>
+          <h3 id="appServiceTitle">App Development</h3>
+          <p id="appServiceDescription">Cross-platform mobile &amp; web applications that feel native on every device. Built with modern frameworks.</p>
           <ul class="service-list">
             <li>iOS &amp; Android (React Native)</li>
             <li>Progressive Web Apps</li>
@@ -113,8 +129,8 @@
               <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
           </div>
-          <h3>Shop Development</h3>
-          <p>High-converting e-commerce stores with seamless checkout, inventory management, and payment integration.</p>
+          <h3 id="shopServiceTitle">Shop Development</h3>
+          <p id="shopServiceDescription">High-converting e-commerce stores with seamless checkout, inventory management, and payment integration.</p>
           <ul class="service-list">
             <li>Shopify / WooCommerce</li>
             <li>Custom storefront builds</li>
@@ -143,10 +159,10 @@
         </div>
       </div>
       <div class="about-content">
-        <span class="section-tag">About me</span>
-        <h2 class="section-title">Turning ideas into<br/><span class="gradient-text">working products</span></h2>
-        <p>I'm a full-stack freelance developer with 5 years of experience shipping production-grade products for startups, agencies, and direct clients.</p>
-        <p>I care about clean code, honest timelines, and making sure every project actually grows your business — not just looks good in a Figma file.</p>
+        <span class="section-tag" id="aboutTag">About me</span>
+        <h2 class="section-title" id="aboutTitle">Turning ideas into<br/><span class="gradient-text">working products</span></h2>
+        <p id="aboutBody1">I'm a full-stack freelance developer with nearly 2 years of experienceon building websites, mobile apps, and online shops. I specialise in no-code development and design with a special interest in python, java, mysql, and css code. I am very passionate and excited to continue to learn and grow my skills and knowledge-- and to work with you!</p>
+        <p id="aboutBody2" hidden></p>
         <div class="about-skills">
           <span class="skill-tag">React / Next.js</span>
           <span class="skill-tag">Node.js</span>
@@ -160,7 +176,7 @@
           <span class="skill-tag">html</span>
           <span class="skill-tag">PYTHON</span>
         </div>
-        <a href="/contact" class="btn btn-primary mt-1">Work with me</a>
+        <a href="/contact" class="btn btn-primary mt-1" id="aboutCta">Work with me</a>
       </div>
     </div>
   </section>
@@ -239,6 +255,78 @@
 
     // ── Year
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    function setContentText(id, value) {
+      if (typeof value === 'string') {
+        document.getElementById(id).textContent = value;
+      }
+    }
+
+    function setContentHeadline(id, value) {
+      if (typeof value !== 'string') return;
+      const heading = document.getElementById(id);
+      if (value !== heading.innerText.replace(/\s+/g, ' ').trim()) {
+        const words = value.trim().split(/\s+/).filter(Boolean);
+        if (words.length < 2) {
+          heading.textContent = value;
+          return;
+        }
+        const splitIndex = Math.ceil(words.length / 2);
+        const highlight = document.createElement('span');
+        highlight.className = 'gradient-text';
+        highlight.textContent = words.slice(splitIndex).join(' ');
+        heading.replaceChildren(
+          document.createTextNode(words.slice(0, splitIndex).join(' ')),
+          document.createElement('br'),
+          highlight,
+        );
+      }
+    }
+
+    async function loadSiteContent(section, applyContent) {
+      try {
+        const response = await fetch(`/api/content/${section}`);
+        if (!response.ok) {
+          throw new Error(`Could not load ${section} content (${response.status}).`);
+        }
+        applyContent(await response.json());
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadSiteContent('hero', content => {
+      setContentText('heroBadge', content.badge);
+      setContentHeadline('heroTitle', content.title);
+      setContentText('heroSubtitle', content.subtitle);
+      setContentText('heroPrimaryCta', content.cta_primary);
+      setContentText('heroSecondaryCta', content.cta_secondary);
+      for (let index = 1; index <= 3; index += 1) {
+        setContentText(`heroStat${index}Number`, content[`stat${index}_num`]);
+        setContentText(`heroStat${index}Label`, content[`stat${index}_label`]);
+      }
+    });
+
+    loadSiteContent('services', content => {
+      setContentText('servicesTag', content.tag);
+      setContentText('servicesTitle', content.title);
+      setContentText('servicesSubtitle', content.subtitle);
+      setContentText('websiteServiceTitle', content.website_title);
+      setContentText('websiteServiceDescription', content.website_desc);
+      setContentText('appServiceTitle', content.app_title);
+      setContentText('appServiceDescription', content.app_desc);
+      setContentText('shopServiceTitle', content.shop_title);
+      setContentText('shopServiceDescription', content.shop_desc);
+    });
+
+    loadSiteContent('about', content => {
+      setContentText('aboutTag', content.tag);
+      setContentHeadline('aboutTitle', content.title);
+      setContentText('aboutBody1', content.body1);
+      setContentText('aboutBody2', content.body2);
+      document.getElementById('aboutBody2').hidden = !content.body2;
+      setContentText('aboutCta', content.cta);
+    });
 
     // ── Check login state → swap nav button
     (async () => {
