@@ -90,15 +90,9 @@ app.use(express.static(path.join(__dirname, '..', 'Frontend')));
 app.use('/css', express.static(path.join(__dirname, '..', 'CSS')));
 app.use('/images', express.static(path.join(__dirname, '..', 'IMAGES')));
 app.use('/images', express.static(path.join(__dirname, '..', 'CherryPOPDev', 'Images')));
-app.get('/images/aureliadesign.jpg', (_, res) =>
-  res.sendFile(path.join(__dirname, '..', 'Aurelia-app', 'frontend', 'images', 'aureliadesign.jpg'))
-);
-app.get('/images/scoopdesign.jpg', (_, res) =>
-  res.sendFile(path.join(__dirname, '..', 'SOVA-demo', 'frontend', 'public', 'images', 'scoopdesign.jpg'))
-);
-app.get('/images/botanicsdesign.jpg', (_, res) =>
-  res.sendFile(path.join(__dirname, '..', 'Botanics', 'images', 'botanicsdesign.jpg'))
-);
+app.use('/images', express.static(path.join(__dirname, '..', 'Aurelia-app', 'frontend', 'images')));
+app.use('/images', express.static(path.join(__dirname, '..', 'SOVA-demo', 'frontend', 'public', 'images')));
+app.use('/images', express.static(path.join(__dirname, '..', 'Botanics', 'images')));
 
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth',      authRouter);
