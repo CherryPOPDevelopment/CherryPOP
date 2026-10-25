@@ -11,7 +11,7 @@
     },
     {
       patterns: ['guarantee', 'warranty', 'broken after', 'post launch', 'bug after launch', 'fix after'],
-      reply: "Every project comes with a <b>30-day post-launch warranty</b> — if anything breaks due to my code after go-live, I'll fix it at no charge.\n\nFor ongoing peace of mind, monthly maintenance packages are available from $79/month.",
+      reply: "Every project comes with a <b>30-day post-launch warranty</b> — if anything breaks due to my code after go-live, I'll fix it at no charge.\n\nFor ongoing peace of mind, basic monthly maintenance is available from $49/month.",
       quick: ['Start a Quote', 'Services & Pricing'],
     },
     {
@@ -21,22 +21,22 @@
     },
     {
       patterns: ['website price', 'website cost', 'website pricing', 'web price'],
-      reply: "Website packages start at <b>$499</b> for the Starter tier, <b>$1,299</b> for Professional, and <b>$2,999+</b> for Enterprise.\n\nEvery package has a clear feature list — or click <b>Buy This Package</b> on any tier to send a request!",
+      reply: "Website packages start at <b>$399</b> for Starter, <b>$999</b> for Professional, and <b>$2,499+</b> for advanced custom work.\n\nThese are beginner-friendly fixed-scope prices. See the Website page for package details or request a custom quote.",
       quick: ['App pricing', 'Shop pricing', 'How to Order', 'Start a Quote'],
     },
     {
       patterns: ['app price', 'app cost', 'app pricing', 'mobile price'],
-      reply: "App packages start at <b>$1,999</b> (MVP), <b>$3,999</b> (Growth — iOS & Android), and <b>$7,999+</b> (Scale).\n\nFill in the order form on the App page or open a quote for something bespoke.",
+      reply: "App packages start at <b>$1,499</b> for an MVP, <b>$2,999</b> for Growth, and <b>$5,999+</b> for larger custom apps.\n\nThese are beginner-friendly fixed-scope prices. Platforms and features affect the final quote.",
       quick: ['Website pricing', 'Shop pricing', 'How to Order', 'Start a Quote'],
     },
     {
       patterns: ['shop price', 'shop cost', 'ecommerce price', 'shopify price', 'store price'],
-      reply: "E-commerce packages start at <b>$599</b> (Starter), <b>$1,799</b> (Pro), and <b>$3,999+</b> (Enterprise).\n\nClick <b>Buy This Package</b> on the Shop page to send an order request!",
+      reply: "E-commerce packages start at <b>$499</b> for Starter, <b>$1,299</b> for Pro, and <b>$2,499+</b> for larger custom stores.\n\nThese are beginner-friendly fixed-scope prices. Platform subscriptions and paid apps are separate.",
       quick: ['Website pricing', 'App pricing', 'How to Order', 'Start a Quote'],
     },
     {
       patterns: ['price', 'cost', 'how much', 'rate', 'charge', 'pricing', 'budget'],
-      reply: "Pricing depends on the service:\n\n🌐 Websites: from $499\n📱 Apps: from $1,999\n🛒 Shops: from $599\n\nEach service page has full tier breakdowns — or jump straight to a quote!",
+      reply: "Beginner-friendly project starting prices:\n\n🌐 Websites: from $399\n📱 Apps: from $1,499\n🛒 Online shops: from $499\n\nFinal prices depend on the agreed scope. Each service page lists package details.",
       quick: ['How to Order', 'Start a Quote', 'Timeline info'],
     },
     {
