@@ -14,15 +14,15 @@
   </style>
 </head>
 <body class="auth-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <div class="auth-bg">
+  <div class="auth-bg" aria-hidden="true">
     <div class="hero-orb orb-1"></div>
     <div class="hero-orb orb-2"></div>
   </div>
 
-  <a href="/" class="auth-logo">cherry<span>.dev</span></a>
-
-  <div class="auth-card" style="max-width:460px;text-align:center;">
+  <main class="auth-card" id="main-content" tabindex="-1" style="max-width:460px;text-align:center;">
+    <a href="/" class="auth-logo">cherry<span>.dev</span></a>
     <div class="pay-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
@@ -37,7 +37,7 @@
       <a href="/" class="btn btn-primary">Back to Home</a>
       <a href="/contact" class="btn btn-ghost">Get in Touch</a>
     </div>
-  </div>
+  </main>
 
   <script>
     // Add "Return to service" button if we know which service they were on

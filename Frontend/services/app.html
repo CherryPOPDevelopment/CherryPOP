@@ -10,21 +10,26 @@
   <link rel="stylesheet" href="/css/service.css" />
 </head>
 <body>
-  <nav class="navbar scrolled">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <nav class="navbar scrolled" aria-label="Primary navigation">
     <div class="nav-inner">
       <a href="/" class="logo">cherry<span>.dev</span></a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="primary-navigation">
         <li><a href="/#services">Services</a></li>
         <li><a href="/#about">About</a></li>
         <li><a href="/#portfolio">Work</a></li>
-        <li><a href="/#contact">Contact</a></li>
+        <li><a href="/contact">Contact</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="/#contact" class="btn btn-primary">Get a Quote</a>
+        <a href="/contact" class="btn btn-primary">Get a Quote</a>
       </div>
+      <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-navigation">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
+  <main id="main-content" tabindex="-1">
   <div class="service-hero service-hero--app">
     <div class="hero-bg"><div class="hero-orb orb-1"></div></div>
     <div class="container">
@@ -46,12 +51,12 @@
         <h2 class="section-title">Built for real users, real devices</h2>
       </div>
       <div class="features-grid">
-        <div class="feature-item"><span class="feature-icon">📱</span><h4>iOS &amp; Android</h4><p>One codebase, both platforms. React Native delivers a truly native feel.</p></div>
-        <div class="feature-item"><span class="feature-icon">🌐</span><h4>Progressive Web App</h4><p>Installable, offline-capable web apps for users who prefer not to download.</p></div>
-        <div class="feature-item"><span class="feature-icon">🔗</span><h4>API Integration</h4><p>Connect to any third-party service — payments, maps, notifications, AI, and more.</p></div>
-        <div class="feature-item"><span class="feature-icon">🔔</span><h4>Push Notifications</h4><p>Keep users engaged with targeted, well-timed push notifications built in.</p></div>
-        <div class="feature-item"><span class="feature-icon">🛡️</span><h4>Auth &amp; Security</h4><p>Secure login flows, biometric auth, and encrypted data storage as standard.</p></div>
-        <div class="feature-item"><span class="feature-icon">📊</span><h4>Analytics Ready</h4><p>Crash reporting, event tracking, and user analytics wired up from day one.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">📱</span><h3>iOS &amp; Android</h3><p>One codebase, both platforms. React Native delivers a truly native feel.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">🌐</span><h3>Progressive Web App</h3><p>Installable, offline-capable web apps for users who prefer not to download.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">🔗</span><h3>API Integration</h3><p>Connect to any third-party service — payments, maps, notifications, AI, and more.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">🔔</span><h3>Push Notifications</h3><p>Keep users engaged with targeted, well-timed push notifications built in.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">🛡️</span><h3>Auth &amp; Security</h3><p>Secure login flows, biometric auth, and encrypted data storage as standard.</p></div>
+        <div class="feature-item"><span class="feature-icon" aria-hidden="true">📊</span><h3>Analytics Ready</h3><p>Crash reporting, event tracking, and user analytics wired up from day one.</p></div>
       </div>
     </div>
   </section>
@@ -162,9 +167,11 @@
     <div class="container sp-cta-inner">
       <h2>Ready to build your app?</h2>
       <p>Send an inquiry and I'll get back to you within 24 hours.</p>
-      <a href="/#contact" class="btn btn-primary btn-lg">Start Your Project</a>
+      <a href="/contact" class="btn btn-primary btn-lg">Start Your Project</a>
     </div>
   </section>
+
+  </main>
 
   <footer class="footer">
     <div class="container">
@@ -185,14 +192,14 @@
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 
   <!-- ── Order Modal ───────────────────────────────────────────────────── -->
-  <div class="order-overlay" id="orderOverlay" role="dialog" aria-modal="true" aria-label="Place your order">
+  <div class="order-overlay" id="orderOverlay" role="dialog" aria-modal="true" aria-labelledby="orderTitle" aria-describedby="orderSubtitle" aria-hidden="true" inert>
     <div class="order-modal">
       <div class="order-modal-head">
         <h2 id="orderTitle">Place Your Order</h2>
         <p id="orderSubtitle">Fill in your details and I'll be in touch within 24 hours.</p>
-        <button class="order-modal-close" id="orderClose" aria-label="Close">✕</button>
+        <button class="order-modal-close" id="orderClose" type="button" aria-label="Close order form">✕</button>
       </div>
-      <div class="order-modal-body">
+      <form class="order-modal-body" id="orderForm">
         <div class="order-tier-summary">
           <strong id="orderTierName">Package</strong>
           <span class="order-tier-price" id="orderTierPrice"></span>
@@ -200,11 +207,11 @@
         <div class="order-row">
           <div class="order-field">
             <label for="oName">Your Name</label>
-            <input type="text" id="oName" placeholder="Jane Smith" required />
+            <input type="text" id="oName" autocomplete="name" placeholder="Jane Smith" required />
           </div>
           <div class="order-field">
             <label for="oEmail">Email Address</label>
-            <input type="email" id="oEmail" placeholder="jane@example.com" required />
+            <input type="email" id="oEmail" autocomplete="email" placeholder="jane@example.com" required />
           </div>
         </div>
         <div class="order-field">
@@ -216,11 +223,11 @@
           <textarea id="oNotes" placeholder="Describe your app idea, screens, features, platform preferences — the more detail the better!" required></textarea>
         </div>
         <p class="order-note">🔒 After submitting, you'll be securely redirected to <b>Stripe</b> to complete payment. We accept all major cards, Apple Pay &amp; Google Pay.</p>
-        <div class="order-alert" id="orderAlert"></div>
-      </div>
+        <div class="order-alert" id="orderAlert" role="alert" aria-live="assertive"></div>
+      </form>
       <div class="order-modal-footer">
-        <button class="btn btn-primary" id="orderSubmit">Continue to Payment</button>
-        <button class="btn btn-ghost" id="orderCancel">Cancel</button>
+        <button type="submit" form="orderForm" class="btn btn-primary" id="orderSubmit">Continue to Payment</button>
+        <button class="btn btn-ghost" id="orderCancel" type="button">Cancel</button>
       </div>
     </div>
   </div>
@@ -234,8 +241,10 @@
     var alertEl  = document.getElementById('orderAlert');
     var submitBtn= document.getElementById('orderSubmit');
     var currentService = 'app';
+    var triggerElement = null;
 
     window.openOrder = function (tier, price, service) {
+      triggerElement = document.activeElement;
       currentService = service || 'app';
       tierName.textContent  = tier;
       tierPrice.textContent = price;
@@ -248,17 +257,43 @@
       document.getElementById('oNotes').value  = '';
       submitBtn.disabled = false;
       submitBtn.textContent = 'Continue to Payment';
+      overlay.inert = false;
+      overlay.setAttribute('aria-hidden', 'false');
       overlay.classList.add('open');
       document.getElementById('oName').focus();
     };
 
-    function close() { overlay.classList.remove('open'); }
+    function close() {
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+      overlay.inert = true;
+      if (triggerElement && triggerElement.isConnected) triggerElement.focus();
+    }
     document.getElementById('orderClose').addEventListener('click', close);
     document.getElementById('orderCancel').addEventListener('click', close);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    overlay.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      var focusable = Array.from(overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]'))
+        .filter(function (element) { return element.getClientRects().length > 0; });
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
 
-    submitBtn.addEventListener('click', async function () {
+    document.getElementById('orderForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
       var name    = document.getElementById('oName').value.trim();
       var email   = document.getElementById('oEmail').value.trim();
       var budget  = document.getElementById('oBudget').value.trim();
@@ -325,6 +360,7 @@
     });
   })();
   </script>
+  <script src="/site-navigation.js"></script>
   <script src="/chatbot.js"></script>
 
 </body>

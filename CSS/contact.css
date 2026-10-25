@@ -30,9 +30,7 @@ body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
 }
 
 .cp-panel-inner {
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: var(--section-card-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   padding: 40px 36px;
@@ -171,16 +169,43 @@ body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
 
 /* Service chips */
 .cp-service-chips {
+  position: relative;
   display: flex;
   gap: .65rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+.cp-service-chips input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.cp-service-legend,
+.cp-budget-label {
+  display: block;
+  width: 100%;
+  margin-bottom: .4rem;
+  color: var(--section-text-muted);
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 .cp-chip {
   display: inline-flex;
   align-items: center;
   gap: .45rem;
   padding: .55rem 1.1rem;
+  min-height: 44px;
   border-radius: 999px;
   border: 1.5px solid var(--input-border);
   background: var(--input-bg);
@@ -198,6 +223,11 @@ input[name="service_chip"]:checked + .cp-chip {
   background: var(--accent);
   color: var(--on-accent);
   box-shadow: 0 4px 16px var(--accent-glow);
+}
+input[name="service_chip"]:focus-visible + .cp-chip {
+  outline: 3px solid #111;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #fff;
 }
 
 /* Form fields */
@@ -260,6 +290,7 @@ input[name="service_chip"]:checked + .cp-chip {
   font-weight: 600;
   color: var(--section-text-muted);
   cursor: pointer;
+  min-height: 44px;
   transition: all var(--transition);
 }
 .cp-budget-chip:hover  { border-color: var(--accent); color: var(--accent); }

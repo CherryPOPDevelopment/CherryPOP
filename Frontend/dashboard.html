@@ -10,27 +10,28 @@
   <link rel="stylesheet" href="/css/dashboard.css" />
 </head>
 <body class="dash-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <!-- ── SIDEBAR ──────────────────────────────────────────────────────────── -->
   <aside class="sidebar">
     <a href="/" class="logo sidebar-logo">cherry<span>.dev</span></a>
-    <nav class="sidebar-nav">
-      <a href="#" class="sidebar-link active" data-tab="inquiries">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <nav class="sidebar-nav" aria-label="Dashboard navigation">
+      <button type="button" class="sidebar-link active" data-tab="inquiries" aria-pressed="true" aria-controls="tab-inquiries">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
         Inquiries
         <span class="badge" id="newBadge"></span>
-      </a>
-      <a href="#" class="sidebar-link" data-tab="editor">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      </button>
+      <button type="button" class="sidebar-link" data-tab="editor" aria-pressed="false" aria-controls="tab-editor">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
         </svg>
         Edit Site
-      </a>
+      </button>
       <a href="/" class="sidebar-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
@@ -39,7 +40,7 @@
     </nav>
     <div class="sidebar-bottom">
       <div class="user-chip" id="userChip">
-        <span class="user-avatar" id="userAvatar">A</span>
+        <span class="user-avatar" id="userAvatar" aria-hidden="true">A</span>
         <span class="user-name" id="userName">Admin</span>
       </div>
       <button class="btn btn-ghost btn-sm" id="logoutBtn">Log out</button>
@@ -47,10 +48,10 @@
   </aside>
 
   <!-- ── MAIN ─────────────────────────────────────────────────────────────── -->
-  <main class="dash-main">
+  <main class="dash-main" id="main-content" tabindex="-1">
 
     <!-- ════ INQUIRIES TAB ════ -->
-    <div id="tab-inquiries" class="dash-tab">
+    <div id="tab-inquiries" class="dash-tab" aria-hidden="false">
       <header class="dash-header">
         <div>
           <h1 class="dash-title">Inquiries</h1>
@@ -80,27 +81,28 @@
         </div>
       </div>
 
-      <div class="dash-filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="new">New</button>
-        <button class="filter-btn" data-filter="in_review">In Review</button>
-        <button class="filter-btn" data-filter="accepted">Accepted</button>
-        <button class="filter-btn" data-filter="completed">Completed</button>
-        <button class="filter-btn" data-filter="declined">Declined</button>
+      <div class="dash-filters" role="group" aria-label="Filter inquiries by status">
+        <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn" data-filter="new" aria-pressed="false">New</button>
+        <button class="filter-btn" data-filter="in_review" aria-pressed="false">In Review</button>
+        <button class="filter-btn" data-filter="accepted" aria-pressed="false">Accepted</button>
+        <button class="filter-btn" data-filter="completed" aria-pressed="false">Completed</button>
+        <button class="filter-btn" data-filter="declined" aria-pressed="false">Declined</button>
       </div>
 
       <div class="dash-table-wrapper">
         <table class="dash-table" id="inquiriesTable">
+          <caption class="visually-hidden">Project inquiries</caption>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Service</th>
-              <th>Budget</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Service</th>
+              <th scope="col">Budget</th>
+              <th scope="col">Status</th>
+              <th scope="col">Date</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody id="inquiriesBody">
@@ -113,7 +115,7 @@
     </div>
 
     <!-- ════ EDITOR TAB ════ -->
-    <div id="tab-editor" class="dash-tab dash-tab--hidden">
+    <div id="tab-editor" class="dash-tab dash-tab--hidden" aria-hidden="true">
       <header class="dash-header">
         <div>
           <h1 class="dash-title">Edit Site</h1>
@@ -123,11 +125,11 @@
       </header>
 
       <!-- Section tabs -->
-      <div class="editor-section-tabs">
-        <button class="esec-btn active" data-sec="hero">Hero</button>
-        <button class="esec-btn" data-sec="services">Services</button>
-        <button class="esec-btn" data-sec="about">About</button>
-        <button class="esec-btn" data-sec="contact">Contact</button>
+      <div class="editor-section-tabs" role="group" aria-label="Edit website section">
+        <button class="esec-btn active" data-sec="hero" aria-pressed="true">Hero</button>
+        <button class="esec-btn" data-sec="services" aria-pressed="false">Services</button>
+        <button class="esec-btn" data-sec="about" aria-pressed="false">About</button>
+        <button class="esec-btn" data-sec="contact" aria-pressed="false">Contact</button>
       </div>
 
       <div class="editor-body" id="editorBody">
@@ -138,9 +140,9 @@
   </main>
 
   <!-- ── DETAIL MODAL ──────────────────────────────────────────────────────── -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modal">
-      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-label="Inquiry details" aria-hidden="true" inert>
+    <div class="modal" id="modal" tabindex="-1">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close inquiry details">✕</button>
       <div id="modalContent"></div>
     </div>
   </div>
@@ -215,17 +217,21 @@
 
     // ════ TAB SWITCHING ══════════════════════════════════════════════════════
     document.querySelectorAll('.sidebar-link[data-tab]').forEach(link => {
-      link.addEventListener('click', event => {
-        event.preventDefault();
+      link.addEventListener('click', () => {
         const tab = link.dataset.tab;
         document.querySelectorAll('.sidebar-link[data-tab]').forEach(item => {
           item.classList.remove('active');
+          item.setAttribute('aria-pressed', 'false');
         });
         link.classList.add('active');
+        link.setAttribute('aria-pressed', 'true');
         document.querySelectorAll('.dash-tab').forEach(item => {
           item.classList.add('dash-tab--hidden');
+          item.setAttribute('aria-hidden', 'true');
         });
-        document.getElementById('tab-' + tab).classList.remove('dash-tab--hidden');
+        const selectedTab = document.getElementById('tab-' + tab);
+        selectedTab.classList.remove('dash-tab--hidden');
+        selectedTab.setAttribute('aria-hidden', 'false');
         if (tab === 'editor') {
           loadEditorSection(currentEditorSection);
         }
@@ -285,12 +291,12 @@
           <td><span class="tag tag--${inquiry.service_type}">${inquiry.service_type}</span></td>
           <td>${inquiry.budget ? esc(inquiry.budget) : '<span class="muted">—</span>'}</td>
           <td>
-            <select class="status-select status--${inquiry.status}" data-id="${inquiry.id}" title="Change status">
+            <select class="status-select status--${inquiry.status}" data-id="${inquiry.id}" aria-label="Change status for ${esc(inquiry.name)}">
               ${VALID_STATUSES.map(status => `<option value="${status}" ${status === inquiry.status ? 'selected' : ''}>${fmt(status)}</option>`).join('')}
             </select>
           </td>
           <td class="td-date">${fmtDate(inquiry.created_at)}</td>
-          <td><button class="btn btn-ghost btn-sm view-btn" data-id="${inquiry.id}">View</button></td>
+          <td><button class="btn btn-ghost btn-sm view-btn" data-id="${inquiry.id}" aria-label="View inquiry from ${esc(inquiry.name)}">View</button></td>
         </tr>
       `).join('');
       tbody.querySelectorAll('.status-select').forEach(select => {
@@ -324,53 +330,85 @@
       }
     }
 
+    let lastModalTrigger = null;
+    const modalOverlay = document.getElementById('modalOverlay');
+
+    function closeModal() {
+      modalOverlay.classList.remove('open');
+      modalOverlay.setAttribute('aria-hidden', 'true');
+      modalOverlay.inert = true;
+      if (lastModalTrigger && lastModalTrigger.isConnected) lastModalTrigger.focus();
+    }
+
     function openModal(id) {
       const inquiry = allInquiries.find(item => item.id === id);
       if (!inquiry) return;
+      lastModalTrigger = document.activeElement;
       document.getElementById('modalContent').innerHTML = `
         <div class="modal-head">
-          <h2>${esc(inquiry.name)}</h2>
+          <h2 id="modalTitle">${esc(inquiry.name)}</h2>
           <span class="tag tag--${inquiry.service_type}">${inquiry.service_type}</span>
         </div>
         <div class="modal-body">
           <div class="modal-field">
-            <label>Email</label>
+            <span class="modal-field-label">Email</span>
             <a href="mailto:${esc(inquiry.email)}">${esc(inquiry.email)}</a>
           </div>
           <div class="modal-field">
-            <label>Budget</label>
+            <span class="modal-field-label">Budget</span>
             <span>${inquiry.budget ? esc(inquiry.budget) : '—'}</span>
           </div>
           <div class="modal-field">
-            <label>Status</label>
+            <span class="modal-field-label">Status</span>
             <span class="status-pill status--${inquiry.status}">${fmt(inquiry.status)}</span>
           </div>
           <div class="modal-field">
-            <label>Submitted</label>
+            <span class="modal-field-label">Submitted</span>
             <span>${fmtDate(inquiry.created_at)}</span>
           </div>
           <div class="modal-field full">
-            <label>Message</label>
+            <span class="modal-field-label">Message</span>
             <p class="modal-message">${esc(inquiry.message)}</p>
           </div>
         </div>`;
-      document.getElementById('modalOverlay').classList.add('open');
+      modalOverlay.inert = false;
+      modalOverlay.setAttribute('aria-hidden', 'false');
+      modalOverlay.setAttribute('aria-labelledby', 'modalTitle');
+      modalOverlay.classList.add('open');
+      document.getElementById('modalClose').focus();
     }
 
-    document.getElementById('modalClose').addEventListener('click', () => {
-      document.getElementById('modalOverlay').classList.remove('open');
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', event => {
+      if (event.target === modalOverlay) closeModal();
     });
-    document.getElementById('modalOverlay').addEventListener('click', event => {
-      if (event.target === document.getElementById('modalOverlay')) {
-        document.getElementById('modalOverlay').classList.remove('open');
+    modalOverlay.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeModal();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(modalOverlay.querySelectorAll('button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]'))
+        .filter(element => element.getClientRects().length > 0);
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     });
     document.querySelectorAll('.filter-btn').forEach(button => {
       button.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(filterButton => {
           filterButton.classList.remove('active');
+          filterButton.setAttribute('aria-pressed', 'false');
         });
         button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
         currentFilter = button.dataset.filter;
         renderTable();
       });
@@ -426,8 +464,10 @@
       button.addEventListener('click', () => {
         document.querySelectorAll('.esec-btn').forEach(sectionButton => {
           sectionButton.classList.remove('active');
+          sectionButton.setAttribute('aria-pressed', 'false');
         });
         button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
         currentEditorSection = button.dataset.sec;
         loadEditorSection(currentEditorSection);
       });
@@ -456,10 +496,10 @@
           <div class="editor-fields">
             ${fields.map(field => `
               <div class="editor-field ${field.type === 'textarea' ? 'editor-field--wide' : ''}">
-                <label>${esc(field.label)}</label>
+                <label for="editor-${field.key}">${esc(field.label)}</label>
                 ${field.type === 'textarea'
-                  ? `<textarea name="${field.key}" rows="3">${esc(data[field.key] || '')}</textarea>`
-                  : `<input type="text" name="${field.key}" value="${esc(data[field.key] || '')}" />`
+                  ? `<textarea id="editor-${field.key}" name="${field.key}" rows="3">${esc(data[field.key] || '')}</textarea>`
+                  : `<input id="editor-${field.key}" type="text" name="${field.key}" value="${esc(data[field.key] || '')}" />`
                 }
               </div>
             `).join('')}

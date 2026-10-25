@@ -6,7 +6,6 @@
   justify-content: center;
   padding: 2rem;
   position: relative;
-  overflow: hidden;
 }
 .auth-bg { position: fixed; inset: 0; pointer-events: none; }
 .auth-bg .hero-orb { filter: blur(160px); opacity: .08; }
@@ -29,7 +28,7 @@ body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
   z-index: 1;
   width: 100%;
   max-width: 420px;
-  background: var(--bg-card);
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2.5rem;
@@ -47,7 +46,7 @@ body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
 .password-wrapper input { padding-right: 3rem; width: 100%; }
 .toggle-pw {
   position: absolute;
-  right: .85rem;
+  right: .4rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -55,6 +54,11 @@ body::before { filter: blur(6px) brightness(1.05); transform: scale(1.04); }
   cursor: pointer;
   color: var(--text-muted);
   padding: 0;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 0;
   transition: color var(--transition);
 }

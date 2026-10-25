@@ -317,29 +317,29 @@
 
   /* ── Build HTML ──────────────────────────────────────────────────────── */
   const WIDGET_HTML = `
-    <button class="cb-toggle" id="cbToggle" aria-label="Open chat">
+    <button class="cb-toggle" id="cbToggle" type="button" aria-label="Open chat" aria-expanded="false" aria-controls="cbPopup">
       <svg class="cb-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
       <svg class="cb-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
-      <span class="cb-dot"></span>
+      <span class="cb-dot" aria-hidden="true"></span>
     </button>
 
-    <div class="cb-popup" id="cbPopup" role="dialog" aria-label="Chat with Cherry.dev">
+    <div class="cb-popup" id="cbPopup" role="dialog" aria-label="Chat with Cherry.dev" aria-hidden="true" inert>
       <div class="cb-header">
-        <div class="cb-avatar">🍒</div>
+        <div class="cb-avatar" aria-hidden="true">🍒</div>
         <div class="cb-header-info">
           <strong>Cherry Assistant</strong>
           <span>Online — usually replies instantly</span>
         </div>
       </div>
-      <div class="cb-messages" id="cbMessages"></div>
+      <div class="cb-messages" id="cbMessages" role="log" aria-label="Chat messages" aria-live="polite"></div>
       <div class="cb-quick-replies" id="cbQuickReplies"></div>
       <div class="cb-input-bar">
-        <input type="text" id="cbInput" placeholder="Ask me anything…" autocomplete="off" />
-        <button class="cb-send" id="cbSend" aria-label="Send">
+        <input type="text" id="cbInput" aria-label="Message Cherry Assistant" placeholder="Ask me anything…" autocomplete="off" />
+        <button class="cb-send" id="cbSend" type="button" aria-label="Send message">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/>
           </svg>
@@ -378,20 +378,29 @@
       isOpen = true;
       toggle.classList.add('open');
       popup.classList.add('open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close chat');
+      popup.setAttribute('aria-hidden', 'false');
+      popup.inert = false;
       input.focus();
       if (messages.children.length === 0) greet();
     }
-    function closeChat() {
+    function closeChat(restoreFocus) {
       isOpen = false;
       toggle.classList.remove('open');
       popup.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open chat');
+      popup.setAttribute('aria-hidden', 'true');
+      popup.inert = true;
+      if (restoreFocus) toggle.focus();
     }
 
-    toggle.addEventListener('click', () => isOpen ? closeChat() : openChat());
+    toggle.addEventListener('click', () => isOpen ? closeChat(false) : openChat());
 
     /* Keyboard close */
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && isOpen) closeChat();
+      if (e.key === 'Escape' && isOpen) closeChat(true);
     });
 
     /* Expose global open function for Quick quote links */

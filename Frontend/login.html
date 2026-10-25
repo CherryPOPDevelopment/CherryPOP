@@ -10,24 +10,24 @@
   <link rel="stylesheet" href="/css/login.css" />
 </head>
 <body class="auth-body">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <div class="auth-bg">
+  <div class="auth-bg" aria-hidden="true">
     <div class="hero-orb orb-1"></div>
     <div class="hero-orb orb-2"></div>
   </div>
 
-  <a href="/" class="auth-logo">cherry<span>.dev</span></a>
-
-  <div class="auth-card">
+  <main class="auth-card" id="main-content" tabindex="-1">
+    <a href="/" class="auth-logo">cherry<span>.dev</span></a>
 
     <!-- ── LOGIN PANEL ───────────────────────────────────────────────────── -->
     <div id="panel-login" class="auth-panel">
       <div class="auth-header">
-        <h1>Welcome back</h1>
+        <h1 tabindex="-1">Welcome back</h1>
         <p>Sign in to your account</p>
       </div>
 
-      <form id="loginForm" class="auth-form" novalidate>
+      <form id="loginForm" class="auth-form">
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" id="username" name="username" placeholder="admin" autocomplete="username" required />
@@ -36,7 +36,7 @@
           <label for="password">Password</label>
           <div class="password-wrapper">
             <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
-            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password">
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show password" aria-controls="password" aria-pressed="false">
               <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
@@ -63,11 +63,11 @@
     <!-- ── REGISTER PANEL ────────────────────────────────────────────────── -->
     <div id="panel-register" class="auth-panel" hidden>
       <div class="auth-header">
-        <h1>Create account</h1>
+        <h1 tabindex="-1">Create account</h1>
         <p>Track your projects and communicate with us</p>
       </div>
 
-      <form id="registerForm" class="auth-form" novalidate>
+      <form id="registerForm" class="auth-form">
         <div class="form-group">
           <label for="reg-username">Username</label>
           <input type="text" id="reg-username" placeholder="yourname" autocomplete="username" required />
@@ -80,7 +80,7 @@
           <label for="reg-password">Password</label>
           <div class="password-wrapper">
             <input type="password" id="reg-password" placeholder="Minimum 8 characters" autocomplete="new-password" required />
-            <button type="button" class="toggle-pw" data-target="reg-password" aria-label="Show password">
+            <button type="button" class="toggle-pw" data-target="reg-password" aria-label="Show password" aria-controls="reg-password" aria-pressed="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
@@ -100,11 +100,11 @@
     <!-- ── FORGOT PASSWORD PANEL ─────────────────────────────────────────── -->
     <div id="panel-forgot-password" class="auth-panel" hidden>
       <div class="auth-header">
-        <h1>Reset password</h1>
+        <h1 tabindex="-1">Reset password</h1>
         <p>Enter your email and we'll send you a reset link</p>
       </div>
 
-      <form id="forgotPwForm" class="auth-form" novalidate>
+      <form id="forgotPwForm" class="auth-form">
         <div class="form-group">
           <label for="fp-email">Email Address</label>
           <input type="email" id="fp-email" placeholder="you@example.com" autocomplete="email" required />
@@ -121,11 +121,11 @@
     <!-- ── FORGOT USERNAME PANEL ─────────────────────────────────────────── -->
     <div id="panel-forgot-username" class="auth-panel" hidden>
       <div class="auth-header">
-        <h1>Forgot username</h1>
+        <h1 tabindex="-1">Forgot username</h1>
         <p>We'll email your username to you</p>
       </div>
 
-      <form id="forgotUserForm" class="auth-form" novalidate>
+      <form id="forgotUserForm" class="auth-form">
         <div class="form-group">
           <label for="fu-email">Email Address</label>
           <input type="email" id="fu-email" placeholder="you@example.com" autocomplete="email" required />
@@ -139,11 +139,11 @@
       </div>
     </div>
 
-  </div>
+  </main>
 
   <style>
     .auth-links { display:flex; align-items:center; justify-content:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.75rem; }
-    .auth-link { background:none; border:none; cursor:pointer; color:var(--accent); font-size:.85rem; padding:0; text-decoration:underline; text-underline-offset:2px; transition:opacity var(--transition); }
+    .auth-link { background:none; border:none; cursor:pointer; color:var(--accent); font-size:.85rem; min-height:44px; padding:.5rem; text-decoration:underline; text-underline-offset:2px; transition:opacity var(--transition); }
     .auth-link:hover { opacity:.75; }
     .auth-link-sep { color:var(--text-muted); font-size:.85rem; }
     .auth-panel[hidden] { display:none; }
@@ -153,7 +153,9 @@
     // ── Panel switching ──────────────────────────────────────────────────────
     function showPanel(id) {
       document.querySelectorAll('.auth-panel').forEach(p => p.hidden = true);
-      document.getElementById('panel-' + id).hidden = false;
+      const panel = document.getElementById('panel-' + id);
+      panel.hidden = false;
+      panel.querySelector('h1').focus();
     }
     document.querySelectorAll('[data-panel]').forEach(el => {
       el.addEventListener('click', () => showPanel(el.dataset.panel));
@@ -172,6 +174,9 @@
     document.getElementById('togglePw').addEventListener('click', () => {
       const input = document.getElementById('password');
       input.type  = input.type === 'password' ? 'text' : 'password';
+      const visible = input.type === 'text';
+      this.setAttribute('aria-pressed', String(visible));
+      this.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
     });
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -201,6 +206,9 @@
       btn.addEventListener('click', () => {
         const input = document.getElementById(btn.dataset.target);
         input.type  = input.type === 'password' ? 'text' : 'password';
+        const visible = input.type === 'text';
+        btn.setAttribute('aria-pressed', String(visible));
+        btn.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
       });
     });
 

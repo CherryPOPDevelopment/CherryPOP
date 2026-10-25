@@ -10,12 +10,13 @@
   <link rel="stylesheet" href="/css/chatbot.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <!-- ── NAV ──────────────────────────────────────────────────────────────── -->
-  <nav class="navbar" id="navbar">
+  <nav class="navbar" id="navbar" aria-label="Primary navigation">
     <div class="nav-inner">
       <a href="/" class="logo">cherry<span>.dev</span></a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="primary-navigation">
         <li><a href="#services">Services</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#portfolio">Work</a></li>
@@ -25,12 +26,13 @@
         <a href="/login" class="btn btn-ghost" id="navLoginBtn">Login</a>
         <a href="/contact" class="btn btn-primary">Get a Quote</a>
       </div>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
+      <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-navigation">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
 
+  <main id="main-content" tabindex="-1">
   <!-- ── HERO ─────────────────────────────────────────────────────────────── -->
   <section class="hero" id="home">
     <div class="hero-bg">
@@ -195,7 +197,7 @@
             <span class="portfolio-tag">Website + App</span>
           </div>
           <div class="portfolio-info">
-            <h4>Aurelia</h4>
+            <h3>Aurelia</h3>
             <p>Social contact platform with friend connections, profiles, and selective information sharing.</p>
           </div>
         </a>
@@ -205,7 +207,7 @@
             <span class="portfolio-tag">App + Business</span>
           </div>
           <div class="portfolio-info">
-            <h4>SCOOP</h4>
+            <h3>SCOOP</h3>
             <p>SCOOP is a hotel concierge business platform for managing recommendations, events, reservations, and team operations.</p>
           </div>
         </a>
@@ -215,13 +217,15 @@
             <span class="portfolio-tag">Shop</span>
           </div>
           <div class="portfolio-info">
-            <h4>Luxe Botanics</h4>
+            <h3>Luxe Botanics</h3>
             <p>Botanical skincare storefront with curated products, subscriptions, and a calm checkout journey.</p>
           </div>
         </a>
       </div>
     </div>
   </section>
+
+  </main>
 
   <!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
   <footer class="footer">
@@ -249,10 +253,6 @@
     });
 
     // ── Hamburger
-    document.getElementById('hamburger').addEventListener('click', () => {
-      document.querySelector('.nav-links').classList.toggle('open');
-    });
-
     // ── Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -346,6 +346,7 @@
 
 
   </script>
+  <script src="/site-navigation.js"></script>
   <script src="/chatbot.js"></script>
 </body>
 </html>

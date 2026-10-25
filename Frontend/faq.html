@@ -10,11 +10,12 @@
   <link rel="stylesheet" href="/css/service.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <nav class="navbar scrolled">
+  <nav class="navbar scrolled" aria-label="Primary navigation">
     <div class="nav-inner">
       <a href="/" class="logo">cherry<span>.dev</span></a>
-      <ul class="nav-links">
+      <ul class="nav-links" id="primary-navigation">
         <li><a href="/#services">Services</a></li>
         <li><a href="/#about">About</a></li>
         <li><a href="/#portfolio">Work</a></li>
@@ -23,9 +24,13 @@
       <div class="nav-actions">
         <a href="/contact" class="btn btn-primary">Get a Quote</a>
       </div>
+      <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-navigation">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
+  <main id="main-content" tabindex="-1">
   <!-- Hero -->
   <div class="service-hero">
     <div class="hero-bg"><div class="hero-orb orb-1"></div></div>
@@ -138,6 +143,8 @@
     </div>
   </section>
 
+  </main>
+
   <footer class="footer">
     <div class="container">
       <div class="footer-brand">
@@ -170,6 +177,7 @@
       } catch (_) {}
     })();
   </script>
+  <script src="/site-navigation.js"></script>
   <script src="/chatbot.js"></script>
 </body>
 </html>
