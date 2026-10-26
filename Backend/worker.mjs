@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { handleAureliaDemoApi } from './aurelia-demo.mjs';
 
 const COOKIE_NAME = 'connect.sid';
 const SESSION_TTL = 8 * 60 * 60;
@@ -600,6 +601,15 @@ function redirect(path) {
   return new Response(null, { status: 302, headers: { location: path, 'cache-control': 'no-store' } });
 }
 
+function hasUsableOrigin(value) {
+  try {
+    const origin = new URL(value);
+    return origin.protocol === 'https:' || origin.hostname === 'localhost' || origin.hostname === '127.0.0.1';
+  } catch {
+    return false;
+  }
+}
+
 async function proxyApp(request, env, prefix, originValue) {
   if (!originValue) return errorResponse(`${prefix} origin is not configured.`, 503);
   let origin;
@@ -633,6 +643,19 @@ async function proxyApp(request, env, prefix, originValue) {
     return errorResponse(`${prefix} is temporarily unavailable.`, 502);
   }
   return rewriteAppResponse(response, prefix, origin);
+}
+
+// Floating link back to the main site, added to every demo page (Aurelia, SCOOP, Luxe Botanics).
+const BACK_BUTTON_HTML = `<a id="cp-back-home" href="/#portfolio">&larr; Back to CherryPOP</a><style>
+#cp-back-home{position:fixed;left:16px;bottom:16px;z-index:2147483647;padding:10px 16px;border-radius:999px;background:#b51f48;color:#fff;font:600 14px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+#cp-back-home:hover,#cp-back-home:focus-visible{background:#a51b40;outline:2px solid #fff;outline-offset:2px}
+@media print{#cp-back-home{display:none}}
+</style>`;
+
+function addBackButton(html) {
+  if (html.includes('id="cp-back-home"')) return html;
+  const index = html.lastIndexOf('</body>');
+  return index === -1 ? html : `${html.slice(0, index)}${BACK_BUTTON_HTML}${html.slice(index)}`;
 }
 
 // Apps are mounted under a path prefix, so root-relative URLs, redirects and cookies must be moved under it.
@@ -679,7 +702,7 @@ async function rewriteAppResponse(response, prefix, origin) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.delete('etag');
-  return new Response(rewriteAppBody(await response.text(), prefix), {
+  return new Response(addBackButton(rewriteAppBody(await response.text(), prefix)), {
     status: response.status,
     statusText: response.statusText,
     headers,
@@ -710,7 +733,9 @@ async function aureliaAssetRoute(request, env, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.delete('etag');
-  return new Response(rewriteAppBody(await response.text(), '/aurelia'), { status: response.status, headers });
+  let body = rewriteAppBody(await response.text(), '/aurelia');
+  if (contentType.includes('text/html')) body = addBackButton(body);
+  return new Response(body, { status: response.status, headers });
 }
 
 async function staticRoute(request, env, url) {
@@ -744,7 +769,14 @@ async function staticRoute(request, env, url) {
   const assetResponse = await env.ASSETS.fetch(assetRequest);
   if (assetResponse.status !== 404) {
     const headers = new Headers(assetResponse.headers);
-    if ((headers.get('content-type') || '').includes('text/html')) headers.set('cache-control', 'no-store');
+    const isHtml = (headers.get('content-type') || '').includes('text/html');
+    if (isHtml) headers.set('cache-control', 'no-store');
+    if (isHtml && (pathname.startsWith('/botanics/') || pathname.startsWith('/projects/'))) {
+      headers.delete('content-length');
+      headers.delete('content-encoding');
+      headers.delete('etag');
+      return new Response(addBackButton(await assetResponse.text()), { status: assetResponse.status, headers });
+    }
     return new Response(assetResponse.body, { status: assetResponse.status, headers });
   }
 
@@ -763,6 +795,7 @@ export default {
         return await proxyApp(request, env, '/sova-demo', env.SOVA_ORIGIN);
       }
       if (url.pathname === '/aurelia/api' || url.pathname.startsWith('/aurelia/api/')) {
+        if (!hasUsableOrigin(env.AURELIA_ORIGIN)) return await handleAureliaDemoApi(request, env, url);
         return await proxyApp(request, env, '/aurelia', env.AURELIA_ORIGIN);
       }
       if (url.pathname === '/aurelia' || url.pathname.startsWith('/aurelia/')) {

@@ -55,7 +55,7 @@ The Cloudflare Worker serves the main CherryPOP website and API. Cloudflare D1 i
 
    `SESSION_SECRET` must be a unique random value of at least 32 characters. Email and Stripe secrets are optional unless those features are enabled. `SOVA_ORIGIN` and `AURELIA_ORIGIN` must be public HTTPS URLs that Cloudflare can reach, not `localhost` and not the Worker domain itself. Use a DNS-only or proxied hostname that points at the VPS and serves those apps (for example an Nginx `server` block for `aurelia-origin.cherrypopdevelopment.com` proxying to port 5000 and `sova-origin.cherrypopdevelopment.com` proxying to port 4000), or `https://sova.cherrypopdevelopment.com` if `workers/sova` is deployed. The Worker returns `503` for an unconfigured origin and `502` if it cannot be reached.
 
-   Aurelia's static frontend is bundled with the Worker and served at `/aurelia/`; only `/aurelia/api/*` is proxied to `AURELIA_ORIGIN`, so the Aurelia backend must be running there. `/sova-demo/*` is fully proxied to `SOVA_ORIGIN`. The Worker rewrites root-relative links, redirects, and cookie paths so both apps work under their path prefixes.
+   Aurelia's static frontend is bundled with the Worker and served at `/aurelia/`; `/aurelia/api/*` is proxied to `AURELIA_ORIGIN` only when that is a valid HTTPS URL; otherwise (not set, or malformed) the Worker answers with its built-in demo API (`Backend/aurelia-demo.mjs`), which provides the demo logins with no VPS. Demo data is kept in memory and resets when the Worker restarts. `/sova-demo/*` is fully proxied to `SOVA_ORIGIN`. The Worker rewrites root-relative links, redirects, and cookie paths so both apps work under their path prefixes.
 
 ## Deploy
 
