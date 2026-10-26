@@ -445,6 +445,11 @@ body {
   text-align: center;
 }
 
+a.step {
+  text-decoration: none;
+  color: inherit;
+}
+
 .step-number {
   width: 60px;
   height: 60px;
