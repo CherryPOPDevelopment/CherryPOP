@@ -15,19 +15,23 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const methodOverride = require('method-override');
+// Overridden by the Cloudflare Worker entry (workers/sova) before this module loads.
+const runtime = require('./runtime');
 
 const app = express();
+app.set('trust proxy', true);
 
 // ---------------------------------------------------------------------------
 // View engine
 // ---------------------------------------------------------------------------
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../frontend/views'));
+if (runtime.View) app.set('view', runtime.View);
 
 // ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
-app.use(express.static(path.join(__dirname, '../frontend/public')));
+if (runtime.serveStatic) app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(methodOverride('_method'));
@@ -39,6 +43,7 @@ app.use(
     secret: process.env.SESSION_SECRET || 'demo-fallback-secret',
     resave: false,
     saveUninitialized: false,
+    store: runtime.sessionStore || undefined,
     cookie: { secure: false, httpOnly: true }
   })
 );
@@ -227,11 +232,15 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 // ---------------------------------------------------------------------------
 // Start
 // ---------------------------------------------------------------------------
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`SOVA Demo server running on http://localhost:${PORT}`);
-  console.log('Demo credentials:');
-  console.log('  Customer  →  demo@sova.com / Demo1234');
-  console.log('  Employee  →  employee@sova.com / Employee1234');
-  console.log('  Admin     →  admin@sova.com / Admin1234');
-});
+if (require.main === module) {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`SOVA Demo server running on http://localhost:${PORT}`);
+    console.log('Demo credentials:');
+    console.log('  Customer  →  demo@sova.com / Demo1234');
+    console.log('  Employee  →  employee@sova.com / Employee1234');
+    console.log('  Admin     →  admin@sova.com / Admin1234');
+  });
+}
+
+module.exports = app;

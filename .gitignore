@@ -1,5 +1,8 @@
 # Dependencies
 node_modules/
+dist/
+.wrangler/
+Backend/d1-data-import.sql
 
 # Environment variables — NEVER commit real keys
 .env

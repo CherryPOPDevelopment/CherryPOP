@@ -1,0 +1,12 @@
+{
+  "name": "cherrypop-sova-worker",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build:views": "node scripts/build-views.js"
+  },
+  "devDependencies": {
+    "acorn": "^8.12.1",
+    "eslint-scope": "^8.0.2"
+  }
+}

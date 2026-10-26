@@ -13,6 +13,8 @@ const paymentsRouter  = require('./routes/payments');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
 const sovaProxy = createProxyMiddleware({
   target: 'http://127.0.0.1:4000',
   changeOrigin: true,

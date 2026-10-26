@@ -1,0 +1,15 @@
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mBuild failed with 1 error:[0m
+
+  [31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "express-session"[0m
+  
+      d1-session-store.mjs:2:20:
+  [37m      2 │ import session from [32m'express-session'[37m;
+          ╵                     [32m~~~~~~~~~~~~~~~~~[0m
+  
+    To fix this, you can add an entry to "alias" in your Wrangler configuration.
+    For more guidance see: [4m[4mhttps://developers.cloudflare.com/workers/wrangler/configuration/#bundling-issues[0m[0m
+    
+  
+  
+
+

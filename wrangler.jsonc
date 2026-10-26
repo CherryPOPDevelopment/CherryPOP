@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developers.cloudflare.com/wrangler/config-schema.json",
+  "name": "cherrypop",
+  "main": "Backend/worker.mjs",
+  "compatibility_date": "2026-10-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "cherrypopdevelopment.com/*",
+      "zone_name": "cherrypopdevelopment.com"
+    },
+    {
+      "pattern": "www.cherrypopdevelopment.com/*",
+      "zone_name": "cherrypopdevelopment.com"
+    }
+  ],
+  "build": {
+    "command": "node deploy/build-worker-assets.js"
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cherrypop",
+      "database_id": "37c2ded3-f833-414e-9678-9fa0f0eb855f",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "SITE_URL": "https://cherrypopdevelopment.com"
+  }
+}
