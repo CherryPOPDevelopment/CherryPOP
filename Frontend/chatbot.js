@@ -231,7 +231,7 @@
     },
     {
       patterns: ['review', 'testimonial', 'feedback', 'rating', 'recommend', 'trust', 'reputation'],
-      reply: "I have a strong track record across 40+ projects with a 98% client satisfaction rate. I'm happy to provide references or point you to testimonials relevant to your industry on request. 🌟",
+      reply: "I have a strong track record across 10+ projects with a 98% client satisfaction rate. I'm happy to provide references or point you to testimonials relevant to your industry on request. 🌟",
       quick: ['Start a Quote'],
     },
     {

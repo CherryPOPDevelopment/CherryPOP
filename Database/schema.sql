@@ -39,10 +39,26 @@ CREATE TABLE IF NOT EXISTS site_content (
 
 -- Seed default content (can be overwritten via dashboard)
 INSERT IGNORE INTO site_content (section, content) VALUES
-('hero', '{"badge":"✦ Available for projects","title":"I build digital experiences that convert & scale","subtitle":"Freelance developer specialising in websites, mobile apps, and full-featured online shops. Clean code. On time. No fluff.","cta_primary":"Start a Project","cta_secondary":"View My Work","stat1_num":"40+","stat1_label":"Projects Delivered","stat2_num":"98%","stat2_label":"Client Satisfaction","stat3_num":"5yr","stat3_label":"Experience"}'),
-('about', '{"tag":"About me","title":"Turning ideas into working products","body1":"I\'m a full-stack freelance developer with nearly 2 years of experienceon building websites, mobile apps, and online shops. I specialise in no-code development and design with a special interest in python, java, mysql, and css code. I am very passionate and excited to continue to learn and grow my skills and knowledge-- and to work with you!","body2":"","cta":"Work with me"}'),
+('hero', '{"badge":"✦ Available for projects","title":"I build digital experiences that convert & scale","subtitle":"Freelance developer specialising in websites, mobile apps, and full-featured online shops. Clean code. On time. No fluff.","cta_primary":"Start a Project","cta_secondary":"View My Work","stat1_num":"10+","stat1_label":"Projects Delivered","stat2_num":"98%","stat2_label":"Client Satisfaction","stat3_num":"2yr","stat3_label":"Experience"}'),
+('about', '{"tag":"About me","title":"Turning ideas into working products","body1":"I\'m a full-stack freelance developer with 2 years of experience building websites, mobile apps, and online shops. I specialise in no-code development and design with a special interest in python, java, mysql, and css code. I am very passionate and excited to continue to learn and grow my skills and knowledge-- and to work with you!","body2":"","cta":"Work with me"}'),
 ('services', '{"tag":"What I do","title":"Services","subtitle":"End-to-end solutions built around your goals.","website_title":"Website Development","website_desc":"Blazing-fast, responsive websites engineered for performance and SEO. From landing pages to complex portals.","app_title":"App Development","app_desc":"Cross-platform mobile & web applications that feel native on every device. Built with modern frameworks.","shop_title":"Shop Development","shop_desc":"High-converting e-commerce stores with seamless checkout, inventory management, and payment integration."}'),
 ('contact', '{"tag":"Let\'s talk","title":"Start a Project","subtitle":"Fill in the form and I\'ll get back to you within 24 hours.","info1":"📍 Remote — worldwide","info2":"⏱ Response within 24h","info3":"📅 Currently accepting new clients"}');
+
+-- Update the original seeded stats once without overwriting dashboard edits.
+UPDATE site_content
+SET content = JSON_SET(content, '$.stat1_num', '10+', '$.stat3_num', '2yr')
+WHERE section = 'hero'
+  AND JSON_UNQUOTE(JSON_EXTRACT(content, '$.stat1_num')) = '40+'
+  AND JSON_UNQUOTE(JSON_EXTRACT(content, '$.stat3_num')) = '5yr';
+
+UPDATE site_content
+SET content = JSON_SET(
+  content,
+  '$.body1',
+  'I''m a full-stack freelance developer with 2 years of experience building websites, mobile apps, and online shops. I specialise in no-code development and design with a special interest in python, java, mysql, and css code. I am very passionate and excited to continue to learn and grow my skills and knowledge-- and to work with you!'
+)
+WHERE section = 'about'
+  AND JSON_UNQUOTE(JSON_EXTRACT(content, '$.body1')) LIKE '%nearly 2 years of experienceon%';
 
 -- Seed a default admin account  (password: Admin1234!)
 -- Replace hash after running:  node -e "const b=require('bcryptjs');console.log(b.hashSync('Admin1234!',12))"
